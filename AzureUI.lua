@@ -619,7 +619,7 @@ do
             end)    
 
             if default ~= min then
-                local percent = 0.1 - ((max - default) / (max - min))
+                local percent = 1 - ((max - default) / (max - min))
                 local number  = default 
 
                 number = tonumber(string.format("%.2f", number))
@@ -634,7 +634,7 @@ do
             self:Resize();
             return {
                 Set = function(self, value)
-                    local percent = 0.1 - ((max - value) / (max - min))
+                    local percent = 1 - ((max - value) / (max - min))
                     local number  = value 
 
                     number = tonumber(string.format("%.2f", number))
