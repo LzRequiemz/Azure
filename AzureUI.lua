@@ -1,5 +1,8 @@
 local library = {count = 0, queue = {}, callbacks = {}, rainbowtable = {}, toggled = true, binds = {}};
 local defaults;
+local UIS = game:GetService("UserInputService");
+local RunService = game:GetService("RunService");
+local Debris = game:GetService("Debris");
 do
 	local dragger = {};
 	do
@@ -38,6 +41,40 @@ do
 		end;
     end
     
+    local function getVisibleChildCount(container)
+        local count = 0;
+        for _, child in next, container:GetChildren() do
+            if (not child:IsA("UIListLayout")) then
+                count = count + 1;
+            end
+        end
+        return count;
+    end
+
+    local function getContainerHeight(container)
+        local y = 0;
+        for _, child in next, container:GetChildren() do
+            if (not child:IsA("UIListLayout")) then
+                y = y + child.AbsoluteSize.Y;
+            end
+        end
+        return y + 5;
+    end
+
+    local function clearNonLayoutChildren(container)
+        for _, child in next, container:GetChildren() do
+            if (not child:IsA("UIListLayout")) then
+                child:Destroy();
+            end
+        end
+    end
+
+    local function safeDisconnect(connection)
+        if connection and connection.Connected then
+            connection:Disconnect();
+        end
+    end
+
     local types = {}; do
         types.__index = types;
         function types.window(name, options)
@@ -123,14 +160,7 @@ do
                     window.container.ClipsDescendants = true;
                 end
                 wait();
-                local y = 0;
-                for i, v in next, window.container:GetChildren() do
-                    if (not v:IsA('UIListLayout')) then
-                        y = y + v.AbsoluteSize.Y;
-                    end
-                end 
-
-                local targetSize = window.toggled and UDim2.new(1, 0, 0, y+5) or UDim2.new(1, 0, 0, 0);
+                local targetSize = window.toggled and UDim2.new(1, 0, 0, getContainerHeight(window.container)) or UDim2.new(1, 0, 0, 0);
                 local targetDirection = window.toggled and "In" or "Out"
 
                 window.container:TweenSize(targetSize, targetDirection, "Quad", 0.15, true)
@@ -144,23 +174,11 @@ do
         end
         
         function types:Resize()
-            local y = 0;
-            for i, v in next, self.container:GetChildren() do
-                if (not v:IsA('UIListLayout')) then
-                    y = y + v.AbsoluteSize.Y;
-                end
-            end 
-            self.container.Size = UDim2.new(1, 0, 0, y+5)
+            self.container.Size = UDim2.new(1, 0, 0, getContainerHeight(self.container))
         end
         
         function types:GetOrder() 
-            local c = 0;
-            for i, v in next, self.container:GetChildren() do
-                if (not v:IsA('UIListLayout')) then
-                    c = c + 1
-                end
-            end
-            return c
+            return getVisibleChildCount(self.container)
         end
         
         function types:Toggle(name, options, callback)
@@ -409,7 +427,7 @@ do
                 library.binding = true
 
                 button.Text = "..."
-                local a, b = game:GetService('UserInputService').InputBegan:wait();
+                local a, b = UIS.InputBegan:wait();
                 local name = tostring(a.KeyCode.Name);
                 local typeName = tostring(a.UserInputType.Name);
 
@@ -573,11 +591,11 @@ do
                     if renderSteppedConnection then renderSteppedConnection:disconnect() end 
                     
 
-                    renderSteppedConnection = game:GetService('RunService').RenderStepped:connect(function()
-                        local mouse = game:GetService("UserInputService"):GetMouseLocation()
+                    renderSteppedConnection = RunService.RenderStepped:connect(function()
+                        local mouse = UIS:GetMouseLocation()
                         local percent = (mouse.X - overlay.Container.AbsolutePosition.X) / (overlay.Container.AbsoluteSize.X)
                         percent = math.clamp(percent, 0, 1)
-                        percent = tonumber(string.format("%.1f", percent)) 
+                        percent = tonumber(string.format("%.2f", percent))
 
                         overlay.Container.Button.Position = UDim2.new(math.clamp(percent, 0, 0.99), 0, 0, 1)
                         
@@ -591,11 +609,11 @@ do
                 end
 
                 local function disconnect()
-                    if renderSteppedConnection then renderSteppedConnection:disconnect() end
-                    if inputBeganConnection then inputBeganConnection:disconnect() end
-                    if inputEndedConnection then inputEndedConnection:disconnect() end
-                    if mouseLeaveConnection then mouseLeaveConnection:disconnect() end
-                    if mouseUpConnection then mouseUpConnection:disconnect() end
+                    safeDisconnect(renderSteppedConnection)
+                    safeDisconnect(inputBeganConnection)
+                    safeDisconnect(inputEndedConnection)
+                    safeDisconnect(mouseLeaveConnection)
+                    safeDisconnect(mouseUpConnection)
                 end
 
                 inputBeganConnection = check:FindFirstChild(name).Container.InputBegan:connect(function(input)
@@ -611,7 +629,7 @@ do
                 end)
 
                 mouseDownConnection = check:FindFirstChild(name).Container.Button.MouseButton1Down:connect(update)
-                mouseUpConnection   = game:GetService("UserInputService").InputEnded:connect(function(a, b)
+                mouseUpConnection   = UIS.InputEnded:connect(function(a, b)
                     if a.UserInputType == Enum.UserInputType.MouseButton1 and (mouseDownConnection.Connected) then
                         disconnect()
                     end
@@ -695,11 +713,7 @@ do
 
             local function rebuild(text)
                 box:FindFirstChild('Box').Container.ScrollBarThickness = 0
-                for i, child in next, box:FindFirstChild('Box').Container:GetChildren() do
-                    if (not child:IsA('UIListLayout')) then
-                        child:Destroy();
-                    end
-                end
+                clearNonLayoutChildren(box:FindFirstChild('Box').Container)
 
                 if #text > 0 then
                     for i, v in next, list do
@@ -729,11 +743,7 @@ do
                                 callback(location[flag])
 
                                 box:FindFirstChild('Box').Container.ScrollBarThickness = 0
-                                for i, child in next, box:FindFirstChild('Box').Container:GetChildren() do
-                                    if (not child:IsA('UIListLayout')) then
-                                        child:Destroy();
-                                    end
-                                end
+                                clearNonLayoutChildren(box:FindFirstChild('Box').Container)
                                 box:FindFirstChild('Box').Container:TweenSize(UDim2.new(1, 0, 0, 0), 'Out', 'Quad', 0.25, true)
                             end)
                         end
@@ -880,7 +890,7 @@ do
                         location[flag] = tostring(btn.Text);
                         callback(location[flag])
 
-                        game:GetService('Debris'):AddItem(container, 0)
+                        Debris:AddItem(container, 0)
                         input:disconnect();
                     end)
                 end
@@ -888,7 +898,7 @@ do
                 container:TweenSize(goSize, 'Out', 'Quad', 0.15, true)
                 
                 local function isInGui(frame)
-                    local mloc = game:GetService('UserInputService'):GetMouseLocation();
+                    local mloc = UIS:GetMouseLocation();
                     local mouse = Vector2.new(mloc.X, mloc.Y - 36);
                     
                     local x1, x2 = frame.AbsolutePosition.X, frame.AbsolutePosition.X + frame.AbsoluteSize.X;
@@ -897,7 +907,7 @@ do
                     return (mouse.X >= x1 and mouse.X <= x2) and (mouse.Y >= y1 and mouse.Y <= y2)
                 end
                 
-                input = game:GetService('UserInputService').InputBegan:connect(function(a)
+                input = UIS.InputBegan:connect(function(a)
                     if a.UserInputType == Enum.UserInputType.MouseButton1 and (not isInGui(container)) then
                         check:FindFirstChild('dropdown_lbl'):WaitForChild('Selection').TextColor3 = library.options.textcolor
                         check:FindFirstChild('dropdown_lbl'):WaitForChild('Selection').Text       = location[flag];
@@ -905,7 +915,7 @@ do
                         container:TweenSize(UDim2.new(1, 0, 0, 0), 'In', 'Quad', 0.15, true)
                         wait(0.15)
 
-                        game:GetService('Debris'):AddItem(container, 0)
+                        Debris:AddItem(container, 0)
                         input:disconnect();
                     end
                 end)
@@ -920,7 +930,7 @@ do
                 end)
                 check:WaitForChild('dropdown_lbl').Selection.Text = location[flag]
                 check:FindFirstChild('dropdown_lbl'):WaitForChild('Selection').TextColor3 = library.options.textcolor
-                game:GetService('Debris'):AddItem(container, 0)
+                Debris:AddItem(container, 0)
             end
 
             return {
