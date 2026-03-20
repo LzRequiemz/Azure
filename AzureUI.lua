@@ -551,7 +551,7 @@ do
                             BackgroundTransparency = 0;
                             Position = UDim2.new(0, 0, 0.5, 0);
                             Size     = UDim2.new(1, 0, 0, 1);
-                            BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+                            BackgroundColor3 = Color3.fromRGB(255, 182, 193);
                             BorderSizePixel = 0;
                         });
                     })
@@ -973,7 +973,7 @@ do
         topcolor       = Color3.fromRGB(30, 30, 30);
         titlecolor     = Color3.fromRGB(255, 255, 255);
         
-        underlinecolor = Color3.fromRGB(196, 40, 28);
+        underlinecolor = Color3.fromRGB(255, 182, 193);
         bgcolor        = Color3.fromRGB(35, 35, 35);
         boxcolor       = Color3.fromRGB(35, 35, 35);
         btncolor       = Color3.fromRGB(25, 25, 25);
