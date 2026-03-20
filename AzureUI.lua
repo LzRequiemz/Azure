@@ -1,4 +1,4 @@
-local library = {count = 0, queue = {}, callbacks = {}, rainbowtable = {}, toggled = true, binds = {}};
+local library = {count = 0, queue = {}, callbacks = {}, rainbowtable = {}, toggled = true, binds = {}, visibilityBind = Enum.KeyCode.Period};
 local defaults;
 local UIS = game:GetService("UserInputService");
 local RunService = game:GetService("RunService");
@@ -978,6 +978,14 @@ do
         dragger.new(window.object);
         return window
     end
+
+    function library:SetVisibilityBind(bind)
+        if typeof(bind) == "EnumItem" and bind.EnumType == Enum.KeyCode then
+            library.visibilityBind = bind;
+            return true;
+        end
+        return false;
+    end
     
     default = {
         topcolor       = Color3.fromRGB(30, 30, 30);
@@ -1039,6 +1047,12 @@ do
     end
 
     game:GetService("UserInputService").InputBegan:connect(function(input)
+        if library.container and input.KeyCode == library.visibilityBind then
+            library.toggled = not library.toggled;
+            library.container.Visible = library.toggled;
+            return;
+        end
+
         if (not library.binding) then
             for idx, binds in next, library.binds do
                 local real_binding = binds.location[idx];
