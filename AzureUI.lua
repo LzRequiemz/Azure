@@ -511,8 +511,18 @@ do
             local max      = options.max or 1;
             local location = options.location or self.flags;
             local precise  = options.precise  or false -- e.g 0, 1 vs 0, 0.1, 0.2, ...
+            local step     = options.step or options.increment or (precise and 0.1 or 1);
             local flag     = options.flag or "";
             local callback = callback or function() end
+
+            local function normalizeValue(raw)
+                local clamped = math.clamp(raw, min, max)
+                if precise then
+                    local snapped = math.floor((clamped / step) + 0.5) * step
+                    return tonumber(string.format("%.2f", math.clamp(snapped, min, max)))
+                end
+                return math.floor(clamped)
+            end
 
             location[flag] = default;
 
@@ -600,7 +610,7 @@ do
                         overlay.Container.Button.Position = UDim2.new(math.clamp(percent, 0, 0.99), 0, 0, 1)
                         
                         local num = min + (max - min) * percent
-                        local value = (precise and num or math.floor(num))
+                        local value = normalizeValue(num)
 
                         overlay.Container.ValueLabel.Text = value;
                         callback(tonumber(value))
@@ -638,12 +648,7 @@ do
 
             if default ~= min then
                 local percent = 1 - ((max - default) / (max - min))
-                local number  = default 
-
-                number = tonumber(string.format("%.2f", number))
-                if (not precise) then
-                    number = math.floor(number)
-                end
+                local number = normalizeValue(default)
 
                 overlay.Container.Button.Position  = UDim2.new(math.clamp(percent, 0, 0.99), 0,  0, 1) 
                 overlay.Container.ValueLabel.Text  = number
@@ -653,12 +658,7 @@ do
             return {
                 Set = function(self, value)
                     local percent = 1 - ((max - value) / (max - min))
-                    local number  = value 
-
-                    number = tonumber(string.format("%.2f", number))
-                    if (not precise) then
-                        number = math.floor(number)
-                    end
+                    local number = normalizeValue(value)
 
                     overlay.Container.Button.Position  = UDim2.new(math.clamp(percent, 0, 0.99), 0,  0, 1) 
                     overlay.Container.ValueLabel.Text  = number
