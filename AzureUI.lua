@@ -577,7 +577,7 @@ do
                         local mouse = game:GetService("UserInputService"):GetMouseLocation()
                         local percent = (mouse.X - overlay.Container.AbsolutePosition.X) / (overlay.Container.AbsoluteSize.X)
                         percent = math.clamp(percent, 0, 1)
-                        percent = tonumber(string.format("%.2f", percent))
+                        percent = tonumber(string.format("%.1f", percent)) 
 
                         overlay.Container.Button.Position = UDim2.new(math.clamp(percent, 0, 0.99), 0, 0, 1)
                         
