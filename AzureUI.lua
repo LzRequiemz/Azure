@@ -506,15 +506,15 @@ do
         end
 
         function types:Slider(name, options, callback)
-            local default = options.default or options.min
-            local min     = options.min or 0
-            local max     = options.max or 1
-            local location = options.location or self.flags
-            local precise  = options.precise or false
-            local step     = options.step or options.increment or (precise and 0.1 or 1)
-            local flag     = options.flag or ""
+            local default = options.default or options.min;
+            local min     = options.min or 0;
+            local max      = options.max or 1;
+            local location = options.location or self.flags;
+            local precise  = options.precise  or false -- e.g 0, 1 vs 0, 0.1, 0.2, ...
+            local step     = options.step or options.increment or (precise and 0.1 or 1);
+            local flag     = options.flag or "";
             local callback = callback or function() end
-        
+
             local function normalizeValue(raw)
                 local clamped = math.clamp(raw, min, max)
                 if precise then
@@ -523,9 +523,9 @@ do
                 end
                 return math.floor(clamped)
             end
-        
-            location[flag] = default
-        
+
+            location[flag] = default;
+
             local check = library:Create('Frame', {
                 BackgroundTransparency = 1;
                 Size = UDim2.new(1, 0, 0, 25);
@@ -544,80 +544,129 @@ do
                     TextSize = library.options.fontsize;
                     library:Create('Frame', {
                         Name = 'Container';
-                        Size = UDim2.new(0, 120, 0, 12); -- slightly taller for rounded edges
-                        Position = UDim2.new(1, -130, 0, 6);
+                        Size = UDim2.new(0, 60, 0, 20);
+                        Position = UDim2.new(1, -65, 0, 3);
                         BackgroundTransparency = 1;
+                        --BorderColor3 = library.options.bordercolor;
                         BorderSizePixel = 0;
-                        library:Create('Frame', {
-                            Name = 'Fill';
-                            Size = UDim2.new((default-min)/(max-min), 0, 1, 0); -- initial fill
-                            BackgroundColor3 = Color3.fromRGB(0, 170, 255); -- fill color
-                            BorderSizePixel = 0;
-                            ClipsDescendants = true;
-                            ZIndex = 2;
-                            library:Create('UICorner', {CornerRadius = UDim.new(0, 6)}) -- rounded corners
+                        library:Create('TextLabel', {
+                            Name = 'ValueLabel';
+                            Text = default;
+                            BackgroundTransparency = 1;
+                            TextColor3 = library.options.textcolor;
+                            Position = UDim2.new(0, -10, 0, 0);
+                            Size     = UDim2.new(0, 1, 1, 0);
+                            TextXAlignment = Enum.TextXAlignment.Right;
+                            Font = library.options.font;
+                            TextSize = library.options.fontsize;
+                            TextStrokeTransparency = library.options.textstroke;
+                            TextStrokeColor3 = library.options.strokecolor;
                         });
                         library:Create('TextButton', {
                             Name = 'Button';
-                            Size = UDim2.new(0, 14, 0, 14); -- round handle
-                            Position = UDim2.new((default-min)/(max-min), -7, 0, -1);
-                            BackgroundColor3 = Color3.fromRGB(255, 255, 255);
-                            BorderSizePixel = 0;
-                            ZIndex = 3;
+                            Size = UDim2.new(0, 5, 1, -2);
+                            Position = UDim2.new(0, 0, 0, 1);
                             AutoButtonColor = false;
-                            library:Create('UICorner', {CornerRadius = UDim.new(0, 7)}) -- round handle
+                            Text = "";
+                            BackgroundColor3 = Color3.fromRGB(20, 20, 20);
+                            BorderSizePixel = 0;
+                            ZIndex = 2;
+                            TextStrokeTransparency = library.options.textstroke;
+                            TextStrokeColor3 = library.options.strokecolor;
+                        });
+                        library:Create('Frame', {
+                            Name = 'Line';
+                            BackgroundTransparency = 0;
+                            Position = UDim2.new(0, 0, 0.5, 0);
+                            Size = UDim2.new(1, 0, 0, 1);
+                            BackgroundColor3 = _G.UIUnderlineColor;
+                            BorderSizePixel = 0;
                         });
                     })
                 });
                 Parent = self.container;
-            })
-        
-            local overlay = check:FindFirstChild(name)
-            local container = overlay.Container
-            local fill = container.Fill
-            local button = container.Button
-        
-            local function updateSlider(mouseX)
-                local percent = (mouseX - container.AbsolutePosition.X) / container.AbsoluteSize.X
-                percent = math.clamp(percent, 0, 1)
-                local value = normalizeValue(min + (max-min)*percent)
-                fill.Size = UDim2.new(percent, 0, 1, 0)
-                button.Position = UDim2.new(percent, -7, 0, -1)
-                overlay.ValueLabel.Text = value
-                location[flag] = value
-                callback(value)
+            });
+
+            local overlay = check:FindFirstChild(name);
+
+            local renderSteppedConnection;
+            local inputBeganConnection;
+            local inputEndedConnection;
+            local mouseLeaveConnection;
+            local mouseDownConnection;
+            local mouseUpConnection;
+
+            check:FindFirstChild(name).Container.MouseEnter:connect(function()
+                local function update()
+                    if renderSteppedConnection then renderSteppedConnection:disconnect() end 
+                    
+
+                    renderSteppedConnection = RunService.RenderStepped:connect(function()
+                        local mouse = UIS:GetMouseLocation()
+                        local percent = (mouse.X - overlay.Container.AbsolutePosition.X) / (overlay.Container.AbsoluteSize.X)
+                        percent = math.clamp(percent, 0, 1)
+                        percent = tonumber(string.format("%.2f", percent))
+
+                        overlay.Container.Button.Position = UDim2.new(math.clamp(percent, 0, 0.99), 0, 0, 1)
+                        
+                        local num = min + (max - min) * percent
+                        local value = normalizeValue(num)
+
+                        overlay.Container.ValueLabel.Text = value;
+                        callback(tonumber(value))
+                        location[flag] = tonumber(value)
+                    end)
+                end
+
+                local function disconnect()
+                    safeDisconnect(renderSteppedConnection)
+                    safeDisconnect(inputBeganConnection)
+                    safeDisconnect(inputEndedConnection)
+                    safeDisconnect(mouseLeaveConnection)
+                    safeDisconnect(mouseUpConnection)
+                end
+
+                inputBeganConnection = check:FindFirstChild(name).Container.InputBegan:connect(function(input)
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                        update()
+                    end
+                end)
+
+                inputEndedConnection = check:FindFirstChild(name).Container.InputEnded:connect(function(input)
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                        disconnect()
+                    end
+                end)
+
+                mouseDownConnection = check:FindFirstChild(name).Container.Button.MouseButton1Down:connect(update)
+                mouseUpConnection   = UIS.InputEnded:connect(function(a, b)
+                    if a.UserInputType == Enum.UserInputType.MouseButton1 and (mouseDownConnection.Connected) then
+                        disconnect()
+                    end
+                end)
+            end)    
+
+            if default ~= min then
+                local percent = 1 - ((max - default) / (max - min))
+                local number = normalizeValue(default)
+
+                overlay.Container.Button.Position  = UDim2.new(math.clamp(percent, 0, 0.99), 0,  0, 1) 
+                overlay.Container.ValueLabel.Text  = number
             end
-        
-            container.MouseButton1Down:Connect(function(input)
-                updateSlider(input.Position.X)
-                local moveConn
-                moveConn = UIS.InputChanged:Connect(function(inp)
-                    if inp.UserInputType == Enum.UserInputType.MouseMovement then
-                        updateSlider(inp.Position.X)
-                    end
-                end)
-                local releaseConn
-                releaseConn = UIS.InputEnded:Connect(function(inp)
-                    if inp.UserInputType == Enum.UserInputType.MouseButton1 then
-                        moveConn:Disconnect()
-                        releaseConn:Disconnect()
-                    end
-                end)
-            end)
-        
-            self:Resize()
+
+            self:Resize();
             return {
-                Set = function(_, value)
-                    value = math.clamp(value, min, max)
-                    local percent = (value - min) / (max - min)
-                    fill.Size = UDim2.new(percent, 0, 1, 0)
-                    button.Position = UDim2.new(percent, -7, 0, -1)
-                    overlay.ValueLabel.Text = value
-                    location[flag] = value
-                    callback(value)
+                Set = function(self, value)
+                    local percent = 1 - ((max - value) / (max - min))
+                    local number = normalizeValue(value)
+
+                    overlay.Container.Button.Position  = UDim2.new(math.clamp(percent, 0, 0.99), 0,  0, 1) 
+                    overlay.Container.ValueLabel.Text  = number
+                    location[flag] = number
+                    callback(number)
                 end
             }
-        end
+        end 
 
         function types:SearchBox(text, options, callback)
             local list = options.list or {};
