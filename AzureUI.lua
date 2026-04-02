@@ -578,8 +578,8 @@ do
                             Name = 'Line';
                             BackgroundTransparency = 0;
                             Position = UDim2.new(0, 0, 0.5, 0);
-                            Size     = UDim2.new(1, 0, 0, 1);
-                            BackgroundColor3 = Color3.fromRGB(255, 182, 193);
+                            Size = UDim2.new(1, 0, 0, 1);
+                            BackgroundColor3 = _G.UIUnderlineColor;
                             BorderSizePixel = 0;
                         });
                     })
