@@ -580,7 +580,7 @@ do
                             Position = UDim2.new(0, 0, 0.5, 0);
                             Size = UDim2.new(1, 0, 0, 1);
                             BackgroundColor3 = Color3.fromRGB(20, 20, 20); -- grey line
-                            BorderColor3 = Color3.fromRGB(20, 20, 20)
+                            BorderColor3 = Color3.fromRGB(20, 20, 20);
                             BorderSizePixel = 1;
                         });
                 
