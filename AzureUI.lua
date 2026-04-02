@@ -573,21 +573,21 @@ do
                             TextStrokeTransparency = library.options.textstroke;
                             TextStrokeColor3 = library.options.strokecolor;
                         });
-                        -- Original gray underline
+                        -- Thicker gray underline (height changed from 1 to 3)
                         library:Create('Frame', {
                             Name = 'Line';
                             BackgroundTransparency = 0;
-                            Position = UDim2.new(0, 0, 0.5, 0);
-                            Size = UDim2.new(1, 0, 0, 1);
+                            Position = UDim2.new(0, 0, 0.5, -1); -- Center the thicker line
+                            Size = UDim2.new(1, 0, 0, 3);
                             BackgroundColor3 = Color3.fromRGB(80, 80, 80); -- grey line
                             BorderSizePixel = 0;
                         });
-                        -- Overlay fill underline, starts at 0 width and will expand with the slider
+                        -- Thicker overlay fill underline (height changed from 1 to 3)
                         library:Create('Frame', {
                             Name = 'LineOverlay';
                             BackgroundTransparency = 0;
-                            Position = UDim2.new(0, 0, 0.5, 0);
-                            Size = UDim2.new(0, 0, 0, 1); -- Initially empty
+                            Position = UDim2.new(0, 0, 0.5, -1); -- Center the thicker line
+                            Size = UDim2.new(0, 0, 0, 3); -- Initially empty
                             BackgroundColor3 = _G.UIUnderlineColor;
                             BorderSizePixel = 0;
                             ZIndex = 1;
@@ -608,7 +608,7 @@ do
 
             local function updateOverlayFill(percent)
                 -- Greyscale line remains 100%, overlay grows as fill
-                overlay.Container.LineOverlay.Size = UDim2.new(math.clamp(percent, 0, 0.99), 0, 0, 1)
+                overlay.Container.LineOverlay.Size = UDim2.new(math.clamp(percent, 0, 0.99), 0, 0, 3) -- Thickness is 3
             end
 
             -- Make sure the overlay fill matches the initial value
