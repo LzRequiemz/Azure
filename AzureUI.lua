@@ -548,40 +548,6 @@ do
                         Position = UDim2.new(1, -65, 0, 3);
                         BackgroundTransparency = 1;
                         BorderSizePixel = 0;
-                        -- Outline "track" of slider - thicker outline
-                        library:Create('Frame', {
-                            Name = 'Outline';
-                            BackgroundTransparency = 1;
-                            Position = UDim2.new(0, 0, 0.5, -4);
-                            Size = UDim2.new(1, 0, 0, 8); -- Make it thicker
-                            BorderSizePixel = 2; -- Thick border
-                            BorderColor3 = library.options.bordercolor or Color3.fromRGB(90,90,90);
-                            ZIndex = 1;
-                        });
-                        -- Add back "Line" for center line as before, but make invisible since Outline is main border now
-                        library:Create('Frame', {
-                            Name = 'Line';
-                            BackgroundTransparency = 1; -- make invisible
-                            Position = UDim2.new(0, 0, 0.5, 0);
-                            Size = UDim2.new(1, 0, 0, 1);
-                            BackgroundColor3 = _G.UIUnderlineColor or Color3.fromRGB(110,110,110);
-                            BorderSizePixel = 0;
-                            ZIndex = 1;
-                        });
-                        -- Fill element, width adjusts to value (initial: default-initial percent)
-                        library:Create('Frame', {
-                            Name = 'Fill';
-                            BackgroundTransparency = 0;
-                            Position = UDim2.new(0, 0, 0.5, -4);
-                            Size = UDim2.new(
-                                ((default or min) - min) / math.max(0.001, (max-min)), -- Protect for div0
-                                0, 0, 8
-                            );
-                            BackgroundColor3 = library.options.accentcolor or Color3.fromRGB(70,130,180);
-                            BorderSizePixel = 0;
-                            ZIndex = 2;
-                        });
-                        -- Value label
                         library:Create('TextLabel', {
                             Name = 'ValueLabel';
                             Text = default;
@@ -597,19 +563,34 @@ do
                         });
                         library:Create('TextButton', {
                             Name = 'Button';
-                            Size = UDim2.new(0, 7, 1, -2);
-                            Position = UDim2.new(
-                                ((default or min) - min) / math.max(0.001, (max-min)), 
-                                -3, 0, 1
-                            ); -- Center on the fill
+                            Size = UDim2.new(0, 5, 1, -2);
+                            Position = UDim2.new(0, 0, 0, 1);
                             AutoButtonColor = false;
                             Text = "";
                             BackgroundColor3 = Color3.fromRGB(20, 20, 20);
-                            BorderSizePixel = 1; -- Make thumb more visible
-                            BorderColor3 = library.options.bordercolor or Color3.fromRGB(90,90,90);
-                            ZIndex = 3;
+                            BorderSizePixel = 0;
+                            ZIndex = 2;
                             TextStrokeTransparency = library.options.textstroke;
                             TextStrokeColor3 = library.options.strokecolor;
+                        });
+                        -- Original gray underline
+                        library:Create('Frame', {
+                            Name = 'Line';
+                            BackgroundTransparency = 0;
+                            Position = UDim2.new(0, 0, 0.5, 0);
+                            Size = UDim2.new(1, 0, 0, 1);
+                            BackgroundColor3 = Color3.fromRGB(80, 80, 80); -- grey line
+                            BorderSizePixel = 0;
+                        });
+                        -- Overlay fill underline, starts at 0 width and will expand with the slider
+                        library:Create('Frame', {
+                            Name = 'LineOverlay';
+                            BackgroundTransparency = 0;
+                            Position = UDim2.new(0, 0, 0.5, 0);
+                            Size = UDim2.new(0, 0, 0, 1); -- Initially empty
+                            BackgroundColor3 = _G.underlinecovor;
+                            BorderSizePixel = 0;
+                            ZIndex = 1;
                         });
                     })
                 });
@@ -617,9 +598,6 @@ do
             });
 
             local overlay = check:FindFirstChild(name);
-            local container = overlay.Container
-            local fill = container:FindFirstChild("Fill")
-            local button = container:FindFirstChild("Button")
 
             local renderSteppedConnection;
             local inputBeganConnection;
@@ -628,11 +606,21 @@ do
             local mouseDownConnection;
             local mouseUpConnection;
 
-            local function setSlider(percent, value)
-                percent = math.clamp(percent, 0, 1)
-                fill.Size = UDim2.new(percent, 0, 0, 8)
-                button.Position = UDim2.new(math.clamp(percent, 0, 0.99), -3, 0, 1)
-                container.ValueLabel.Text = value
+            local function updateOverlayFill(percent)
+                -- Greyscale line remains 100%, overlay grows as fill
+                overlay.Container.LineOverlay.Size = UDim2.new(math.clamp(percent, 0, 0.99), 0, 0, 1)
+            end
+
+            -- Make sure the overlay fill matches the initial value
+            if default ~= min then
+                local percent = 1 - ((max - default) / (max - min))
+                local number = normalizeValue(default)
+
+                overlay.Container.Button.Position  = UDim2.new(math.clamp(percent, 0, 0.99), 0,  0, 1) 
+                overlay.Container.ValueLabel.Text  = number
+                updateOverlayFill(percent)
+            else
+                updateOverlayFill(0)
             end
 
             check:FindFirstChild(name).Container.MouseEnter:connect(function()
@@ -645,10 +633,13 @@ do
                         percent = math.clamp(percent, 0, 1)
                         percent = tonumber(string.format("%.2f", percent))
 
+                        overlay.Container.Button.Position = UDim2.new(math.clamp(percent, 0, 0.99), 0, 0, 1)
+                        updateOverlayFill(percent)
+
                         local num = min + (max - min) * percent
                         local value = normalizeValue(num)
 
-                        setSlider(percent, value)
+                        overlay.Container.ValueLabel.Text = value;
                         callback(tonumber(value))
                         location[flag] = tonumber(value)
                     end)
@@ -682,20 +673,17 @@ do
                 end)
             end)    
 
-            -- Set the default/fill on load
-            local percent = ((default or min) - min) / math.max(0.001, (max - min))
-            local number = normalizeValue(default)
-
-            setSlider(percent, number)
-
             self:Resize();
             return {
                 Set = function(self, value)
-                    local percent = ((value or min) - min) / math.max(0.001, (max - min))
+                    local percent = 1 - ((max - value) / (max - min))
                     local number = normalizeValue(value)
-                    setSlider(percent, number)
+
+                    overlay.Container.Button.Position  = UDim2.new(math.clamp(percent, 0, 0.99), 0,  0, 1) 
+                    overlay.Container.ValueLabel.Text  = number
                     location[flag] = number
                     callback(number)
+                    updateOverlayFill(percent)
                 end
             }
         end 
