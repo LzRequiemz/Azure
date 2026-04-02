@@ -573,21 +573,20 @@ do
                             TextStrokeTransparency = library.options.textstroke;
                             TextStrokeColor3 = library.options.strokecolor;
                         });
-                        -- Original gray underline
+                        -- Make the line and lineoverlay match the button height
                         library:Create('Frame', {
                             Name = 'Line';
                             BackgroundTransparency = 0;
-                            Position = UDim2.new(0, 0, 0.5, 0);
-                            Size = UDim2.new(1, 0, 0, 1);
+                            Position = UDim2.new(0, 0, 0, 1); -- aligns with the top of the button (offset y = 1)
+                            Size = UDim2.new(1, 0, 1, -2); -- same height as the button (20-2 = 18, but since offset is y=1 in Button, height is 18 so 1,-2)
                             BackgroundColor3 = Color3.fromRGB(80, 80, 80); -- grey line
                             BorderSizePixel = 0;
                         });
-                        -- Overlay fill underline, starts at 0 width and will expand with the slider
                         library:Create('Frame', {
                             Name = 'LineOverlay';
                             BackgroundTransparency = 0;
-                            Position = UDim2.new(0, 0, 0.5, 0);
-                            Size = UDim2.new(0, 0, 0, 1); -- Initially empty
+                            Position = UDim2.new(0, 0, 0, 1); -- aligns with the top of the button (offset y = 1)
+                            Size = UDim2.new(0, 0, 1, -2); -- initially 0 width, height same as button
                             BackgroundColor3 = _G.underlinecovor;
                             BorderSizePixel = 0;
                             ZIndex = 1;
@@ -608,7 +607,7 @@ do
 
             local function updateOverlayFill(percent)
                 -- Greyscale line remains 100%, overlay grows as fill
-                overlay.Container.LineOverlay.Size = UDim2.new(math.clamp(percent, 0, 0.99), 0, 0, 1)
+                overlay.Container.LineOverlay.Size = UDim2.new(math.clamp(percent, 0, 0.99), 0, 1, -2)
             end
 
             -- Make sure the overlay fill matches the initial value
@@ -616,7 +615,7 @@ do
                 local percent = 1 - ((max - default) / (max - min))
                 local number = normalizeValue(default)
 
-                overlay.Container.Button.Position  = UDim2.new(math.clamp(percent, 0, 0.99), 0,  0, 1) 
+                overlay.Container.Button.Position  = UDim2.new(math.clamp(percent, 0, 0.99), 0,  0, 1)
                 overlay.Container.ValueLabel.Text  = number
                 updateOverlayFill(percent)
             else
@@ -679,7 +678,7 @@ do
                     local percent = 1 - ((max - value) / (max - min))
                     local number = normalizeValue(value)
 
-                    overlay.Container.Button.Position  = UDim2.new(math.clamp(percent, 0, 0.99), 0,  0, 1) 
+                    overlay.Container.Button.Position  = UDim2.new(math.clamp(percent, 0, 0.99), 0,  0, 1)
                     overlay.Container.ValueLabel.Text  = number
                     location[flag] = number
                     callback(number)
