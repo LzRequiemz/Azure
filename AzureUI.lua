@@ -1,4 +1,4 @@
-library = {count = 0, queue = {}, callbacks = {}, rainbowtable = {}, toggled = true, binds = {}, hideui = _G.HideUI};
+local library = {count = 0, queue = {}, callbacks = {}, rainbowtable = {}, toggled = true, binds = {}, hideui = _G.HideUI};
 local defaults;
 local UIS = game:GetService("UserInputService");
 local RunService = game:GetService("RunService");
