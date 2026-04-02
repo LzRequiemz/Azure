@@ -506,15 +506,15 @@ do
         end
 
         function types:Slider(name, options, callback)
-            local default = options.default or options.min
-            local min = options.min or 0
-            local max = options.max or 1
-            local location = options.location or self.flags
-            local precise = options.precise or false
-            local step = options.step or options.increment or (precise and 0.1 or 1)
-            local flag = options.flag or ""
+            local default = options.default or options.min;
+            local min     = options.min or 0;
+            local max      = options.max or 1;
+            local location = options.location or self.flags;
+            local precise  = options.precise  or false -- e.g 0, 1 vs 0, 0.1, 0.2, ...
+            local step     = options.step or options.increment or (precise and 0.1 or 1);
+            local flag     = options.flag or "";
             local callback = callback or function() end
-        
+
             local function normalizeValue(raw)
                 local clamped = math.clamp(raw, min, max)
                 if precise then
@@ -523,147 +523,150 @@ do
                 end
                 return math.floor(clamped)
             end
-        
-            location[flag] = default
-        
+
+            location[flag] = default;
+
             local check = library:Create('Frame', {
-                BackgroundTransparency = 1,
-                Size = UDim2.new(1, 0, 0, 25),
-                LayoutOrder = self:GetOrder(),
-            })
-        
-            -- Create label
-            library:Create('TextLabel', {
-                Text = "\r" .. name,
-                TextStrokeTransparency = library.options.textstroke,
-                TextStrokeColor3 = library.options.strokecolor,
-                BackgroundTransparency = 1,
-                TextColor3 = library.options.textcolor,
-                Position = UDim2.new(0, 5, 0, 2),
-                Size = UDim2.new(1, -5, 1, 0),
-                TextXAlignment = Enum.TextXAlignment.Left,
-                Font = library.options.font,
-                TextSize = library.options.fontsize,
-                Parent = check
-            })
-        
-            -- Container frame for slider bar
-            local containerFrame = library:Create('Frame', {
-                Size = UDim2.new(0, 60, 0, 20),
-                Position = UDim2.new(1, -65, 0, 3),
-                BackgroundTransparency = 1,
-                BorderSizePixel = 0,
-                Parent = check
-            })
-        
-            -- Fill bar (shows current value)
-            local fillBar = library:Create('Frame', {
-                BackgroundColor3 = Color3.fromRGB(255, 0, 0),
-                Size = UDim2.new(0, 0, 1, 0), -- start with 0 width
-                Position = UDim2.new(0, 0, 0, 0),
-                BorderSizePixel = 0,
-                Parent = containerFrame
-            })
-        
-            -- Rounded corners for fill
-            local fillUICorner = library:Create('UICorner', { CornerRadius = UDim.new(0.5, 0), Parent = fillBar })
-        
-            -- Slider button
-            local sliderButton = library:Create('TextButton', {
-                Size = UDim2.new(0, 5, 1, -2),
-                Position = UDim2.new(0, 0, 0, 1),
-                AutoButtonColor = false,
-                Text = "",
-                BackgroundColor3 = Color3.fromRGB(20, 20, 20),
-                BorderSizePixel = 0,
-                Parent = containerFrame
-            })
-        
-            -- Rounded corners for button
-            local buttonUICorner = library:Create('UICorner', { CornerRadius = UDim.new(0.5, 0), Parent = sliderButton })
-        
-            -- Initialize position based on default value
-            local function updateSlider(percent)
-                percent = math.clamp(percent, 0, 1)
-                local value = min + (max - min) * percent
-                local number = normalizeValue(value)
-                -- Update slider button position
-                sliderButton.Position = UDim2.new(percent, 0, 0, 1)
-                -- Update fill size
-                fillBar.Size = UDim2.new(percent, 0, 1, 0)
-                -- Call callback with value
-                callback(tonumber(number))
-                -- Save flag
-                location[flag] = tonumber(number)
-            end
-        
-            -- Set initial position
-            local initialPercent = (default - min) / (max - min)
-            updateSlider(initialPercent)
-        
-            -- Handle input for slider
-            local renderStepped
-            local inputBegan
-            local inputEnded
-            local mouseDown
-            local mouseUp
-        
-            local function disconnectAll()
-                if renderStepped then renderStepped:Disconnect() end
-                if inputBegan then inputBegan:Disconnect() end
-                if inputEnded then inputEnded:Disconnect() end
-                if mouseDown then mouseDown:Disconnect() end
-                if mouseUp then mouseUp:Disconnect() end
-            end
-        
-            check:FindFirstChild('Container').MouseEnter:Connect(function()
+                BackgroundTransparency = 1;
+                Size = UDim2.new(1, 0, 0, 25);
+                LayoutOrder = self:GetOrder();
+                library:Create('TextLabel', {
+                    Name = name;
+                    TextStrokeTransparency = library.options.textstroke;
+                    TextStrokeColor3 = library.options.strokecolor;
+                    Text = "\r" .. name;
+                    BackgroundTransparency = 1;
+                    TextColor3 = library.options.textcolor;
+                    Position = UDim2.new(0, 5, 0, 2);
+                    Size     = UDim2.new(1, -5, 1, 0);
+                    TextXAlignment = Enum.TextXAlignment.Left;
+                    Font = library.options.font;
+                    TextSize = library.options.fontsize;
+                    library:Create('Frame', {
+                        Name = 'Container';
+                        Size = UDim2.new(0, 60, 0, 20);
+                        Position = UDim2.new(1, -65, 0, 3);
+                        BackgroundTransparency = 1;
+                        --BorderColor3 = library.options.bordercolor;
+                        BorderSizePixel = 0;
+                        library:Create('TextLabel', {
+                            Name = 'ValueLabel';
+                            Text = default;
+                            BackgroundTransparency = 1;
+                            TextColor3 = library.options.textcolor;
+                            Position = UDim2.new(0, -10, 0, 0);
+                            Size     = UDim2.new(0, 1, 1, 0);
+                            TextXAlignment = Enum.TextXAlignment.Right;
+                            Font = library.options.font;
+                            TextSize = library.options.fontsize;
+                            TextStrokeTransparency = library.options.textstroke;
+                            TextStrokeColor3 = library.options.strokecolor;
+                        });
+                        library:Create('TextButton', {
+                            Name = 'Button';
+                            Size = UDim2.new(0, 5, 1, -2);
+                            Position = UDim2.new(0, 0, 0, 1);
+                            AutoButtonColor = false;
+                            Text = "";
+                            BackgroundColor3 = Color3.fromRGB(20, 20, 20);
+                            BorderSizePixel = 0;
+                            ZIndex = 2;
+                            TextStrokeTransparency = library.options.textstroke;
+                            TextStrokeColor3 = library.options.strokecolor;
+                        });
+                        library:Create('Frame', {
+                            Name = 'Line';
+                            BackgroundTransparency = 0;
+                            Position = UDim2.new(0, 0, 0.5, 0);
+                            Size = UDim2.new(1, 0, 0, 1);
+                            BackgroundColor3 = _G.UIUnderlineColor;
+                            BorderSizePixel = 0;
+                        });
+                    })
+                });
+                Parent = self.container;
+            });
+
+            local overlay = check:FindFirstChild(name);
+
+            local renderSteppedConnection;
+            local inputBeganConnection;
+            local inputEndedConnection;
+            local mouseLeaveConnection;
+            local mouseDownConnection;
+            local mouseUpConnection;
+
+            check:FindFirstChild(name).Container.MouseEnter:connect(function()
                 local function update()
-                    if renderStepped then renderStepped:Disconnect() end
-                    renderStepped = RunService.RenderStepped:Connect(function()
-                        local mouseX = UIS:GetMouseLocation().X
-                        local containerPos = containerFrame.AbsolutePosition.X
-                        local containerSize = containerFrame.AbsoluteSize.X
-                        local percent = (mouseX - containerPos) / containerSize
-                        updateSlider(percent)
+                    if renderSteppedConnection then renderSteppedConnection:disconnect() end 
+                    
+
+                    renderSteppedConnection = RunService.RenderStepped:connect(function()
+                        local mouse = UIS:GetMouseLocation()
+                        local percent = (mouse.X - overlay.Container.AbsolutePosition.X) / (overlay.Container.AbsoluteSize.X)
+                        percent = math.clamp(percent, 0, 1)
+                        percent = tonumber(string.format("%.2f", percent))
+
+                        overlay.Container.Button.Position = UDim2.new(math.clamp(percent, 0, 0.99), 0, 0, 1)
+                        
+                        local num = min + (max - min) * percent
+                        local value = normalizeValue(num)
+
+                        overlay.Container.ValueLabel.Text = value;
+                        callback(tonumber(value))
+                        location[flag] = tonumber(value)
                     end)
                 end
-        
+
                 local function disconnect()
-                    disconnectAll()
+                    safeDisconnect(renderSteppedConnection)
+                    safeDisconnect(inputBeganConnection)
+                    safeDisconnect(inputEndedConnection)
+                    safeDisconnect(mouseLeaveConnection)
+                    safeDisconnect(mouseUpConnection)
                 end
-        
-                inputBegan = containerFrame.InputBegan:Connect(function(input)
+
+                inputBeganConnection = check:FindFirstChild(name).Container.InputBegan:connect(function(input)
                     if input.UserInputType == Enum.UserInputType.MouseButton1 then
                         update()
                     end
                 end)
-        
-                inputEnded = containerFrame.InputEnded:Connect(function(input)
+
+                inputEndedConnection = check:FindFirstChild(name).Container.InputEnded:connect(function(input)
                     if input.UserInputType == Enum.UserInputType.MouseButton1 then
                         disconnect()
                     end
                 end)
-        
-                mouseDown = sliderButton.MouseButton1Down:Connect(update)
-                mouseUp = UIS.InputEnded:Connect(function(a)
-                    if a.UserInputType == Enum.UserInputType.MouseButton1 then
+
+                mouseDownConnection = check:FindFirstChild(name).Container.Button.MouseButton1Down:connect(update)
+                mouseUpConnection   = UIS.InputEnded:connect(function(a, b)
+                    if a.UserInputType == Enum.UserInputType.MouseButton1 and (mouseDownConnection.Connected) then
                         disconnect()
                     end
                 end)
-            end)
-        
-            -- Set initial fill size
-            fillBar.Size = UDim2.new(initialPercent, 0, 1, 0)
-        
-            self:Resize()
-        
+            end)    
+
+            if default ~= min then
+                local percent = 1 - ((max - default) / (max - min))
+                local number = normalizeValue(default)
+
+                overlay.Container.Button.Position  = UDim2.new(math.clamp(percent, 0, 0.99), 0,  0, 1) 
+                overlay.Container.ValueLabel.Text  = number
+            end
+
+            self:Resize();
             return {
                 Set = function(self, value)
-                    local percent = (value - min) / (max - min)
-                    updateSlider(percent)
+                    local percent = 1 - ((max - value) / (max - min))
+                    local number = normalizeValue(value)
+
+                    overlay.Container.Button.Position  = UDim2.new(math.clamp(percent, 0, 0.99), 0,  0, 1) 
+                    overlay.Container.ValueLabel.Text  = number
+                    location[flag] = number
+                    callback(number)
                 end
             }
-        end
+        end 
 
         function types:SearchBox(text, options, callback)
             local list = options.list or {};
