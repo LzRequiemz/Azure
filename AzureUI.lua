@@ -530,121 +530,122 @@ do
                 BackgroundTransparency = 1,
                 Size = UDim2.new(1, 0, 0, 25),
                 LayoutOrder = self:GetOrder(),
-                [library:Create('TextLabel', {
-                    Name = name,
-                    TextStrokeTransparency = library.options.textstroke,
-                    TextStrokeColor3 = library.options.strokecolor,
-                    Text = "\r" .. name,
-                    BackgroundTransparency = 1,
-                    TextColor3 = library.options.textcolor,
-                    Position = UDim2.new(0, 5, 0, 2),
-                    Size = UDim2.new(1, -5, 1, 0),
-                    TextXAlignment = Enum.TextXAlignment.Left,
-                    Font = library.options.font,
-                    TextSize = library.options.fontsize,
-                }),
-                library:Create('Frame', {
-                    Name = 'Container',
-                    Size = UDim2.new(0, 60, 0, 20),
-                    Position = UDim2.new(1, -65, 0, 3),
-                    BackgroundTransparency = 1,
-                    BorderSizePixel = 0,
-                }),
-                library:Create('Frame', {
-                    Name = 'Fill',
-                    BackgroundColor3 = Color3.fromRGB(255, 0, 0),
-                    BorderSizePixel = 0,
-                    Size = UDim2.new(0, 0, 1, 0), -- initial
-                }),
-                library:Create('UICorner', { CornerRadius = UDim.new(0.5, 0), Parent = nil }), -- for fill
-                library:Create('TextButton', {
-                    Name = 'Button',
-                    Size = UDim2.new(0, 5, 1, -2),
-                    Position = UDim2.new(0, 0, 0, 1),
-                    AutoButtonColor = false,
-                    Text = "",
-                    BackgroundColor3 = Color3.fromRGB(20, 20, 20),
-                    BorderSizePixel = 0,
-                }),
-                library:Create('UICorner', { CornerRadius = UDim.new(0.5, 0), Parent = nil }) -- for button
             })
         
-            -- Assign parents for UICorner
-            check:FindFirstChild('Fill').Parent = check:FindFirstChild('Fill')
-            check:FindFirstChild('Button').Parent = check:FindFirstChild('Button')
+            -- Create label
+            library:Create('TextLabel', {
+                Text = "\r" .. name,
+                TextStrokeTransparency = library.options.textstroke,
+                TextStrokeColor3 = library.options.strokecolor,
+                BackgroundTransparency = 1,
+                TextColor3 = library.options.textcolor,
+                Position = UDim2.new(0, 5, 0, 2),
+                Size = UDim2.new(1, -5, 1, 0),
+                TextXAlignment = Enum.TextXAlignment.Left,
+                Font = library.options.font,
+                TextSize = library.options.fontsize,
+                Parent = check
+            })
         
-            -- Set parents for UICorner
-            check:FindFirstChild('Fill').Parent = check:FindFirstChild('Fill')
-            check:FindFirstChild('Button').Parent = check:FindFirstChild('Button')
+            -- Container frame for slider bar
+            local containerFrame = library:Create('Frame', {
+                Size = UDim2.new(0, 60, 0, 20),
+                Position = UDim2.new(1, -65, 0, 3),
+                BackgroundTransparency = 1,
+                BorderSizePixel = 0,
+                Parent = check
+            })
         
-            local overlay = check:FindFirstChild(name)
+            -- Fill bar (shows current value)
+            local fillBar = library:Create('Frame', {
+                BackgroundColor3 = Color3.fromRGB(255, 0, 0),
+                Size = UDim2.new(0, 0, 1, 0), -- start with 0 width
+                Position = UDim2.new(0, 0, 0, 0),
+                BorderSizePixel = 0,
+                Parent = containerFrame
+            })
         
+            -- Rounded corners for fill
+            local fillUICorner = library:Create('UICorner', { CornerRadius = UDim.new(0.5, 0), Parent = fillBar })
+        
+            -- Slider button
+            local sliderButton = library:Create('TextButton', {
+                Size = UDim2.new(0, 5, 1, -2),
+                Position = UDim2.new(0, 0, 0, 1),
+                AutoButtonColor = false,
+                Text = "",
+                BackgroundColor3 = Color3.fromRGB(20, 20, 20),
+                BorderSizePixel = 0,
+                Parent = containerFrame
+            })
+        
+            -- Rounded corners for button
+            local buttonUICorner = library:Create('UICorner', { CornerRadius = UDim.new(0.5, 0), Parent = sliderButton })
+        
+            -- Initialize position based on default value
             local function updateSlider(percent)
                 percent = math.clamp(percent, 0, 1)
                 local value = min + (max - min) * percent
                 local number = normalizeValue(value)
-                overlay.Container.Button.Position = UDim2.new(percent, 0, 0, 1)
-                overlay.Container.ValueLabel.Text = number
-                overlay.Fill.Size = UDim2.new(percent, 0, 1, 0) -- update fill size
+                -- Update slider button position
+                sliderButton.Position = UDim2.new(percent, 0, 0, 1)
+                -- Update fill size
+                fillBar.Size = UDim2.new(percent, 0, 1, 0)
+                -- Call callback with value
                 callback(tonumber(number))
+                -- Save flag
                 location[flag] = tonumber(number)
             end
         
-            -- Initialize slider position
+            -- Set initial position
             local initialPercent = (default - min) / (max - min)
             updateSlider(initialPercent)
+        
+            -- Handle input for slider
+            local renderStepped
+            local inputBegan
+            local inputEnded
+            local mouseDown
+            local mouseUp
         
             local function disconnectAll()
                 if renderStepped then renderStepped:Disconnect() end
                 if inputBegan then inputBegan:Disconnect() end
                 if inputEnded then inputEnded:Disconnect() end
-                if mouseLeave then mouseLeave:Disconnect() end
                 if mouseDown then mouseDown:Disconnect() end
                 if mouseUp then mouseUp:Disconnect() end
             end
-        
-            local renderStepped
-            local inputBegan
-            local inputEnded
-            local mouseLeave
-            local mouseDown
-            local mouseUp
         
             check:FindFirstChild('Container').MouseEnter:Connect(function()
                 local function update()
                     if renderStepped then renderStepped:Disconnect() end
                     renderStepped = RunService.RenderStepped:Connect(function()
                         local mouseX = UIS:GetMouseLocation().X
-                        local containerPos = overlay.Container.AbsolutePosition.X
-                        local containerSize = overlay.Container.AbsoluteSize.X
+                        local containerPos = containerFrame.AbsolutePosition.X
+                        local containerSize = containerFrame.AbsoluteSize.X
                         local percent = (mouseX - containerPos) / containerSize
                         updateSlider(percent)
                     end)
                 end
         
                 local function disconnect()
-                    if renderStepped then renderStepped:Disconnect() end
-                    if inputBegan then inputBegan:Disconnect() end
-                    if inputEnded then inputEnded:Disconnect() end
-                    if mouseLeave then mouseLeave:Disconnect() end
-                    if mouseDown then mouseDown:Disconnect() end
-                    if mouseUp then mouseUp:Disconnect() end
+                    disconnectAll()
                 end
         
-                inputBegan = overlay.Container.InputBegan:Connect(function(input)
+                inputBegan = containerFrame.InputBegan:Connect(function(input)
                     if input.UserInputType == Enum.UserInputType.MouseButton1 then
                         update()
                     end
                 end)
         
-                inputEnded = overlay.Container.InputEnded:Connect(function(input)
+                inputEnded = containerFrame.InputEnded:Connect(function(input)
                     if input.UserInputType == Enum.UserInputType.MouseButton1 then
                         disconnect()
                     end
                 end)
         
-                mouseDown = overlay.Container.Button.MouseButton1Down:Connect(update)
-                mouseUp = UIS.InputEnded:Connect(function(a, b)
+                mouseDown = sliderButton.MouseButton1Down:Connect(update)
+                mouseUp = UIS.InputEnded:Connect(function(a)
                     if a.UserInputType == Enum.UserInputType.MouseButton1 then
                         disconnect()
                     end
@@ -652,7 +653,7 @@ do
             end)
         
             -- Set initial fill size
-            overlay.Fill.Size = UDim2.new(initialPercent, 0, 1, 0)
+            fillBar.Size = UDim2.new(initialPercent, 0, 1, 0)
         
             self:Resize()
         
