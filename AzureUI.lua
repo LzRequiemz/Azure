@@ -1,4 +1,4 @@
-can you make my slider round but not super round and have a fill in also make example code for ui library once done local library = {count = 0, queue = {}, callbacks = {}, rainbowtable = {}, toggled = true, binds = {}, hideui = _G.HideUI};
+library = {count = 0, queue = {}, callbacks = {}, rainbowtable = {}, toggled = true, binds = {}, hideui = _G.HideUI};
 local defaults;
 local UIS = game:GetService("UserInputService");
 local RunService = game:GetService("RunService");
