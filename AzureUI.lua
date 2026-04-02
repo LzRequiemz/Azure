@@ -578,7 +578,7 @@ do
                             Name = 'Line';
                             BackgroundTransparency = 0;
                             Position = UDim2.new(0, 0, 0, 1); -- aligns with the top of the button (offset y = 1)
-                            Size = UDim2.new(1, 5, 1, -2); -- same height as the button (20-2 = 18, but since offset is y=1 in Button, height is 18 so 1,-2)
+                            Size = UDim2.new(5, 0, 5, -2); -- same height as the button (20-2 = 18, but since offset is y=1 in Button, height is 18 so 1,-2)
                             BackgroundColor3 = Color3.fromRGB(80, 80, 80); -- grey line
                             BorderSizePixel = 0;
                         });
