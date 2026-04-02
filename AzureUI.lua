@@ -1,4 +1,4 @@
-local library = {count = 0, queue = {}, callbacks = {}, rainbowtable = {}, toggled = true, binds = {}, visibilityBind = Enum.KeyCode.Period};
+local library = {count = 0, queue = {}, callbacks = {}, rainbowtable = {}, toggled = true, binds = {}, hideui = _G.HideUI};
 local defaults;
 local UIS = game:GetService("UserInputService");
 local RunService = game:GetService("RunService");
@@ -979,9 +979,9 @@ do
         return window
     end
 
-    function library:SetVisibilityBind(bind)
+    function library:Sethideui(bind)
         if typeof(bind) == "EnumItem" and bind.EnumType == Enum.KeyCode then
-            library.visibilityBind = bind;
+            library.hideui = bind;
             return true;
         end
         return false;
@@ -991,7 +991,7 @@ do
         topcolor       = Color3.fromRGB(30, 30, 30);
         titlecolor     = Color3.fromRGB(255, 255, 255);
         
-        underlinecolor = Color3.fromRGB(255, 182, 193);
+        underlinecolor = _G.UIUnderlineColor;
         bgcolor        = Color3.fromRGB(35, 35, 35);
         boxcolor       = Color3.fromRGB(35, 35, 35);
         btncolor       = Color3.fromRGB(25, 25, 25);
@@ -1047,7 +1047,7 @@ do
     end
 
     game:GetService("UserInputService").InputBegan:connect(function(input)
-        if library.container and input.KeyCode == library.visibilityBind then
+        if library.container and input.KeyCode == library.hideui then
             library.toggled = not library.toggled;
             library.container.Visible = library.toggled;
             return;
