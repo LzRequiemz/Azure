@@ -578,7 +578,7 @@ do
                             Name = 'Line';
                             BackgroundTransparency = 0;
                             Position = UDim2.new(0, 0, 0.5, 0);
-                            Size = UDim2.new(1, 0, 0, -2);
+                            Size = UDim2.new(1, 0, 0, -5);
                             BackgroundColor3 = Color3.fromRGB(80, 80, 80); -- grey line
                             BorderSizePixel = 0;
                         });
@@ -587,7 +587,7 @@ do
                             Name = 'LineOverlay';
                             BackgroundTransparency = 0;
                             Position = UDim2.new(0, 0, 0.5, 0);
-                            Size = UDim2.new(0, 0, 0, -2); -- Initially empty
+                            Size = UDim2.new(0, 0, 0, -5); -- Initially empty
                             BackgroundColor3 = _G.UIUnderlineColor;
                             BorderSizePixel = 0;
                             ZIndex = 1;
@@ -608,7 +608,7 @@ do
 
             local function updateOverlayFill(percent)
                 -- Greyscale line remains 100%, overlay grows as fill
-                overlay.Container.LineOverlay.Size = UDim2.new(math.clamp(percent, 0, 0.99), 0, 0, -2)
+                overlay.Container.LineOverlay.Size = UDim2.new(math.clamp(percent, 0, 0.99), 0, 0, -5)
             end
 
             -- Make sure the overlay fill matches the initial value
