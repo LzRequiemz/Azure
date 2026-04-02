@@ -530,7 +530,7 @@ do
                 BackgroundTransparency = 1,
                 Size = UDim2.new(1, 0, 0, 25),
                 LayoutOrder = self:GetOrder(),
-                library:Create('TextLabel', {
+                [library:Create('TextLabel', {
                     Name = name,
                     TextStrokeTransparency = library.options.textstroke,
                     TextStrokeColor3 = library.options.strokecolor,
@@ -549,15 +549,14 @@ do
                     Position = UDim2.new(1, -65, 0, 3),
                     BackgroundTransparency = 1,
                     BorderSizePixel = 0,
-                    BackgroundColor3 = Color3.fromRGB(20, 20, 20),
                 }),
                 library:Create('Frame', {
                     Name = 'Fill',
-                    BackgroundColor3 = Color3.fromRGB(255, 0, 0), -- fill color
+                    BackgroundColor3 = Color3.fromRGB(255, 0, 0),
                     BorderSizePixel = 0,
-                    Size = UDim2.new(0, 0, 1, 0), -- initial size, will be updated
-                    Position = UDim2.new(0, 0, 0, 0),
+                    Size = UDim2.new(0, 0, 1, 0), -- initial
                 }),
+                library:Create('UICorner', { CornerRadius = UDim.new(0.5, 0), Parent = nil }), -- for fill
                 library:Create('TextButton', {
                     Name = 'Button',
                     Size = UDim2.new(0, 5, 1, -2),
@@ -566,24 +565,17 @@ do
                     Text = "",
                     BackgroundColor3 = Color3.fromRGB(20, 20, 20),
                     BorderSizePixel = 0,
-                    ZIndex = 2,
                 }),
-                -- Add UICorner for rounding
-                library:Create('UICorner', { CornerRadius = UDim.new(0.5, 0), Parent = nil }), -- parent will be set later
-                -- Add UICorner for fill
-                library:Create('UICorner', { CornerRadius = UDim.new(0.5, 0), Parent = nil }), -- parent will be set later
+                library:Create('UICorner', { CornerRadius = UDim.new(0.5, 0), Parent = nil }) -- for button
             })
         
+            -- Assign parents for UICorner
+            check:FindFirstChild('Fill').Parent = check:FindFirstChild('Fill')
+            check:FindFirstChild('Button').Parent = check:FindFirstChild('Button')
+        
             -- Set parents for UICorner
-            check.Fill.Parent = check.Fill
-            check.Button.Parent = check.Button
-        
-            -- The fill and button need UICorner for round edges
-            local fillCorner = check:FindFirstChildOfClass('UICorner')
-            fillCorner.Parent = check.Fill
-        
-            local buttonCorner = check:FindFirstChildOfClass('UICorner')
-            buttonCorner.Parent = check.Button
+            check:FindFirstChild('Fill').Parent = check:FindFirstChild('Fill')
+            check:FindFirstChild('Button').Parent = check:FindFirstChild('Button')
         
             local overlay = check:FindFirstChild(name)
         
@@ -602,18 +594,26 @@ do
             local initialPercent = (default - min) / (max - min)
             updateSlider(initialPercent)
         
-            local renderSteppedConnection
-            local inputBeganConnection
-            local inputEndedConnection
-            local mouseLeaveConnection
-            local mouseDownConnection
-            local mouseUpConnection
+            local function disconnectAll()
+                if renderStepped then renderStepped:Disconnect() end
+                if inputBegan then inputBegan:Disconnect() end
+                if inputEnded then inputEnded:Disconnect() end
+                if mouseLeave then mouseLeave:Disconnect() end
+                if mouseDown then mouseDown:Disconnect() end
+                if mouseUp then mouseUp:Disconnect() end
+            end
         
-            check:FindFirstChild(name).Container.MouseEnter:Connect(function()
+            local renderStepped
+            local inputBegan
+            local inputEnded
+            local mouseLeave
+            local mouseDown
+            local mouseUp
+        
+            check:FindFirstChild('Container').MouseEnter:Connect(function()
                 local function update()
-                    if renderSteppedConnection then renderSteppedConnection:Disconnect() end
-        
-                    renderSteppedConnection = RunService.RenderStepped:Connect(function()
+                    if renderStepped then renderStepped:Disconnect() end
+                    renderStepped = RunService.RenderStepped:Connect(function()
                         local mouseX = UIS:GetMouseLocation().X
                         local containerPos = overlay.Container.AbsolutePosition.X
                         local containerSize = overlay.Container.AbsoluteSize.X
@@ -623,28 +623,28 @@ do
                 end
         
                 local function disconnect()
-                    if renderSteppedConnection then renderSteppedConnection:Disconnect() end
-                    if inputBeganConnection then inputBeganConnection:Disconnect() end
-                    if inputEndedConnection then inputEndedConnection:Disconnect() end
-                    if mouseLeaveConnection then mouseLeaveConnection:Disconnect() end
-                    if mouseDownConnection then mouseDownConnection:Disconnect() end
-                    if mouseUpConnection then mouseUpConnection:Disconnect() end
+                    if renderStepped then renderStepped:Disconnect() end
+                    if inputBegan then inputBegan:Disconnect() end
+                    if inputEnded then inputEnded:Disconnect() end
+                    if mouseLeave then mouseLeave:Disconnect() end
+                    if mouseDown then mouseDown:Disconnect() end
+                    if mouseUp then mouseUp:Disconnect() end
                 end
         
-                inputBeganConnection = check:FindFirstChild(name).Container.InputBegan:Connect(function(input)
+                inputBegan = overlay.Container.InputBegan:Connect(function(input)
                     if input.UserInputType == Enum.UserInputType.MouseButton1 then
                         update()
                     end
                 end)
         
-                inputEndedConnection = check:FindFirstChild(name).Container.InputEnded:Connect(function(input)
+                inputEnded = overlay.Container.InputEnded:Connect(function(input)
                     if input.UserInputType == Enum.UserInputType.MouseButton1 then
                         disconnect()
                     end
                 end)
         
-                mouseDownConnection = check:FindFirstChild(name).Container.Button.MouseButton1Down:Connect(update)
-                mouseUpConnection = UIS.InputEnded:Connect(function(a, b)
+                mouseDown = overlay.Container.Button.MouseButton1Down:Connect(update)
+                mouseUp = UIS.InputEnded:Connect(function(a, b)
                     if a.UserInputType == Enum.UserInputType.MouseButton1 then
                         disconnect()
                     end
