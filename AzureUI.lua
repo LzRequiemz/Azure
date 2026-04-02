@@ -578,7 +578,7 @@ do
                             Name = 'Line';
                             BackgroundTransparency = 0;
                             Position = UDim2.new(0, 0, 0.5, 0);
-                            Size = UDim2.new(1, 5, 0, 1);
+                            Size = UDim2.new(1, 0, 1, 1);
                             BackgroundColor3 = Color3.fromRGB(80, 80, 80); -- grey line
                             BorderSizePixel = 0;
                         });
