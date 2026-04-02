@@ -574,25 +574,23 @@ do
                             TextStrokeColor3 = library.options.strokecolor;
                         });
                         -- Original gray underline
-                        local lineHeight = 5 -- how tall you want the line
-
                         library:Create('Frame', {
                             Name = 'Line';
                             BackgroundTransparency = 0;
-                            BackgroundColor3 = Color3.fromRGB(80, 80, 80);
+                            Position = UDim2.new(0, 0, 0.5, 0);
+                            Size = UDim2.new(5, 5, 5, 5);
+                            BackgroundColor3 = Color3.fromRGB(80, 80, 80); -- grey line
                             BorderSizePixel = 0;
-                            Position = UDim2.new(0, 0, 0.5, -lineHeight/2); -- center the line
-                            Size = UDim2.new(1, 0, 0, lineHeight);          -- height of the line
                         });
-
+                
                         library:Create('Frame', {
                             Name = 'LineOverlay';
                             BackgroundTransparency = 0;
+                            Position = UDim2.new(0, 0, 0.5, 0);
+                            Size = UDim2.new(0, 0, 0, 5); -- Initially empty
                             BackgroundColor3 = _G.UIUnderlineColor;
                             BorderSizePixel = 0;
                             ZIndex = 1;
-                            Position = UDim2.new(0, 0, 0.5, -lineHeight/2); -- center the overlay
-                            Size = UDim2.new(0, 0, 0, lineHeight);          -- match height
                         });
                     })
                 });
@@ -610,7 +608,7 @@ do
 
             local function updateOverlayFill(percent)
                 -- Greyscale line remains 100%, overlay grows as fill
-                overlay.Container.LineOverlay.Size = UDim2.new(math.clamp(percent, 0, 0.99), 0, 0, 4)
+                overlay.Container.LineOverlay.Size = UDim2.new(math.clamp(percent, 0, 0.99), 0, 0, 5)
             end
 
             -- Make sure the overlay fill matches the initial value
