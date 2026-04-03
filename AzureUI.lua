@@ -580,7 +580,8 @@ do
                             Position = UDim2.new(0, 0, 0.5, -1);
                             Size = UDim2.new(1, 0, 0, 5);
                             BackgroundColor3 = Color3.fromRGB(80, 80, 80);
-                            BorderSizePixel = 0;
+                            BorderSizePixel = 1;
+                            BorderColor3 = library.options.bordercolor;
                         });
         
                         library:Create('Frame', {
@@ -1011,7 +1012,7 @@ do
         titlecolor     = Color3.fromRGB(255, 255, 255);
         
         underlinecolor = _G.UIUnderlineColor;
-        bgcolor        = Color3.fromRGB(35, 35, 35);
+        bgcolor        = Color3.fromRGB(30, 30, 30);
         boxcolor       = Color3.fromRGB(35, 35, 35);
         btncolor       = Color3.fromRGB(25, 25, 25);
         dropcolor      = Color3.fromRGB(25, 25, 25);
