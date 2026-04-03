@@ -1281,21 +1281,6 @@ function sectiontable:Slider(Info)
     sliderButton.Size = UDim2.new(0, 149, 0, 4)
     sliderButton.Parent = slider
 
-    -- Add precise toggle switch
-    local preciseToggle = Instance.new("TextButton")
-    preciseToggle.Name = "PreciseToggle"
-    preciseToggle.Font = Enum.Font.GothamBold
-    preciseToggle.Text = Info.Precise and "Precise: ON" or "Precise: OFF"
-    preciseToggle.TextColor3 = Color3.fromRGB(150, 200, 250)
-    preciseToggle.TextSize = 10
-    preciseToggle.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
-    preciseToggle.BackgroundTransparency = 0.3
-    preciseToggle.BorderSizePixel = 0
-    preciseToggle.Position = UDim2.new(1, -58, 0.2, 0)
-    preciseToggle.Size = UDim2.new(0, 57, 0, 14)
-    preciseToggle.AnchorPoint = Vector2.new(0, 0)
-    preciseToggle.Parent = slider
-
     preciseToggle.MouseButton1Click:Connect(function()
         Info.Precise = not Info.Precise
         preciseToggle.Text = Info.Precise and "Precise: ON" or "Precise: OFF"
