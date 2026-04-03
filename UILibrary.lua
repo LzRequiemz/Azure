@@ -1182,10 +1182,22 @@ function sectiontable:Slider(Info)
     Info.Postfix = Info.Postfix or ""
     Info.Callback = Info.Callback or function() end
     Info.Tooltip = Info.Tooltip or ""
+    Info.Precise = Info.Precise or false -- Add this: Info.Precise toggles precise mode
 
     if Info.Minimum > Info.Maximum then
         local ValueBefore = Info.Minimum
         Info.Minimum, Info.Maximum = Info.Maximum, ValueBefore
+    end
+
+    -- In Precise mode, clamp to .1 increments, otherwise to integers
+    local function roundSliderValue(val)
+        if Info.Precise then
+            -- Round to nearest 0.1
+            return math.floor((val * 10) + 0.5) / 10
+        else
+            -- Round to nearest integer
+            return math.floor(val + 0.5)
+        end
     end
 
     Info.Default = math.clamp(Info.Default, Info.Minimum, Info.Maximum)
@@ -1247,7 +1259,7 @@ function sectiontable:Slider(Info)
     local sliderValueText = Instance.new("TextLabel")
     sliderValueText.Name = "SliderValueText"
     sliderValueText.Font = Enum.Font.GothamBold
-    sliderValueText.Text = tostring(Info.Default)..Info.Postfix
+    sliderValueText.Text = tostring(roundSliderValue(Info.Default))..Info.Postfix
     sliderValueText.TextColor3 = Color3.fromRGB(217, 217, 217)
     sliderValueText.TextSize = 11
     sliderValueText.TextXAlignment = Enum.TextXAlignment.Right
@@ -1269,15 +1281,41 @@ function sectiontable:Slider(Info)
     sliderButton.Size = UDim2.new(0, 149, 0, 4)
     sliderButton.Parent = slider
 
-    -- Function to round the value to the nearest step
-    local function roundToStep(value, step)
-        return math.floor(value / step + 0.5) * step
-    end
+    -- Add precise toggle switch
+    local preciseToggle = Instance.new("TextButton")
+    preciseToggle.Name = "PreciseToggle"
+    preciseToggle.Font = Enum.Font.GothamBold
+    preciseToggle.Text = Info.Precise and "Precise: ON" or "Precise: OFF"
+    preciseToggle.TextColor3 = Color3.fromRGB(150, 200, 250)
+    preciseToggle.TextSize = 10
+    preciseToggle.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
+    preciseToggle.BackgroundTransparency = 0.3
+    preciseToggle.BorderSizePixel = 0
+    preciseToggle.Position = UDim2.new(1, -58, 0.2, 0)
+    preciseToggle.Size = UDim2.new(0, 57, 0, 14)
+    preciseToggle.AnchorPoint = Vector2.new(0, 0)
+    preciseToggle.Parent = slider
+
+    preciseToggle.MouseButton1Click:Connect(function()
+        Info.Precise = not Info.Precise
+        preciseToggle.Text = Info.Precise and "Precise: ON" or "Precise: OFF"
+        -- Update slider value immediately when toggling mode for clarity
+        local currentPx = (library:GetXY(outerSlider))
+        local newValue = Info.Minimum + ((Info.Maximum - Info.Minimum) * currentPx)
+        newValue = roundSliderValue(newValue)
+        sliderValueText.Text = tostring(newValue)..Info.Postfix
+        if Info.Flag ~= nil then
+            library.Flags[Info.Flag] = newValue
+        end
+        task.spawn(function()
+            pcall(Info.Callback, newValue)
+        end)
+    end)
 
     task.spawn(function()
-        pcall(Info.Callback, Info.Default)
+        pcall(Info.Callback, roundSliderValue(Info.Default))
         if Info.Flag ~= nil then
-            library.Flags[Info.Flag] = Info.Default
+            library.Flags[Info.Flag] = roundSliderValue(Info.Default)
         end
     end)
 
@@ -1292,23 +1330,19 @@ function sectiontable:Slider(Info)
         MouseMove = Mouse.Move:Connect(function()
             local Px = library:GetXY(outerSlider)
             local SizeFromScale = (MinSize +  (MaxSize - MinSize)) * Px
-
-            -- Round the value to the nearest 0.1
-            local Value = roundToStep(Info.Minimum + ((Info.Maximum - Info.Minimum) * Px), 0.1)
-
+            local Value = Info.Minimum + ((Info.Maximum - Info.Minimum) * Px)
+            Value = roundSliderValue(Value)
             SizeFromScale = SizeFromScale - (SizeFromScale % 2)
-            TweenService:Create(innerSlider, TweenInfo.new(0.1), {Size = UDim2.new(Px,0,0,4)}):Play()
 
+            TweenService:Create(innerSlider, TweenInfo.new(0.1), {Size = UDim2.new(Px,0,0,4)}):Play()
             if Info.Flag ~= nil then
                 library.Flags[Info.Flag] = Value
             end
             sliderValueText.Text = tostring(Value)..Info.Postfix
-
             task.spawn(function()
                 pcall(Info.Callback, Value)
             end)
         end)
-
         MouseKill = UserInputService.InputEnded:Connect(function(UserInput)
             if UserInput.UserInputType == Enum.UserInputType.MouseButton1 then
                 MouseMove:Disconnect()
