@@ -1182,7 +1182,7 @@ function sectiontable:Slider(Info)
     Info.Postfix = Info.Postfix or ""
     Info.Callback = Info.Callback or function() end
     Info.Tooltip = Info.Tooltip or ""
-    Info.Precise = Info.Precise or false -- Add this: Info.Precise toggles precise mode
+    Info.Precise = Info.Precise or false -- Info.Precise toggles precise mode
 
     if Info.Minimum > Info.Maximum then
         local ValueBefore = Info.Minimum
@@ -1281,21 +1281,7 @@ function sectiontable:Slider(Info)
     sliderButton.Size = UDim2.new(0, 149, 0, 4)
     sliderButton.Parent = slider
 
-    preciseToggle.MouseButton1Click:Connect(function()
-        Info.Precise = not Info.Precise
-        preciseToggle.Text = Info.Precise and "Precise: ON" or "Precise: OFF"
-        -- Update slider value immediately when toggling mode for clarity
-        local currentPx = (library:GetXY(outerSlider))
-        local newValue = Info.Minimum + ((Info.Maximum - Info.Minimum) * currentPx)
-        newValue = roundSliderValue(newValue)
-        sliderValueText.Text = tostring(newValue)..Info.Postfix
-        if Info.Flag ~= nil then
-            library.Flags[Info.Flag] = newValue
-        end
-        task.spawn(function()
-            pcall(Info.Callback, newValue)
-        end)
-    end)
+    -- Removed the preciseToggle button. Mode is now toggled elsewhere.
 
     task.spawn(function()
         pcall(Info.Callback, roundSliderValue(Info.Default))
