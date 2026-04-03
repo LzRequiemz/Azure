@@ -1174,137 +1174,148 @@ return insidetoggle
 end
 
 function sectiontable:Slider(Info)
-Info.Text = Info.Text or "Slider"
-Info.Default = Info.Default or 50
-Info.Minimum = Info.Minimum or 1
-Info.Flag = Info.Flag or nil
-Info.Maximum = Info.Maximum or 100
-Info.Postfix = Info.Postfix or ""
-Info.Callback = Info.Callback or function() end
-Info.Tooltip = Info.Tooltip or ""
+    Info.Text = Info.Text or "Slider"
+    Info.Default = Info.Default or 50
+    Info.Minimum = Info.Minimum or 1
+    Info.Flag = Info.Flag or nil
+    Info.Maximum = Info.Maximum or 100
+    Info.Postfix = Info.Postfix or ""
+    Info.Callback = Info.Callback or function() end
+    Info.Tooltip = Info.Tooltip or ""
 
-if Info.Minimum > Info.Maximum then
-local ValueBefore = Info.Minimum
-Info.Minimum, Info.Maximum = Info.Maximum, ValueBefore
-end
-
-Info.Default = math.clamp(Info.Default, Info.Minimum, Info.Maximum)
-local DefaultScale = (Info.Default - Info.Minimum) / (Info.Maximum - Info.Minimum)
-
-local slider = Instance.new("Frame")
-slider.Name = "Slider"
-slider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-slider.BackgroundTransparency = 1
-slider.Position = UDim2.new(0, 0, 0.825, 0)
-slider.Size = UDim2.new(0, 162, 0, 40)
-slider.Parent = sectionFrame
-
-if Info.Tooltip ~= "" then
-    AddTooltip(slider, Info.Tooltip)
-end
-
-local sliderText = Instance.new("TextLabel")
-sliderText.Name = "SliderText"
-sliderText.Font = Enum.Font.GothamBold
-sliderText.Text = Info.Text
-sliderText.TextColor3 = Color3.fromRGB(217, 217, 217)
-sliderText.TextSize = 11
-sliderText.TextXAlignment = Enum.TextXAlignment.Left
-sliderText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-sliderText.BackgroundTransparency = 1
-sliderText.Position = UDim2.new(0.0488, 0, 0, 0)
-sliderText.Size = UDim2.new(0, 156, 0, 27)
-sliderText.Parent = slider
-
-local outerSlider = Instance.new("Frame")
-outerSlider.Name = "OuterSlider"
-outerSlider.BackgroundColor3 = Color3.fromRGB(68, 68, 68)
-outerSlider.BorderSizePixel = 0
-outerSlider.Position = UDim2.new(0.049, -1, 0.664, 0)
-outerSlider.Size = UDim2.new(0, 149, 0, 4)
-outerSlider.Parent = slider
-
-local sliderCorner = Instance.new("UICorner")
-sliderCorner.Name = "SliderCorner"
-sliderCorner.CornerRadius = UDim.new(0, 100)
-sliderCorner.Parent = outerSlider
-
-local innerSlider = Instance.new("Frame")
-innerSlider.Name = "InnerSlider"
-innerSlider.BackgroundColor3 = _G.UIColor
-innerSlider.BorderSizePixel = 0
-innerSlider.Size = UDim2.new(DefaultScale, 0, 0, 4)
-innerSlider.ZIndex = 2
-innerSlider.Parent = outerSlider
-
-ColorElements[innerSlider] = {Type = "Slider", Enabled = false}
-
-local innerSliderCorner = Instance.new("UICorner")
-innerSliderCorner.Name = "InnerSliderCorner"
-innerSliderCorner.CornerRadius = UDim.new(0, 100)
-innerSliderCorner.Parent = innerSlider
-
-local sliderValueText = Instance.new("TextLabel")
-sliderValueText.Name = "SliderValueText"
-sliderValueText.Font = Enum.Font.GothamBold
-sliderValueText.Text = tostring(Info.Default)..Info.Postfix
-sliderValueText.TextColor3 = Color3.fromRGB(217, 217, 217)
-sliderValueText.TextSize = 11
-sliderValueText.TextXAlignment = Enum.TextXAlignment.Right
-sliderValueText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-sliderValueText.BackgroundTransparency = 1
-sliderValueText.Position = UDim2.new(0.0488, 0, 0, 0)
-sliderValueText.Size = UDim2.new(0, 149, 0, 27)
-sliderValueText.Parent = slider
-
-local sliderButton = Instance.new("TextButton")
-sliderButton.Name = "SliderButton"
-sliderButton.Font = Enum.Font.SourceSans
-sliderButton.Text = ""
-sliderButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-sliderButton.TextSize = 14
-sliderButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-sliderButton.BackgroundTransparency = 1
-sliderButton.Position = UDim2.new(0.049, 0, 0.664, 0)
-sliderButton.Size = UDim2.new(0, 149, 0, 4)
-sliderButton.Parent = slider
-
-task.spawn(function()
-    pcall(Info.Callback, Info.Default)
-    if Info.Flag ~= nil then
-        library.Flags[Info.Flag] = Info.Default
+    if Info.Minimum > Info.Maximum then
+        local ValueBefore = Info.Minimum
+        Info.Minimum, Info.Maximum = Info.Maximum, ValueBefore
     end
-end)
 
-local MinSize = 0
-local MaxSize = 1
+    Info.Default = math.clamp(Info.Default, Info.Minimum, Info.Maximum)
+    local DefaultScale = (Info.Default - Info.Minimum) / (Info.Maximum - Info.Minimum)
 
-local SizeFromScale = (MinSize +  (MaxSize - MinSize)) * DefaultScale
-SizeFromScale = SizeFromScale - (SizeFromScale % 2)
+    local slider = Instance.new("Frame")
+    slider.Name = "Slider"
+    slider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    slider.BackgroundTransparency = 1
+    slider.Position = UDim2.new(0, 0, 0.825, 0)
+    slider.Size = UDim2.new(0, 162, 0, 40)
+    slider.Parent = sectionFrame
 
-sliderButton.MouseButton1Down:Connect(function() -- Skidded from material ui hehe, sorry
-	local MouseMove, MouseKill
-	MouseMove = Mouse.Move:Connect(function()
-		local Px = library:GetXY(outerSlider)
-		local SizeFromScale = (MinSize +  (MaxSize - MinSize)) * Px
-		local Value = math.floor(Info.Minimum + ((Info.Maximum - Info.Minimum) * Px))
-		SizeFromScale = SizeFromScale - (SizeFromScale % 2)
-		TweenService:Create(innerSlider, TweenInfo.new(0.1), {Size = UDim2.new(Px,0,0,4)}):Play()
-		if Info.Flag ~= nil then
-		    library.Flags[Info.Flag] = Value
-		end
-		sliderValueText.Text = tostring(Value)..Info.Postfix
-		task.spawn(function()
-		    pcall(Info.Callback, Value)
-		end)
-	end)
-	MouseKill = UserInputService.InputEnded:Connect(function(UserInput)
-		if UserInput.UserInputType == Enum.UserInputType.MouseButton1 then
-			MouseMove:Disconnect()
-			MouseKill:Disconnect()
-		end
-	end)
-end)
+    if Info.Tooltip ~= "" then
+        AddTooltip(slider, Info.Tooltip)
+    end
+
+    local sliderText = Instance.new("TextLabel")
+    sliderText.Name = "SliderText"
+    sliderText.Font = Enum.Font.GothamBold
+    sliderText.Text = Info.Text
+    sliderText.TextColor3 = Color3.fromRGB(217, 217, 217)
+    sliderText.TextSize = 11
+    sliderText.TextXAlignment = Enum.TextXAlignment.Left
+    sliderText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    sliderText.BackgroundTransparency = 1
+    sliderText.Position = UDim2.new(0.0488, 0, 0, 0)
+    sliderText.Size = UDim2.new(0, 156, 0, 27)
+    sliderText.Parent = slider
+
+    local outerSlider = Instance.new("Frame")
+    outerSlider.Name = "OuterSlider"
+    outerSlider.BackgroundColor3 = Color3.fromRGB(68, 68, 68)
+    outerSlider.BorderSizePixel = 0
+    outerSlider.Position = UDim2.new(0.049, -1, 0.664, 0)
+    outerSlider.Size = UDim2.new(0, 149, 0, 4)
+    outerSlider.Parent = slider
+
+    local sliderCorner = Instance.new("UICorner")
+    sliderCorner.Name = "SliderCorner"
+    sliderCorner.CornerRadius = UDim.new(0, 100)
+    sliderCorner.Parent = outerSlider
+
+    local innerSlider = Instance.new("Frame")
+    innerSlider.Name = "InnerSlider"
+    innerSlider.BackgroundColor3 = _G.UIColor
+    innerSlider.BorderSizePixel = 0
+    innerSlider.Size = UDim2.new(DefaultScale, 0, 0, 4)
+    innerSlider.ZIndex = 2
+    innerSlider.Parent = outerSlider
+
+    ColorElements[innerSlider] = {Type = "Slider", Enabled = false}
+
+    local innerSliderCorner = Instance.new("UICorner")
+    innerSliderCorner.Name = "InnerSliderCorner"
+    innerSliderCorner.CornerRadius = UDim.new(0, 100)
+    innerSliderCorner.Parent = innerSlider
+
+    local sliderValueText = Instance.new("TextLabel")
+    sliderValueText.Name = "SliderValueText"
+    sliderValueText.Font = Enum.Font.GothamBold
+    sliderValueText.Text = tostring(Info.Default)..Info.Postfix
+    sliderValueText.TextColor3 = Color3.fromRGB(217, 217, 217)
+    sliderValueText.TextSize = 11
+    sliderValueText.TextXAlignment = Enum.TextXAlignment.Right
+    sliderValueText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    sliderValueText.BackgroundTransparency = 1
+    sliderValueText.Position = UDim2.new(0.0488, 0, 0, 0)
+    sliderValueText.Size = UDim2.new(0, 149, 0, 27)
+    sliderValueText.Parent = slider
+
+    local sliderButton = Instance.new("TextButton")
+    sliderButton.Name = "SliderButton"
+    sliderButton.Font = Enum.Font.SourceSans
+    sliderButton.Text = ""
+    sliderButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+    sliderButton.TextSize = 14
+    sliderButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    sliderButton.BackgroundTransparency = 1
+    sliderButton.Position = UDim2.new(0.049, 0, 0.664, 0)
+    sliderButton.Size = UDim2.new(0, 149, 0, 4)
+    sliderButton.Parent = slider
+
+    -- Function to round the value to the nearest step
+    local function roundToStep(value, step)
+        return math.floor(value / step + 0.5) * step
+    end
+
+    task.spawn(function()
+        pcall(Info.Callback, Info.Default)
+        if Info.Flag ~= nil then
+            library.Flags[Info.Flag] = Info.Default
+        end
+    end)
+
+    local MinSize = 0
+    local MaxSize = 1
+
+    local SizeFromScale = (MinSize +  (MaxSize - MinSize)) * DefaultScale
+    SizeFromScale = SizeFromScale - (SizeFromScale % 2)
+
+    sliderButton.MouseButton1Down:Connect(function()
+        local MouseMove, MouseKill
+        MouseMove = Mouse.Move:Connect(function()
+            local Px = library:GetXY(outerSlider)
+            local SizeFromScale = (MinSize +  (MaxSize - MinSize)) * Px
+
+            -- Round the value to the nearest 0.1
+            local Value = roundToStep(Info.Minimum + ((Info.Maximum - Info.Minimum) * Px), 0.1)
+
+            SizeFromScale = SizeFromScale - (SizeFromScale % 2)
+            TweenService:Create(innerSlider, TweenInfo.new(0.1), {Size = UDim2.new(Px,0,0,4)}):Play()
+
+            if Info.Flag ~= nil then
+                library.Flags[Info.Flag] = Value
+            end
+            sliderValueText.Text = tostring(Value)..Info.Postfix
+
+            task.spawn(function()
+                pcall(Info.Callback, Value)
+            end)
+        end)
+
+        MouseKill = UserInputService.InputEnded:Connect(function(UserInput)
+            if UserInput.UserInputType == Enum.UserInputType.MouseButton1 then
+                MouseMove:Disconnect()
+                MouseKill:Disconnect()
+            end
+        end)
+    end)
 end
 
 function sectiontable:Dropdown(Info)
