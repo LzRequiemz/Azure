@@ -579,7 +579,7 @@ do
                             BackgroundTransparency = 0;
                             Position = UDim2.new(0, 0, 0.5, -1);
                             Size = UDim2.new(1, 0, 0, 5);
-                            BackgroundColor3 = Color3.fromRGB(80, 80, 80);
+                            BackgroundColor3 = Color3.fromRGB(20, 20, 20);
                             BorderSizePixel = 1;
                             BorderColor3 = library.options.bordercolor;
                         });
