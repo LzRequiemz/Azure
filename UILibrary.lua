@@ -407,7 +407,7 @@ minimizeButton.MouseButton1Click:Connect(function()
         end
     end
     for _,v in pairs(main:GetChildren()) do
-       if (v.Name == "LeftContainer" or v.Name == "RightContainer") and v.Visible then
+       if v.Name == "LeftContainer" or v.Name == "RightContainer" and v.Visible then
            v.Size = Opened and UDim2.new(0, 168,0, 287) or UDim2.new(0, 168,0, 0)
        end
     end
@@ -1068,382 +1068,243 @@ inputTextBox.FocusLost:Connect(function()
 end)
 end
 
--- FIXED Toggle logic to properly update the flag to false when turning off!
 function sectiontable:Toggle(Info)
-	Info.Text = Info.Text or "Toggle"
-	Info.Flag = Info.Flag or nil
-	Info.Default = Info.Default or false
-	Info.Callback = Info.Callback or function() end
-	Info.Tooltip = Info.Tooltip or ""
-	Info.Hotkey = Info.Hotkey
-	Info.HotkeyIgnoreGameProcessed = Info.HotkeyIgnoreGameProcessed or false
-	Info.AllowHotkeyChange = Info.AllowHotkeyChange or false
+Info.Text = Info.Text or "Toggle"
+Info.Flag = Info.Flag or nil
+Info.Default = Info.Default or false
+Info.Callback = Info.Callback or function() end
+Info.Tooltip = Info.Tooltip or ""
 
-	local insidetoggle = {}
-	local Toggled = Info.Default
-	local CurrentHotkey = Info.Hotkey
-	local HotkeyChanging = false
-	local HotkeyPickConn
+if Info.Flag ~= nil then
+    library.Flags[Info.Flag] = false
+end
 
-	local toggle = Instance.new("Frame")
-	toggle.Name = "Toggle"
-	toggle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	toggle.BackgroundTransparency = 1
-	toggle.Size = UDim2.new(0, 162, 0, 27)
-	toggle.Parent = sectionFrame
+local insidetoggle = {}
 
-	if Info.Tooltip ~= "" then
-		AddTooltip(toggle, Info.Tooltip)
-	end
+local Toggled = false
 
-	local toggleText = Instance.new("TextLabel")
-	toggleText.Name = "ToggleText"
-	toggleText.Font = Enum.Font.GothamBold
-	toggleText.Text = Info.Text
-	toggleText.TextColor3 = Color3.fromRGB(217, 217, 217)
-	toggleText.TextSize = 11
-	toggleText.TextXAlignment = Enum.TextXAlignment.Left
-	toggleText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	toggleText.BackgroundTransparency = 1
-	toggleText.Position = UDim2.new(0.0488, 0, 0, 0)
-	toggleText.Size = UDim2.new(0, (Info.Hotkey or Info.AllowHotkeyChange) and 92 or 156, 0, 27)
-	toggleText.Parent = toggle
+local toggle = Instance.new("Frame")
+toggle.Name = "Toggle"
+toggle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+toggle.BackgroundTransparency = 1
+toggle.Size = UDim2.new(0, 162, 0, 27)
+toggle.Parent = sectionFrame
 
-	local hotkeyFrame
-	local hotkeyFrameText
+if Info.Tooltip ~= "" then
+    AddTooltip(toggle, Info.Tooltip)
+end
 
-	if Info.Hotkey or Info.AllowHotkeyChange then
-		hotkeyFrame = Instance.new("Frame")
-		hotkeyFrame.Name = "ToggleHotkeyFrame"
-		hotkeyFrame.BackgroundColor3 = Color3.fromRGB(68, 68, 68)
-		hotkeyFrame.AnchorPoint = Vector2.new(1, 0)
-		hotkeyFrame.BorderSizePixel = 0
-		hotkeyFrame.Position = UDim2.new(1, -38, 0.222, 0)
-		hotkeyFrame.Size = UDim2.new(0, 30, 0, 15)
-		hotkeyFrame.Parent = toggle
+local toggleText = Instance.new("TextLabel")
+toggleText.Name = "ToggleText"
+toggleText.Font = Enum.Font.GothamBold
+toggleText.Text = Info.Text
+toggleText.TextColor3 = Color3.fromRGB(217, 217, 217)
+toggleText.TextSize = 11
+toggleText.TextXAlignment = Enum.TextXAlignment.Left
+toggleText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+toggleText.BackgroundTransparency = 1
+toggleText.Position = UDim2.new(0.0488, 0, 0, 0)
+toggleText.Size = UDim2.new(0, 156, 0, 27)
+toggleText.Parent = toggle
 
-		local hkCorner = Instance.new("UICorner")
-		hkCorner.CornerRadius = UDim.new(0, 3)
-		hkCorner.Parent = hotkeyFrame
+local toggleButton = Instance.new("TextButton")
+toggleButton.Name = "ToggleButton"
+toggleButton.Font = Enum.Font.SourceSans
+toggleButton.Text = ""
+toggleButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+toggleButton.TextSize = 14
+toggleButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.BackgroundTransparency = 1
+toggleButton.Size = UDim2.new(0, 162, 0, 27)
+toggleButton.Parent = toggle
 
-		local hkStroke = Instance.new("UIStroke")
-		hkStroke.Color = Color3.fromRGB(84, 84, 84)
-		hkStroke.Parent = hotkeyFrame
+local toggleFrame = Instance.new("Frame")
+toggleFrame.Name = "ToggleFrame"
+toggleFrame.BackgroundColor3 = Color3.fromRGB(68, 68, 68)
+toggleFrame.BorderSizePixel = 0
+toggleFrame.Position = UDim2.new(0.783, 0, 0.222, 0)
+toggleFrame.Size = UDim2.new(0, 30, 0, 15)
+toggleFrame.Parent = toggle
 
-		hotkeyFrameText = Instance.new("TextLabel")
-		hotkeyFrameText.Name = "ToggleHotkeyText"
-		hotkeyFrameText.Font = Enum.Font.GothamBold
-		hotkeyFrameText.Text = CurrentHotkey and CurrentHotkey.Name or "None"
-		hotkeyFrameText.TextColor3 = Color3.fromRGB(217, 217, 217)
-		hotkeyFrameText.TextSize = 11
-		hotkeyFrameText.BackgroundTransparency = 1
-		hotkeyFrameText.Size = UDim2.new(1, 0, 0, 15)
-		hotkeyFrameText.Parent = hotkeyFrame
+ColorElements[toggleFrame] = {Type = "Toggle", Enabled = false}
 
-		local function sizeHotkeyFrame()
-			local w = hotkeyFrameText.TextBounds.X + 10
-			hotkeyFrame.Size = UDim2.new(0, w, 0, 15)
-		end
-		sizeHotkeyFrame()
-		hotkeyFrameText:GetPropertyChangedSignal("Text"):Connect(sizeHotkeyFrame)
+local toggleUICorner = Instance.new("UICorner")
+toggleUICorner.Name = "ToggleUICorner"
+toggleUICorner.CornerRadius = UDim.new(0, 100)
+toggleUICorner.Parent = toggleFrame
 
-		if Info.AllowHotkeyChange then
-			local hotkeyPickBtn = Instance.new("TextButton")
-			hotkeyPickBtn.Name = "ToggleHotkeyPick"
-			hotkeyPickBtn.Text = ""
-			hotkeyPickBtn.BackgroundTransparency = 1
-			hotkeyPickBtn.Size = UDim2.new(1, 0, 1, 0)
-			hotkeyPickBtn.Parent = hotkeyFrame
+local circleIcon = Instance.new("ImageLabel")
+circleIcon.Name = "CheckIcon"
+circleIcon.Image = getcustomasset("Shaman/Circle.png")
+circleIcon.ImageColor3 = Color3.fromRGB(217, 217, 217)
+circleIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+circleIcon.BackgroundTransparency = 1
+circleIcon.Position = UDim2.new(0, 1, 0.067, 0)
+circleIcon.Size = UDim2.new(0, 13, 0, 13)
+circleIcon.Parent = toggleFrame
 
-			hotkeyPickBtn.MouseButton1Click:Connect(function()
-				if HotkeyPickConn then
-					HotkeyPickConn:Disconnect()
-					HotkeyPickConn = nil
-				end
-				HotkeyChanging = true
-				hotkeyFrameText.Text = "..."
-				HotkeyPickConn = UserInputService.InputBegan:Connect(function(inp, processed)
-					if inp.UserInputType ~= Enum.UserInputType.Keyboard then
-						return
-					end
-					if table.find(Blacklist, inp.KeyCode) then
-						return
-					end
-					if processed then
-						return
-					end
-					HotkeyPickConn:Disconnect()
-					HotkeyPickConn = nil
-					CurrentHotkey = inp.KeyCode
-					hotkeyFrameText.Text = inp.KeyCode.Name
-					sizeHotkeyFrame()
-					task.spawn(function()
-						wait(0.1)
-						HotkeyChanging = false
-					end)
-				end)
-			end)
-		end
-	end
+function insidetoggle:Set(bool)
+    Toggled = bool
+    if Info.Flag ~= nil then
+        library.Flags[Info.Flag] = Toggled
+    end
+    ColorElements[toggleFrame].Enabled = Toggled
+    
+    TweenService:Create(circleIcon, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Position = Toggled and UDim2.new(0, 16,0.067, 0) or UDim2.new(0, 1,0.067, 0)}):Play()
+    if not Toggled then
+        TweenService:Create(toggleFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundColor3 = Color3.fromRGB(68, 68, 68)}):Play()
+    elseif Toggled and not EditOpened then
+        TweenService:Create(toggleFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundColor3 = _G.UIColor}):Play()
+    end
+    pcall(Info.Callback, Toggled)
+end
 
-	local toggleButton = Instance.new("TextButton")
-	toggleButton.Name = "ToggleButton"
-	toggleButton.Font = Enum.Font.SourceSans
-	toggleButton.Text = ""
-	toggleButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-	toggleButton.TextSize = 14
-	toggleButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	toggleButton.BackgroundTransparency = 1
-	toggleButton.Size = UDim2.new(0, 162, 0, 27)
-	toggleButton.Parent = toggle
+if Info.Default then
+    task.spawn(function()
+        insidetoggle:Set(true)
+    end)
+end
 
-	local toggleFrame = Instance.new("Frame")
-	toggleFrame.Name = "ToggleFrame"
-	toggleFrame.BackgroundColor3 = Color3.fromRGB(68, 68, 68)
-	toggleFrame.BorderSizePixel = 0
-	toggleFrame.AnchorPoint = Vector2.new(1, 0)
-	toggleFrame.Position = UDim2.new(1, -4, 0.222, 0)
-	toggleFrame.Size = UDim2.new(0, 30, 0, 15)
-	toggleFrame.Parent = toggle
+toggleButton.MouseButton1Click:Connect(function()
+    Toggled = not Toggled
+    insidetoggle:Set(Toggled)
+end)
 
-	ColorElements[toggleFrame] = {Type = "Toggle", Enabled = false}
-
-	local toggleUICorner = Instance.new("UICorner")
-	toggleUICorner.Name = "ToggleUICorner"
-	toggleUICorner.CornerRadius = UDim.new(0, 100)
-	toggleUICorner.Parent = toggleFrame
-
-	local circleIcon = Instance.new("ImageLabel")
-	circleIcon.Name = "CheckIcon"
-	circleIcon.Image = getcustomasset("Shaman/Circle.png")
-	circleIcon.ImageColor3 = Color3.fromRGB(217, 217, 217)
-	circleIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	circleIcon.BackgroundTransparency = 1
-	circleIcon.Position = UDim2.new(0, 1, 0.067, 0)
-	circleIcon.Size = UDim2.new(0, 13, 0, 13)
-	circleIcon.Parent = toggleFrame
-
-	local function tweenToggleColors(on)
-		if on and not EditOpened then
-			TweenService:Create(toggleFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundColor3 = _G.UIColor}):Play()
-		elseif not on then
-			TweenService:Create(toggleFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundColor3 = Color3.fromRGB(68, 68, 68)}):Play()
-		end
-	end
-
-	function insidetoggle:Set(bool)
-		Toggled = bool
-		if Info.Flag ~= nil then
-			library.Flags[Info.Flag] = Toggled -- this ensures false is set when turning off
-		end
-		ColorElements[toggleFrame].Enabled = Toggled
-
-		TweenService:Create(circleIcon, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Position = Toggled and UDim2.new(0, 16, 0.067, 0) or UDim2.new(0, 1, 0.067, 0)}):Play()
-		tweenToggleColors(Toggled)
-		pcall(Info.Callback, Toggled)
-	end
-
-	function insidetoggle:Get()
-		return Toggled
-	end
-
-	function insidetoggle:SetHotkey(keyCode)
-		CurrentHotkey = keyCode
-		if hotkeyFrameText then
-			hotkeyFrameText.Text = keyCode and keyCode.Name or "None"
-		end
-	end
-
-	function insidetoggle:GetHotkey()
-		return CurrentHotkey
-	end
-
-	-- Set initial flag state and appearance
-	if Info.Flag ~= nil then
-		library.Flags[Info.Flag] = Toggled
-	end
-
-	--[[task.spawn(function()
-		insidetoggle:Set(Toggled)
-	end)]]
-
-	toggleButton.MouseButton1Click:Connect(function()
-		insidetoggle:Set(not Toggled)
-	end)
-
-	UserInputService.InputBegan:Connect(function(input, gameProcessed)
-		if HotkeyChanging then
-			return
-		end
-		if not CurrentHotkey then
-			return
-		end
-		if input.UserInputType ~= Enum.UserInputType.Keyboard then
-			return
-		end
-		if input.KeyCode ~= CurrentHotkey then
-			return
-		end
-		if not Info.HotkeyIgnoreGameProcessed and gameProcessed then
-			return
-		end
-		if UserInputService:GetFocusedTextBox() ~= nil then
-			return
-		end
-		insidetoggle:Set(not Toggled)
-	end)
-
-	return insidetoggle
+return insidetoggle
 end
 
 function sectiontable:Slider(Info)
-    Info.Text = Info.Text or "Slider"
-    Info.Default = Info.Default or 50
-    Info.Minimum = Info.Minimum or 1
-    Info.Flag = Info.Flag or nil
-    Info.Maximum = Info.Maximum or 100
-    Info.Postfix = Info.Postfix or ""
-    Info.Callback = Info.Callback or function() end
-    Info.Tooltip = Info.Tooltip or ""
-    Info.Precise = Info.Precise or false -- Info.Precise toggles precise mode
+Info.Text = Info.Text or "Slider"
+Info.Default = Info.Default or 50
+Info.Minimum = Info.Minimum or 1
+Info.Flag = Info.Flag or nil
+Info.Maximum = Info.Maximum or 100
+Info.Postfix = Info.Postfix or ""
+Info.Callback = Info.Callback or function() end
+Info.Tooltip = Info.Tooltip or ""
 
-    if Info.Minimum > Info.Maximum then
-        local ValueBefore = Info.Minimum
-        Info.Minimum, Info.Maximum = Info.Maximum, ValueBefore
+if Info.Minimum > Info.Maximum then
+local ValueBefore = Info.Minimum
+Info.Minimum, Info.Maximum = Info.Maximum, ValueBefore
+end
+
+Info.Default = math.clamp(Info.Default, Info.Minimum, Info.Maximum)
+local DefaultScale = (Info.Default - Info.Minimum) / (Info.Maximum - Info.Minimum)
+
+local slider = Instance.new("Frame")
+slider.Name = "Slider"
+slider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+slider.BackgroundTransparency = 1
+slider.Position = UDim2.new(0, 0, 0.825, 0)
+slider.Size = UDim2.new(0, 162, 0, 40)
+slider.Parent = sectionFrame
+
+if Info.Tooltip ~= "" then
+    AddTooltip(slider, Info.Tooltip)
+end
+
+local sliderText = Instance.new("TextLabel")
+sliderText.Name = "SliderText"
+sliderText.Font = Enum.Font.GothamBold
+sliderText.Text = Info.Text
+sliderText.TextColor3 = Color3.fromRGB(217, 217, 217)
+sliderText.TextSize = 11
+sliderText.TextXAlignment = Enum.TextXAlignment.Left
+sliderText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+sliderText.BackgroundTransparency = 1
+sliderText.Position = UDim2.new(0.0488, 0, 0, 0)
+sliderText.Size = UDim2.new(0, 156, 0, 27)
+sliderText.Parent = slider
+
+local outerSlider = Instance.new("Frame")
+outerSlider.Name = "OuterSlider"
+outerSlider.BackgroundColor3 = Color3.fromRGB(68, 68, 68)
+outerSlider.BorderSizePixel = 0
+outerSlider.Position = UDim2.new(0.049, -1, 0.664, 0)
+outerSlider.Size = UDim2.new(0, 149, 0, 4)
+outerSlider.Parent = slider
+
+local sliderCorner = Instance.new("UICorner")
+sliderCorner.Name = "SliderCorner"
+sliderCorner.CornerRadius = UDim.new(0, 100)
+sliderCorner.Parent = outerSlider
+
+local innerSlider = Instance.new("Frame")
+innerSlider.Name = "InnerSlider"
+innerSlider.BackgroundColor3 = _G.UIColor
+innerSlider.BorderSizePixel = 0
+innerSlider.Size = UDim2.new(DefaultScale, 0, 0, 4)
+innerSlider.ZIndex = 2
+innerSlider.Parent = outerSlider
+
+ColorElements[innerSlider] = {Type = "Slider", Enabled = false}
+
+local innerSliderCorner = Instance.new("UICorner")
+innerSliderCorner.Name = "InnerSliderCorner"
+innerSliderCorner.CornerRadius = UDim.new(0, 100)
+innerSliderCorner.Parent = innerSlider
+
+local sliderValueText = Instance.new("TextLabel")
+sliderValueText.Name = "SliderValueText"
+sliderValueText.Font = Enum.Font.GothamBold
+sliderValueText.Text = tostring(Info.Default)..Info.Postfix
+sliderValueText.TextColor3 = Color3.fromRGB(217, 217, 217)
+sliderValueText.TextSize = 11
+sliderValueText.TextXAlignment = Enum.TextXAlignment.Right
+sliderValueText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+sliderValueText.BackgroundTransparency = 1
+sliderValueText.Position = UDim2.new(0.0488, 0, 0, 0)
+sliderValueText.Size = UDim2.new(0, 149, 0, 27)
+sliderValueText.Parent = slider
+
+local sliderButton = Instance.new("TextButton")
+sliderButton.Name = "SliderButton"
+sliderButton.Font = Enum.Font.SourceSans
+sliderButton.Text = ""
+sliderButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+sliderButton.TextSize = 14
+sliderButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+sliderButton.BackgroundTransparency = 1
+sliderButton.Position = UDim2.new(0.049, 0, 0.664, 0)
+sliderButton.Size = UDim2.new(0, 149, 0, 4)
+sliderButton.Parent = slider
+
+task.spawn(function()
+    pcall(Info.Callback, Info.Default)
+    if Info.Flag ~= nil then
+        library.Flags[Info.Flag] = Info.Default
     end
+end)
 
-    -- In Precise mode, clamp to .1 increments, otherwise to integers
-    local function roundSliderValue(val)
-        if Info.Precise then
-            -- Round to nearest 0.1
-            return math.floor((val * 10) + 0.5) / 10
-        else
-            -- Round to nearest integer
-            return math.floor(val + 0.5)
-        end
-    end
+local MinSize = 0
+local MaxSize = 1
 
-    Info.Default = math.clamp(Info.Default, Info.Minimum, Info.Maximum)
-    local DefaultScale = (Info.Default - Info.Minimum) / (Info.Maximum - Info.Minimum)
+local SizeFromScale = (MinSize +  (MaxSize - MinSize)) * DefaultScale
+SizeFromScale = SizeFromScale - (SizeFromScale % 2)
 
-    local slider = Instance.new("Frame")
-    slider.Name = "Slider"
-    slider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    slider.BackgroundTransparency = 1
-    slider.Position = UDim2.new(0, 0, 0.825, 0)
-    slider.Size = UDim2.new(0, 162, 0, 40)
-    slider.Parent = sectionFrame
-
-    if Info.Tooltip ~= "" then
-        AddTooltip(slider, Info.Tooltip)
-    end
-
-    local sliderText = Instance.new("TextLabel")
-    sliderText.Name = "SliderText"
-    sliderText.Font = Enum.Font.GothamBold
-    sliderText.Text = Info.Text
-    sliderText.TextColor3 = Color3.fromRGB(217, 217, 217)
-    sliderText.TextSize = 11
-    sliderText.TextXAlignment = Enum.TextXAlignment.Left
-    sliderText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    sliderText.BackgroundTransparency = 1
-    sliderText.Position = UDim2.new(0.0488, 0, 0, 0)
-    sliderText.Size = UDim2.new(0, 156, 0, 27)
-    sliderText.Parent = slider
-
-    local outerSlider = Instance.new("Frame")
-    outerSlider.Name = "OuterSlider"
-    outerSlider.BackgroundColor3 = Color3.fromRGB(68, 68, 68)
-    outerSlider.BorderSizePixel = 0
-    outerSlider.Position = UDim2.new(0.049, -1, 0.664, 0)
-    outerSlider.Size = UDim2.new(0, 149, 0, 4)
-    outerSlider.Parent = slider
-
-    local sliderCorner = Instance.new("UICorner")
-    sliderCorner.Name = "SliderCorner"
-    sliderCorner.CornerRadius = UDim.new(0, 100)
-    sliderCorner.Parent = outerSlider
-
-    local innerSlider = Instance.new("Frame")
-    innerSlider.Name = "InnerSlider"
-    innerSlider.BackgroundColor3 = _G.UIColor
-    innerSlider.BorderSizePixel = 0
-    innerSlider.Size = UDim2.new(DefaultScale, 0, 0, 4)
-    innerSlider.ZIndex = 2
-    innerSlider.Parent = outerSlider
-
-    ColorElements[innerSlider] = {Type = "Slider", Enabled = false}
-
-    local innerSliderCorner = Instance.new("UICorner")
-    innerSliderCorner.Name = "InnerSliderCorner"
-    innerSliderCorner.CornerRadius = UDim.new(0, 100)
-    innerSliderCorner.Parent = innerSlider
-
-    local sliderValueText = Instance.new("TextLabel")
-    sliderValueText.Name = "SliderValueText"
-    sliderValueText.Font = Enum.Font.GothamBold
-    sliderValueText.Text = tostring(roundSliderValue(Info.Default))..Info.Postfix
-    sliderValueText.TextColor3 = Color3.fromRGB(217, 217, 217)
-    sliderValueText.TextSize = 11
-    sliderValueText.TextXAlignment = Enum.TextXAlignment.Right
-    sliderValueText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    sliderValueText.BackgroundTransparency = 1
-    sliderValueText.Position = UDim2.new(0.0488, 0, 0, 0)
-    sliderValueText.Size = UDim2.new(0, 149, 0, 27)
-    sliderValueText.Parent = slider
-
-    local sliderButton = Instance.new("TextButton")
-    sliderButton.Name = "SliderButton"
-    sliderButton.Font = Enum.Font.SourceSans
-    sliderButton.Text = ""
-    sliderButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-    sliderButton.TextSize = 14
-    sliderButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    sliderButton.BackgroundTransparency = 1
-    sliderButton.Position = UDim2.new(0.049, 0, 0.664, 0)
-    sliderButton.Size = UDim2.new(0, 149, 0, 4)
-    sliderButton.Parent = slider
-
-    -- Removed the preciseToggle button. Mode is now toggled elsewhere.
-
-    task.spawn(function()
-        pcall(Info.Callback, roundSliderValue(Info.Default))
-        if Info.Flag ~= nil then
-            library.Flags[Info.Flag] = roundSliderValue(Info.Default)
-        end
-    end)
-
-    local MinSize = 0
-    local MaxSize = 1
-
-    local SizeFromScale = (MinSize +  (MaxSize - MinSize)) * DefaultScale
-    SizeFromScale = SizeFromScale - (SizeFromScale % 2)
-
-    sliderButton.MouseButton1Down:Connect(function()
-        local MouseMove, MouseKill
-        MouseMove = Mouse.Move:Connect(function()
-            local Px = library:GetXY(outerSlider)
-            local SizeFromScale = (MinSize +  (MaxSize - MinSize)) * Px
-            local Value = Info.Minimum + ((Info.Maximum - Info.Minimum) * Px)
-            Value = roundSliderValue(Value)
-            SizeFromScale = SizeFromScale - (SizeFromScale % 2)
-
-            TweenService:Create(innerSlider, TweenInfo.new(0.1), {Size = UDim2.new(Px,0,0,4)}):Play()
-            if Info.Flag ~= nil then
-                library.Flags[Info.Flag] = Value
-            end
-            sliderValueText.Text = tostring(Value)..Info.Postfix
-            task.spawn(function()
-                pcall(Info.Callback, Value)
-            end)
-        end)
-        MouseKill = UserInputService.InputEnded:Connect(function(UserInput)
-            if UserInput.UserInputType == Enum.UserInputType.MouseButton1 then
-                MouseMove:Disconnect()
-                MouseKill:Disconnect()
-            end
-        end)
-    end)
+sliderButton.MouseButton1Down:Connect(function() -- Skidded from material ui hehe, sorry
+	local MouseMove, MouseKill
+	MouseMove = Mouse.Move:Connect(function()
+		local Px = library:GetXY(outerSlider)
+		local SizeFromScale = (MinSize +  (MaxSize - MinSize)) * Px
+		local Value = math.floor(Info.Minimum + ((Info.Maximum - Info.Minimum) * Px))
+		SizeFromScale = SizeFromScale - (SizeFromScale % 2)
+		TweenService:Create(innerSlider, TweenInfo.new(0.1), {Size = UDim2.new(Px,0,0,4)}):Play()
+		if Info.Flag ~= nil then
+		    library.Flags[Info.Flag] = Value
+		end
+		sliderValueText.Text = tostring(Value)..Info.Postfix
+		task.spawn(function()
+		    pcall(Info.Callback, Value)
+		end)
+	end)
+	MouseKill = UserInputService.InputEnded:Connect(function(UserInput)
+		if UserInput.UserInputType == Enum.UserInputType.MouseButton1 then
+			MouseMove:Disconnect()
+			MouseKill:Disconnect()
+		end
+	end)
+end)
 end
 
 function sectiontable:Dropdown(Info)
