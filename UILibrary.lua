@@ -1263,9 +1263,9 @@ function sectiontable:Toggle(Info)
 		library.Flags[Info.Flag] = Toggled
 	end
 
-	task.spawn(function()
+	--[[task.spawn(function()
 		insidetoggle:Set(Toggled)
-	end)
+	end)]]
 
 	toggleButton.MouseButton1Click:Connect(function()
 		insidetoggle:Set(not Toggled)
