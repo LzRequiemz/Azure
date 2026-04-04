@@ -479,9 +479,9 @@ editButton.MouseButton1Click:Connect(function()
         for frame, v in pairs(ColorElements) do
             if v.Enabled then
                 if frame.ClassName == "Frame" then
-                TweenService:Create(frame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundColor3 = _G.UIColor}):Play()
+                TweenService:Create(frame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundColor3 = Color3.fromRGB(48, 207, 106)}):Play()
                 else
-                TweenService:Create(frame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = _G.UIColor}):Play()
+                TweenService:Create(frame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = Color3.fromRGB(48, 207, 106)}):Play()
                 end
             end
         end
@@ -1154,7 +1154,7 @@ function insidetoggle:Set(bool)
     if not Toggled then
         TweenService:Create(toggleFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundColor3 = Color3.fromRGB(68, 68, 68)}):Play()
     elseif Toggled and not EditOpened then
-        TweenService:Create(toggleFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundColor3 = _G.UIColor}):Play()
+        TweenService:Create(toggleFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundColor3 = Color3.fromRGB(48, 207, 106)}):Play()
     end
     pcall(Info.Callback, Toggled)
 end
@@ -1231,7 +1231,7 @@ sliderCorner.Parent = outerSlider
 
 local innerSlider = Instance.new("Frame")
 innerSlider.Name = "InnerSlider"
-innerSlider.BackgroundColor3 = _G.UIColor
+innerSlider.BackgroundColor3 = Color3.fromRGB(48, 207, 106)
 innerSlider.BorderSizePixel = 0
 innerSlider.Size = UDim2.new(DefaultScale, 0, 0, 4)
 innerSlider.ZIndex = 2
@@ -1734,8 +1734,8 @@ radioTextButton.MouseButton1Click:Connect(function()
     TweenService:Create(radioText, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
     
     if not EditOpened then
-        TweenService:Create(radioInner, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = RadioOpened and _G.UIColor or Color3.fromRGB(191, 191, 191)}):Play()
-        TweenService:Create(radioOuter, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = RadioOpened and _G.UIColor or Color3.fromRGB(191, 191, 191)}):Play()
+        TweenService:Create(radioInner, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = RadioOpened and Color3.fromRGB(48, 207, 106) or Color3.fromRGB(191, 191, 191)}):Play()
+        TweenService:Create(radioOuter, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = RadioOpened and Color3.fromRGB(48, 207, 106) or Color3.fromRGB(191, 191, 191)}):Play()
     end
 end)
 
