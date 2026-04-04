@@ -1069,231 +1069,213 @@ end)
 end
 
 function sectiontable:Toggle(Info)
-	Info.Text = Info.Text or "Toggle"
-	Info.Flag = Info.Flag or nil
-	Info.Default = Info.Default or false
-	Info.Callback = Info.Callback or function() end
-	Info.Tooltip = Info.Tooltip or ""
-	Info.Hotkey = Info.Hotkey
-	Info.HotkeyIgnoreGameProcessed = Info.HotkeyIgnoreGameProcessed or false
-	Info.AllowHotkeyChange = Info.AllowHotkeyChange or false
+    Info.Text = Info.Text or "Toggle"
+    Info.Flag = Info.Flag or nil
+    Info.Default = Info.Default or false
+    Info.Callback = Info.Callback or function() end
+    Info.Tooltip = Info.Tooltip or ""
+    Info.Hotkey = Info.Hotkey
+    Info.HotkeyIgnoreGameProcessed = Info.HotkeyIgnoreGameProcessed or false
+    Info.AllowHotkeyChange = Info.AllowHotkeyChange or false
 
-	if Info.Flag ~= nil then
-		library.Flags[Info.Flag] = Info.Default
-	end
+    if Info.Flag ~= nil then
+        library.Flags[Info.Flag] = Info.Default
+    end
 
-	local insidetoggle = {}
-	local Toggled = false
-	local CurrentHotkey = Info.Hotkey
-	local HotkeyChanging = false
-	local HotkeyPickConn
+    local insidetoggle = {}
+    local Toggled = Info.Default -- initialize properly
+    local CurrentHotkey = Info.Hotkey
+    local HotkeyChanging = false
+    local HotkeyPickConn
 
-	local toggle = Instance.new("Frame")
-	toggle.Name = "Toggle"
-	toggle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	toggle.BackgroundTransparency = 1
-	toggle.Size = UDim2.new(0, 162, 0, 27)
-	toggle.Parent = sectionFrame
+    local toggle = Instance.new("Frame")
+    toggle.Name = "Toggle"
+    toggle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    toggle.BackgroundTransparency = 1
+    toggle.Size = UDim2.new(0, 162, 0, 27)
+    toggle.Parent = sectionFrame
 
-	if Info.Tooltip ~= "" then
-		AddTooltip(toggle, Info.Tooltip)
-	end
+    if Info.Tooltip ~= "" then
+        AddTooltip(toggle, Info.Tooltip)
+    end
 
-	local toggleText = Instance.new("TextLabel")
-	toggleText.Name = "ToggleText"
-	toggleText.Font = Enum.Font.GothamBold
-	toggleText.Text = Info.Text
-	toggleText.TextColor3 = Color3.fromRGB(217, 217, 217)
-	toggleText.TextSize = 11
-	toggleText.TextXAlignment = Enum.TextXAlignment.Left
-	toggleText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	toggleText.BackgroundTransparency = 1
-	toggleText.Position = UDim2.new(0.0488, 0, 0, 0)
-	toggleText.Size = UDim2.new(0, (Info.Hotkey or Info.AllowHotkeyChange) and 92 or 156, 0, 27)
-	toggleText.Parent = toggle
+    local toggleText = Instance.new("TextLabel")
+    toggleText.Name = "ToggleText"
+    toggleText.Font = Enum.Font.GothamBold
+    toggleText.Text = Info.Text
+    toggleText.TextColor3 = Color3.fromRGB(217, 217, 217)
+    toggleText.TextSize = 11
+    toggleText.TextXAlignment = Enum.TextXAlignment.Left
+    toggleText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    toggleText.BackgroundTransparency = 1
+    toggleText.Position = UDim2.new(0.0488, 0, 0, 0)
+    toggleText.Size = UDim2.new(0, (Info.Hotkey or Info.AllowHotkeyChange) and 92 or 156, 0, 27)
+    toggleText.Parent = toggle
 
-	local hotkeyFrame
-	local hotkeyFrameText
+    local hotkeyFrame
+    local hotkeyFrameText
 
-	if Info.Hotkey or Info.AllowHotkeyChange then
-		hotkeyFrame = Instance.new("Frame")
-		hotkeyFrame.Name = "ToggleHotkeyFrame"
-		hotkeyFrame.BackgroundColor3 = Color3.fromRGB(68, 68, 68)
-		hotkeyFrame.AnchorPoint = Vector2.new(1, 0)
-		hotkeyFrame.BorderSizePixel = 0
-		hotkeyFrame.Position = UDim2.new(1, -38, 0.222, 0)
-		hotkeyFrame.Size = UDim2.new(0, 30, 0, 15)
-		hotkeyFrame.Parent = toggle
+    if Info.Hotkey or Info.AllowHotkeyChange then
+        hotkeyFrame = Instance.new("Frame")
+        hotkeyFrame.Name = "ToggleHotkeyFrame"
+        hotkeyFrame.BackgroundColor3 = Color3.fromRGB(68, 68, 68)
+        hotkeyFrame.AnchorPoint = Vector2.new(1, 0)
+        hotkeyFrame.BorderSizePixel = 0
+        hotkeyFrame.Position = UDim2.new(1, -38, 0.222, 0)
+        hotkeyFrame.Size = UDim2.new(0, 30, 0, 15)
+        hotkeyFrame.Parent = toggle
 
-		local hkCorner = Instance.new("UICorner")
-		hkCorner.CornerRadius = UDim.new(0, 3)
-		hkCorner.Parent = hotkeyFrame
+        local hkCorner = Instance.new("UICorner")
+        hkCorner.CornerRadius = UDim.new(0, 3)
+        hkCorner.Parent = hotkeyFrame
 
-		local hkStroke = Instance.new("UIStroke")
-		hkStroke.Color = Color3.fromRGB(84, 84, 84)
-		hkStroke.Parent = hotkeyFrame
+        local hkStroke = Instance.new("UIStroke")
+        hkStroke.Color = Color3.fromRGB(84, 84, 84)
+        hkStroke.Parent = hotkeyFrame
 
-		hotkeyFrameText = Instance.new("TextLabel")
-		hotkeyFrameText.Name = "ToggleHotkeyText"
-		hotkeyFrameText.Font = Enum.Font.GothamBold
-		hotkeyFrameText.Text = CurrentHotkey and CurrentHotkey.Name or "None"
-		hotkeyFrameText.TextColor3 = Color3.fromRGB(217, 217, 217)
-		hotkeyFrameText.TextSize = 11
-		hotkeyFrameText.BackgroundTransparency = 1
-		hotkeyFrameText.Size = UDim2.new(1, 0, 0, 15)
-		hotkeyFrameText.Parent = hotkeyFrame
+        hotkeyFrameText = Instance.new("TextLabel")
+        hotkeyFrameText.Name = "ToggleHotkeyText"
+        hotkeyFrameText.Font = Enum.Font.GothamBold
+        hotkeyFrameText.Text = CurrentHotkey and CurrentHotkey.Name or "None"
+        hotkeyFrameText.TextColor3 = Color3.fromRGB(217, 217, 217)
+        hotkeyFrameText.TextSize = 11
+        hotkeyFrameText.BackgroundTransparency = 1
+        hotkeyFrameText.Size = UDim2.new(1, 0, 0, 15)
+        hotkeyFrameText.Parent = hotkeyFrame
 
-		local function sizeHotkeyFrame()
-			local w = hotkeyFrameText.TextBounds.X + 10
-			hotkeyFrame.Size = UDim2.new(0, w, 0, 15)
-		end
-		sizeHotkeyFrame()
-		hotkeyFrameText:GetPropertyChangedSignal("Text"):Connect(sizeHotkeyFrame)
+        local function sizeHotkeyFrame()
+            local w = hotkeyFrameText.TextBounds.X + 10
+            hotkeyFrame.Size = UDim2.new(0, w, 0, 15)
+        end
+        sizeHotkeyFrame()
+        hotkeyFrameText:GetPropertyChangedSignal("Text"):Connect(sizeHotkeyFrame)
 
-		if Info.AllowHotkeyChange then
-			local hotkeyPickBtn = Instance.new("TextButton")
-			hotkeyPickBtn.Name = "ToggleHotkeyPick"
-			hotkeyPickBtn.Text = ""
-			hotkeyPickBtn.BackgroundTransparency = 1
-			hotkeyPickBtn.Size = UDim2.new(1, 0, 1, 0)
-			hotkeyPickBtn.Parent = hotkeyFrame
+        if Info.AllowHotkeyChange then
+            local hotkeyPickBtn = Instance.new("TextButton")
+            hotkeyPickBtn.Name = "ToggleHotkeyPick"
+            hotkeyPickBtn.Text = ""
+            hotkeyPickBtn.BackgroundTransparency = 1
+            hotkeyPickBtn.Size = UDim2.new(1, 0, 1, 0)
+            hotkeyPickBtn.Parent = hotkeyFrame
 
-			hotkeyPickBtn.MouseButton1Click:Connect(function()
-				if HotkeyPickConn then
-					HotkeyPickConn:Disconnect()
-					HotkeyPickConn = nil
-				end
-				HotkeyChanging = true
-				hotkeyFrameText.Text = "..."
-				HotkeyPickConn = UserInputService.InputBegan:Connect(function(inp, processed)
-					if inp.UserInputType ~= Enum.UserInputType.Keyboard then
-						return
-					end
-					if table.find(Blacklist, inp.KeyCode) then
-						return
-					end
-					if processed then
-						return
-					end
-					HotkeyPickConn:Disconnect()
-					HotkeyPickConn = nil
-					CurrentHotkey = inp.KeyCode
-					hotkeyFrameText.Text = inp.KeyCode.Name
-					sizeHotkeyFrame()
-					task.spawn(function()
-						wait(0.1)
-						HotkeyChanging = false
-					end)
-				end)
-			end)
-		end
-	end
+            hotkeyPickBtn.MouseButton1Click:Connect(function()
+                if HotkeyPickConn then
+                    HotkeyPickConn:Disconnect()
+                    HotkeyPickConn = nil
+                end
+                HotkeyChanging = true
+                hotkeyFrameText.Text = "..."
+                HotkeyPickConn = UserInputService.InputBegan:Connect(function(inp, processed)
+                    if inp.UserInputType ~= Enum.UserInputType.Keyboard then return end
+                    if table.find(Blacklist, inp.KeyCode) then return end
+                    if processed then return end
+                    HotkeyPickConn:Disconnect()
+                    HotkeyPickConn = nil
+                    CurrentHotkey = inp.KeyCode
+                    hotkeyFrameText.Text = inp.KeyCode.Name
+                    sizeHotkeyFrame()
+                    task.spawn(function()
+                        wait(0.1)
+                        HotkeyChanging = false
+                    end)
+                end)
+            end)
+        end
+    end
 
-	local toggleButton = Instance.new("TextButton")
-	toggleButton.Name = "ToggleButton"
-	toggleButton.Font = Enum.Font.SourceSans
-	toggleButton.Text = ""
-	toggleButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-	toggleButton.TextSize = 14
-	toggleButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	toggleButton.BackgroundTransparency = 1
-	toggleButton.Size = UDim2.new(0, 162, 0, 27)
-	toggleButton.Parent = toggle
+    local toggleButton = Instance.new("TextButton")
+    toggleButton.Name = "ToggleButton"
+    toggleButton.Font = Enum.Font.SourceSans
+    toggleButton.Text = ""
+    toggleButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+    toggleButton.TextSize = 14
+    toggleButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    toggleButton.BackgroundTransparency = 1
+    toggleButton.Size = UDim2.new(0, 162, 0, 27)
+    toggleButton.Parent = toggle
 
-	local toggleFrame = Instance.new("Frame")
-	toggleFrame.Name = "ToggleFrame"
-	toggleFrame.BackgroundColor3 = Color3.fromRGB(68, 68, 68)
-	toggleFrame.BorderSizePixel = 0
-	toggleFrame.AnchorPoint = Vector2.new(1, 0)
-	toggleFrame.Position = UDim2.new(1, -4, 0.222, 0)
-	toggleFrame.Size = UDim2.new(0, 30, 0, 15)
-	toggleFrame.Parent = toggle
+    local toggleFrame = Instance.new("Frame")
+    toggleFrame.Name = "ToggleFrame"
+    toggleFrame.BackgroundColor3 = Color3.fromRGB(68, 68, 68)
+    toggleFrame.BorderSizePixel = 0
+    toggleFrame.AnchorPoint = Vector2.new(1, 0)
+    toggleFrame.Position = UDim2.new(1, -4, 0.222, 0)
+    toggleFrame.Size = UDim2.new(0, 30, 0, 15)
+    toggleFrame.Parent = toggle
 
-	ColorElements[toggleFrame] = {Type = "Toggle", Enabled = false}
+    ColorElements[toggleFrame] = {Type = "Toggle", Enabled = false}
 
-	local toggleUICorner = Instance.new("UICorner")
-	toggleUICorner.Name = "ToggleUICorner"
-	toggleUICorner.CornerRadius = UDim.new(0, 100)
-	toggleUICorner.Parent = toggleFrame
+    local toggleUICorner = Instance.new("UICorner")
+    toggleUICorner.Name = "ToggleUICorner"
+    toggleUICorner.CornerRadius = UDim.new(0, 100)
+    toggleUICorner.Parent = toggleFrame
 
-	local circleIcon = Instance.new("ImageLabel")
-	circleIcon.Name = "CheckIcon"
-	circleIcon.Image = getcustomasset("Shaman/Circle.png")
-	circleIcon.ImageColor3 = Color3.fromRGB(217, 217, 217)
-	circleIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	circleIcon.BackgroundTransparency = 1
-	circleIcon.Position = UDim2.new(0, 1, 0.067, 0)
-	circleIcon.Size = UDim2.new(0, 13, 0, 13)
-	circleIcon.Parent = toggleFrame
+    local circleIcon = Instance.new("ImageLabel")
+    circleIcon.Name = "CheckIcon"
+    circleIcon.Image = getcustomasset("Shaman/Circle.png")
+    circleIcon.ImageColor3 = Color3.fromRGB(217, 217, 217)
+    circleIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    circleIcon.BackgroundTransparency = 1
+    circleIcon.Position = UDim2.new(0, 1, 0.067, 0)
+    circleIcon.Size = UDim2.new(0, 13, 0, 13)
+    circleIcon.Parent = toggleFrame
 
-	local function tweenToggleColors(on)
-		if on and not EditOpened then
-			TweenService:Create(toggleFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundColor3 = _G.UIColor}):Play()
-		elseif not on then
-			TweenService:Create(toggleFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundColor3 = Color3.fromRGB(68, 68, 68)}):Play()
-		end
-	end
+    local function tweenToggleColors(on)
+        if on and not EditOpened then
+            TweenService:Create(toggleFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundColor3 = _G.UIColor}):Play()
+        elseif not on then
+            TweenService:Create(toggleFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundColor3 = Color3.fromRGB(68, 68, 68)}):Play()
+        end
+    end
 
-	function insidetoggle:Set(bool)
-		Toggled = bool
-		if Info.Flag ~= nil then
-			library.Flags[Info.Flag] = Toggled
-		end
-		ColorElements[toggleFrame].Enabled = Toggled
+    function insidetoggle:Set(bool)
+        if Toggled == bool then return end
+        Toggled = bool
+        if Info.Flag ~= nil then
+            library.Flags[Info.Flag] = Toggled
+        end
+        ColorElements[toggleFrame].Enabled = Toggled
 
-		TweenService:Create(circleIcon, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Position = Toggled and UDim2.new(0, 16, 0.067, 0) or UDim2.new(0, 1, 0.067, 0)}):Play()
-		tweenToggleColors(Toggled)
-		pcall(Info.Callback, Toggled)
-	end
+        TweenService:Create(circleIcon, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {
+            Position = Toggled and UDim2.new(0, 16, 0.067, 0) or UDim2.new(0, 1, 0.067, 0)
+        }):Play()
+        tweenToggleColors(Toggled)
+        pcall(Info.Callback, Toggled)
+    end
 
-	function insidetoggle:Get()
-		return Toggled
-	end
+    function insidetoggle:Get()
+        return Toggled
+    end
 
-	function insidetoggle:SetHotkey(keyCode)
-		CurrentHotkey = keyCode
-		if hotkeyFrameText then
-			hotkeyFrameText.Text = keyCode and keyCode.Name or "None"
-		end
-	end
+    function insidetoggle:SetHotkey(keyCode)
+        CurrentHotkey = keyCode
+        if hotkeyFrameText then
+            hotkeyFrameText.Text = keyCode and keyCode.Name or "None"
+        end
+    end
 
-	function insidetoggle:GetHotkey()
-		return CurrentHotkey
-	end
+    function insidetoggle:GetHotkey()
+        return CurrentHotkey
+    end
 
-	if Info.Default then
-		task.spawn(function()
-			insidetoggle:Set(true)
-		end)
-	end
+    -- Initialize visuals
+    insidetoggle:Set(Toggled)
 
-	toggleButton.MouseButton1Click:Connect(function()
-		insidetoggle:Set(not Toggled)
-	end)
+    toggleButton.MouseButton1Click:Connect(function()
+        insidetoggle:Set(not Toggled)
+    end)
 
-	UserInputService.InputBegan:Connect(function(input, gameProcessed)
-		if HotkeyChanging then
-			return
-		end
-		if not CurrentHotkey then
-			return
-		end
-		if input.UserInputType ~= Enum.UserInputType.Keyboard then
-			return
-		end
-		if input.KeyCode ~= CurrentHotkey then
-			return
-		end
-		if not Info.HotkeyIgnoreGameProcessed and gameProcessed then
-			return
-		end
-		if UserInputService:GetFocusedTextBox() ~= nil then
-			return
-		end
-		insidetoggle:Set(not Toggled)
-	end)
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if HotkeyChanging then return end
+        if not CurrentHotkey then return end
+        if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
+        if input.KeyCode ~= CurrentHotkey then return end
+        if not Info.HotkeyIgnoreGameProcessed and gameProcessed then return end
+        if UserInputService:GetFocusedTextBox() ~= nil then return end
+        insidetoggle:Set(not Toggled)
+    end)
 
-	return insidetoggle
+    return insidetoggle
 end
 
 function sectiontable:Slider(Info)
