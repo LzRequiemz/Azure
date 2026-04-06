@@ -580,6 +580,7 @@ tabTextButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 tabTextButton.BackgroundTransparency = 1
 tabTextButton.Size = UDim2.new(0, 107, 0, 23)
 tabTextButton.Parent = tabFrame
+--tabTextButton.TextXAlignment = Enum.TextXAlignment.Left
 
 local uICorner3 = Instance.new("UICorner")
 uICorner3.Name = "UICorner"
@@ -597,6 +598,7 @@ textLabel1.BackgroundTransparency = 1
 textLabel1.Size = UDim2.new(0, 108, 0, 23)
 textLabel1.ZIndex = 2
 textLabel1.Parent = tabFrame
+textLabel1.TextXAlignment = Enum.TextXAlignment.Left
 
 local uIStroke = Instance.new("UIStroke")
 uIStroke.Name = "UIStroke"
