@@ -605,7 +605,7 @@ lineFrame.Name = "LineFrame"
 lineFrame.BackgroundColor3 = _G.UIColor 
 lineFrame.BorderSizePixel = 0
 --lineFrame.Position = UDim2.new(0.5, -1, 0.15, 0)
-lineFrame.Size = UDim2.new(0, 2, 0, 15)
+lineFrame.Size = UDim2.new(0, 2, 0, 23)
 lineFrame.Parent = tabFrame
 
 local uIStroke = Instance.new("UIStroke")
