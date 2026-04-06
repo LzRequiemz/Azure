@@ -590,7 +590,7 @@ uICorner3.Parent = tabFrame
 local textLabel1 = Instance.new("TextLabel")
 textLabel1.Name = "TextLabel"
 textLabel1.Font = Enum.Font.GothamBold
-textLabel1.Text = Info.Text
+textLabel1.Text = "   " .. Info.Text
 textLabel1.TextColor3 = Color3.fromRGB(237, 237, 237)
 textLabel1.TextSize = 11
 textLabel1.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -599,6 +599,14 @@ textLabel1.Size = UDim2.new(0, 108, 0, 23)
 textLabel1.ZIndex = 2
 textLabel1.Parent = tabFrame
 textLabel1.TextXAlignment = Enum.TextXAlignment.Left
+
+local lineFrame = Instance.new("Frame")
+lineFrame.Name = "LineFrame"
+lineFrame.BackgroundColor3 = _G.UIColor 
+lineFrame.BorderSizePixel = 0
+lineFrame.Position = UDim2.new(0, 0, 1, -2)
+lineFrame.Size = UDim2.new(1, 0, 0, 2)
+lineFrame.Parent = tabFrame
 
 local uIStroke = Instance.new("UIStroke")
 uIStroke.Name = "UIStroke"
