@@ -23,26 +23,6 @@ local TabSelected = nil
 local EditOpened = false
 local ColorElements = {}
 
-task.spawn(function()
-while true do
-if EditOpened and CheckTable(ColorElements) > 0 then
-local hue = tick() % 7 / 7
-local color = Color3.fromHSV(hue, 1, 1)
-
-for frame, v in pairs(ColorElements) do
-    if v.Enabled then
-        if frame.ClassName == "Frame" then
-        frame.BackgroundColor3 = color
-        else
-        frame.ImageColor3 = color
-        end
-    end
-end
-end
-wait()
-end
-end)
-
 local library = {
     Flags = {}
 }
@@ -128,6 +108,10 @@ makefolder("Shaman")
 local Circle = request({Url = "https://raw.githubusercontent.com/Rain-Design/Icons/main/Circle.png", Method = "GET"})
 writefile("Shaman/Circle.png", Circle.Body)
 dText.Text = "Downloaded: Circle.png"
+    
+local ColorDropper = request({Url = "https://raw.githubusercontent.com/Rain-Design/Icons/main/ColorDropper.png", Method = "GET"})
+writefile("Shaman/ColorDropper.png", ColorDropper.Body)
+dText.Text = "Downloaded: ColorDropper.png"
 
 local Close = request({Url = "https://raw.githubusercontent.com/Rain-Design/Icons/main/Close.png", Method = "GET"})
 writefile("Shaman/Close.png", Close.Body)
@@ -411,7 +395,6 @@ minimizeButton.MouseButton1Click:Connect(function()
     
     TweenService:Create(main, TweenInfo.new(.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = Opened and UDim2.new(0, 450,0, 321) or UDim2.new(0, 450,0, 30)}):Play()
 end)
-
 
 local tabContainer = Instance.new("Frame")
 tabContainer.Name = "TabContainer"
