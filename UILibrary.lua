@@ -551,22 +551,30 @@ tabButton.Parent = scrollingContainer
 local tabFrame = Instance.new("Frame")
 tabFrame.Name = "TabFrame"
 tabFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-tabFrame.BackgroundTransparency = 0.96
+tabFrame.BackgroundTransparency = 1
 tabFrame.BorderSizePixel = 0
 tabFrame.Position = UDim2.new(0.067, -5, 0.013, 3)
 tabFrame.Size = UDim2.new(0, 107, 0, 23)
 tabFrame.ZIndex = 2
 tabFrame.Parent = tabButton
 
+local uIStroke = Instance.new("UIStroke")
+uIStroke.Name = "UIStroke"
+uIStroke.Color = Color3.fromRGB(68, 68, 68) -- 183, 248, 219
+uIStroke.Transparency = 0.43
+uIStroke.Parent = tabFrame
+
 tabFrame.MouseEnter:Connect(function()
     if TabSelected ~= tabFrame or TabSelected == nil then
         TweenService:Create(tabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = .93}):Play()
+        TweenService:Create(uIStroke, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Transparency = 0.43}):Play()
     end
 end)
 
 tabFrame.MouseLeave:Connect(function()
     if TabSelected ~= tabFrame or TabSelected == nil then
-        TweenService:Create(tabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = .96}):Play()
+        TweenService:Create(tabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1}):Play()
+        TweenService:Create(uIStroke, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Transparency = 1}):Play()
     end
 end)
 
@@ -604,15 +612,8 @@ local lineFrame = Instance.new("Frame")
 lineFrame.Name = "LineFrame"
 lineFrame.BackgroundColor3 = _G.UIColor 
 lineFrame.BorderSizePixel = 0
---lineFrame.Position = UDim2.new(0.5, -1, 0.15, 0)
 lineFrame.Size = UDim2.new(0, 2, 0, 23)
 lineFrame.Parent = tabFrame
-
-local uIStroke = Instance.new("UIStroke")
-uIStroke.Name = "UIStroke"
-uIStroke.Color = Color3.fromRGB(68, 68, 68) -- 183, 248, 219
-uIStroke.Transparency = 0.45
-uIStroke.Parent = tabFrame
 
 local selected = Instance.new("Frame")
 selected.Name = "Selected"
