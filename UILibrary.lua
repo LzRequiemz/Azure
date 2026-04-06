@@ -618,7 +618,7 @@ local section = Instance.new("Frame")
 section.Name = "Section"
 section.BackgroundColor3 = Color3.fromRGB(42, 42, 42)
 section.BackgroundTransparency = 1
-section.Size = UDim2.new(0, 162, 0, 27)
+--section.Size = UDim2.new(0, 162, 0, 27)
 section.Parent = Side
 
 local Closed = Instance.new("BoolValue", section)
@@ -628,7 +628,7 @@ local sectionFrame = Instance.new("Frame")
 sectionFrame.Name = "SectionFrame"
 sectionFrame.BackgroundColor3 = Color3.fromRGB(42, 42, 42)
 sectionFrame.ClipsDescendants = true
-sectionFrame.Size = UDim2.new(0, 162, 0, 23)
+--sectionFrame.Size = UDim2.new(0, 162, 0, 23)
 sectionFrame.Parent = section
 
 sectionFrame.ChildAdded:Connect(function(v)
@@ -686,20 +686,10 @@ sectionButton.Size = UDim2.new(0, 162, 0, 23)
 sectionButton.ZIndex = 2
 sectionButton.Parent = section
 
-local sectionIcon = Instance.new("ImageButton")
-sectionIcon.Name = "SectionButton"
-sectionIcon.Image = "rbxassetid://10664195729"
-sectionIcon.ImageColor3 = Color3.fromRGB(217, 217, 217)
-sectionIcon.AnchorPoint = Vector2.new(1, 0)
-sectionIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-sectionIcon.BackgroundTransparency = 1
-sectionIcon.Position = UDim2.new(1, -5, 0, 5)
-sectionIcon.Size = UDim2.new(0, 13, 0, 13)
-sectionIcon.ZIndex = 1
-sectionIcon.Parent = section
+    
+TweenService:Create(section, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size =  UDim2.new(0, 162, 0, SizeY + 4)}):Play()
+TweenService:Create(sectionFrame, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = UDim2.new(0, 162, 0, SizeY)}):Play()
 
-section.Size = UDim2.new(0, 162, 0, SizeY + 4)
-sectionFrame.Size = UDim2.new(0, 162, 0, SizeY)
 
 function sectiontable:Label(Info)
 Info.Text = Info.Text or "Label"
