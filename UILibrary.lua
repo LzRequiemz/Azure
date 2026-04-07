@@ -23,26 +23,6 @@ local TabSelected = nil
 local EditOpened = false
 local ColorElements = {}
 
-task.spawn(function()
-while true do
-if EditOpened and CheckTable(ColorElements) > 0 then
-local hue = tick() % 7 / 7
-local color = Color3.fromHSV(hue, 1, 1)
-
-for frame, v in pairs(ColorElements) do
-    if v.Enabled then
-        if frame.ClassName == "Frame" then
-        frame.BackgroundColor3 = color
-        else
-        frame.ImageColor3 = color
-        end
-    end
-end
-end
-wait()
-end
-end)
-
 local library = {
     Flags = {}
 }
@@ -414,84 +394,6 @@ minimizeButton.MouseButton1Click:Connect(function()
     end)
     
     TweenService:Create(main, TweenInfo.new(.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = Opened and UDim2.new(0, 450,0, 321) or UDim2.new(0, 450,0, 30)}):Play()
-end)
-
-local editButton = Instance.new("ImageButton")
-editButton.Name = "EditButton"
-editButton.Image = getcustomasset("Shaman/ColorDropper.png")
-editButton.ImageColor3 = Color3.fromRGB(237, 237, 237)
-editButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-editButton.BackgroundTransparency = 1
-editButton.Position = UDim2.new(0.841, 0, 0.226, 0)
-editButton.Size = UDim2.new(0, 15, 0, 15)
-editButton.ZIndex = 2
-editButton.Parent = topbar
-
-local uiGradient = Instance.new("UIGradient")
-uiGradient.Name = "UIGradient"
-uiGradient.Enabled = false
-uiGradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0,Color3.fromRGB(255,0,0)),
-    ColorSequenceKeypoint.new(0.2,Color3.fromRGB(255,255,0)),
-    ColorSequenceKeypoint.new(0.4,Color3.fromRGB(0,255,0)),
-    ColorSequenceKeypoint.new(0.6,Color3.fromRGB(0,255,255)),
-    ColorSequenceKeypoint.new(0.8,Color3.fromRGB(0,0,255)),
-    ColorSequenceKeypoint.new(1,Color3.fromRGB(255,0,255)),
-}
-uiGradient.Parent = editButton
-
-task.spawn(function()
-    while wait() do -- skidded from devforum
-    if uiGradient.Enabled then
-	local loop = tick() % 2 / 2
-	colors = {}
-	for i = 1, 7 + 1, 1 do
-		z = Color3.fromHSV(loop - ((i - 1)/7), 1, 1)
-		if loop - ((i - 1) / 7) < 0 then
-			z = Color3.fromHSV((loop - ((i - 1) / 7)) + 1, 1, 1)
-		end
-		local d = ColorSequenceKeypoint.new((i - 1) / 7, z)
-		table.insert(colors, #colors + 1, d)
-	end
-	uiGradient.Color = ColorSequence.new(colors)
-end
-end
-end)
-
-editButton.MouseEnter:Connect(function()
-    if not EditOpened then
-        uiGradient.Enabled = true
-    end
-end)
-
-editButton.MouseLeave:Connect(function()
-    if not EditOpened then
-        uiGradient.Enabled = false
-    end
-end)
-
-editButton.MouseButton1Click:Connect(function()
-    EditOpened = not EditOpened
-    
-    uiGradient.Enabled = EditOpened and true or false
-    
-    if not EditOpened then
-        for frame, v in pairs(ColorElements) do
-            if v.Enabled then
-                if frame.ClassName == "Frame" then
-                TweenService:Create(frame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundColor3 = _G.UIColor}):Play()
-                else
-                TweenService:Create(frame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = _G.UIColor}):Play()
-                end
-            end
-        end
-    else
-        for _,v in pairs(ColorElements) do
-            if v.Type ~= "Toggle" then
-                v.Enabled = true
-            end
-        end
-    end
 end)
 
 local tabContainer = Instance.new("Frame")
@@ -1945,6 +1847,7 @@ tabTextButton.MouseButton1Click:Connect(function()
         end
     end
     TweenService:Create(tabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = .85}):Play()
+    TweenService:Create(uIStroke, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Transparency = 0.45}):Play()
     leftContainer.Visible = true
     rightContainer.Visible = true
 end)
@@ -1965,6 +1868,7 @@ function tab:Select()
         end
     end
     TweenService:Create(tabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = .85}):Play()
+    TweenService:Create(uIStroke, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Transparency = 0.45}):Play()
     leftContainer.Visible = true
     rightContainer.Visible = true
 end
