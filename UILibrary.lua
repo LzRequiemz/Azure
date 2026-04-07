@@ -137,9 +137,9 @@ download:Destroy()
 end
 
 function library:GetXY(GuiObject)
-    local Max, May = GuiObject.AbsoluteSize.X, GuiObject.AbsoluteSize.Y
-    local Px, Py = math.clamp(Mouse.X - GuiObject.AbsolutePosition.X, 0, Max), math.clamp(Mouse.Y - GuiObject.AbsolutePosition.Y, 0, May)
-    return Px/Max, Py/May
+	local Max, May = GuiObject.AbsoluteSize.X, GuiObject.AbsoluteSize.Y
+	local Px, Py = math.clamp(Mouse.X - GuiObject.AbsolutePosition.X, 0, Max), math.clamp(Mouse.Y - GuiObject.AbsolutePosition.Y, 0, May)
+	return Px/Max, Py/May
 end
 
 function library:Window(Info)
@@ -261,11 +261,11 @@ topbar.InputBegan:Connect(function(input)
         dragging = true
         dragStart = input.Position
         startPos = main.Position
-                
+        		
         input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
+        	if input.UserInputState == Enum.UserInputState.End then
+        		dragging = false
+        	end
         end)
     end
 end)
@@ -437,8 +437,6 @@ scrollingContainer.BorderSizePixel = 0
 scrollingContainer.Size = UDim2.new(0, 114, 0, 285)
 scrollingContainer.ZIndex = 2
 scrollingContainer.Parent = tabContainer
-
-local FirstTabSelected = false
 
 function window:Tab(Info)
 Info.Text = Info.Text or "Tab"
@@ -617,12 +615,21 @@ if Info.Side == "Left" then
 end
     
 local section = Instance.new("Frame")
+section.Name = "Section"
+section.BackgroundColor3 = Color3.fromRGB(42, 42, 42)
+section.BackgroundTransparency = 1
+section.Size = UDim2.new(0, 162, 0, 27)
+section.Parent = Side
 
 local Closed = Instance.new("BoolValue", section)
-Closed.Value = false -- Always open
+Closed.Value = false
 
 local sectionFrame = Instance.new("Frame")
-
+sectionFrame.Name = "SectionFrame"
+sectionFrame.BackgroundColor3 = Color3.fromRGB(42, 42, 42)
+sectionFrame.ClipsDescendants = true
+sectionFrame.Size = UDim2.new(0, 162, 0, 23)
+sectionFrame.Parent = section
 
 sectionFrame.ChildAdded:Connect(function(v)
     if v.ClassName == "Frame" then
@@ -667,19 +674,40 @@ sectionName.Position = UDim2.new(0.0488, 0, 0, 0)
 sectionName.Size = UDim2.new(0, 128, 0, 23)
 sectionName.Parent = section
 
--- Removed sectionButton and sectionIcon to prevent closing
+local sectionButton = Instance.new("TextButton")
+sectionButton.Name = "SectionButton"
+sectionButton.Font = Enum.Font.SourceSans
+sectionButton.Text = ""
+sectionButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+sectionButton.TextSize = 14
+sectionButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+sectionButton.BackgroundTransparency = 1
+sectionButton.Size = UDim2.new(0, 162, 0, 23)
+sectionButton.ZIndex = 2
+sectionButton.Parent = section
 
-section.Name = "Section"
-section.BackgroundColor3 = Color3.fromRGB(42, 42, 42)
-section.BackgroundTransparency = 1
-section.Size = UDim2.new(0, 162, 0, SizeY + 4)
-section.Parent = Side
+local sectionIcon = Instance.new("ImageButton")
+sectionIcon.Name = "SectionButton"
+sectionIcon.Image = "rbxassetid://10664195729"
+sectionIcon.ImageColor3 = Color3.fromRGB(217, 217, 217)
+sectionIcon.AnchorPoint = Vector2.new(1, 0)
+sectionIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+sectionIcon.BackgroundTransparency = 1
+sectionIcon.Position = UDim2.new(1, -5, 0, 5)
+sectionIcon.Size = UDim2.new(0, 13, 0, 13)
+sectionIcon.ZIndex = 1
+sectionIcon.Parent = section
 
-sectionFrame.Name = "SectionFrame"
-sectionFrame.BackgroundColor3 = Color3.fromRGB(42, 42, 42)
-sectionFrame.ClipsDescendants = true
-sectionFrame.Size = UDim2.new(0, 162, 0, SizeY)
-sectionFrame.Parent = section
+sectionButton.MouseButton1Click:Connect(function()
+    Closed.Value = not Closed.Value
+    --#d96163
+    
+    
+    TweenService:Create(section, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = Closed.Value and UDim2.new(0, 162, 0, SizeY + 4) or UDim2.new(0, 162, 0, SizeY + 4)}):Play()
+    TweenService:Create(sectionFrame, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = Closed.Value and UDim2.new(0, 162, 0, SizeY) or UDim2.new(0, 162, 0, SizeY)}):Play()
+    TweenService:Create(sectionIcon, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = Closed.Value and Color3.fromRGB(217, 97, 99) or Color3.fromRGB(217, 217, 217)}):Play()
+    TweenService:Create(sectionIcon, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Rotation = Closed.Value and 45 or 0}):Play()
+end)
 
 function sectiontable:Label(Info)
 Info.Text = Info.Text or "Label"
@@ -947,238 +975,238 @@ inputTextBox.FocusLost:Connect(function()
     task.spawn(function()
         pcall(Info.Callback, inputTextBox.Text)
         if Info.Flag ~= nil then
-            library.Flags[Info.Flag] = inputTextBox.Text
-        end
+		    library.Flags[Info.Flag] = inputTextBox.Text
+		end
     end)
 end)
 end
 
 function sectiontable:Toggle(Info)
-    Info.Text = Info.Text or "Toggle"
-    Info.Flag = Info.Flag or nil
-    Info.Default = Info.Default or false
-    Info.Callback = Info.Callback or function() end
-    Info.Tooltip = Info.Tooltip or ""
-    Info.Hotkey = Info.Hotkey
-    Info.HotkeyIgnoreGameProcessed = Info.HotkeyIgnoreGameProcessed or false
-    Info.AllowHotkeyChange = Info.AllowHotkeyChange or false
+	Info.Text = Info.Text or "Toggle"
+	Info.Flag = Info.Flag or nil
+	Info.Default = Info.Default or false
+	Info.Callback = Info.Callback or function() end
+	Info.Tooltip = Info.Tooltip or ""
+	Info.Hotkey = Info.Hotkey
+	Info.HotkeyIgnoreGameProcessed = Info.HotkeyIgnoreGameProcessed or false
+	Info.AllowHotkeyChange = Info.AllowHotkeyChange or false
 
-    if Info.Flag ~= nil then
-        library.Flags[Info.Flag] = Info.Default
-    end
+	if Info.Flag ~= nil then
+		library.Flags[Info.Flag] = Info.Default
+	end
 
-    local insidetoggle = {}
-    local Toggled = false
-    local CurrentHotkey = Info.Hotkey
-    local HotkeyChanging = false
-    local HotkeyPickConn
+	local insidetoggle = {}
+	local Toggled = false
+	local CurrentHotkey = Info.Hotkey
+	local HotkeyChanging = false
+	local HotkeyPickConn
 
-    local toggle = Instance.new("Frame")
-    toggle.Name = "Toggle"
-    toggle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    toggle.BackgroundTransparency = 1
-    toggle.Size = UDim2.new(0, 162, 0, 27)
-    toggle.Parent = sectionFrame
+	local toggle = Instance.new("Frame")
+	toggle.Name = "Toggle"
+	toggle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	toggle.BackgroundTransparency = 1
+	toggle.Size = UDim2.new(0, 162, 0, 27)
+	toggle.Parent = sectionFrame
 
-    if Info.Tooltip ~= "" then
-        AddTooltip(toggle, Info.Tooltip)
-    end
+	if Info.Tooltip ~= "" then
+		AddTooltip(toggle, Info.Tooltip)
+	end
 
-    local toggleText = Instance.new("TextLabel")
-    toggleText.Name = "ToggleText"
-    toggleText.Font = Enum.Font.GothamBold
-    toggleText.Text = Info.Text
-    toggleText.TextColor3 = Color3.fromRGB(217, 217, 217)
-    toggleText.TextSize = 11
-    toggleText.TextXAlignment = Enum.TextXAlignment.Left
-    toggleText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    toggleText.BackgroundTransparency = 1
-    toggleText.Position = UDim2.new(0.0488, 0, 0, 0)
-    toggleText.Size = UDim2.new(0, (Info.Hotkey or Info.AllowHotkeyChange) and 92 or 156, 0, 27)
-    toggleText.Parent = toggle
+	local toggleText = Instance.new("TextLabel")
+	toggleText.Name = "ToggleText"
+	toggleText.Font = Enum.Font.GothamBold
+	toggleText.Text = Info.Text
+	toggleText.TextColor3 = Color3.fromRGB(217, 217, 217)
+	toggleText.TextSize = 11
+	toggleText.TextXAlignment = Enum.TextXAlignment.Left
+	toggleText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	toggleText.BackgroundTransparency = 1
+	toggleText.Position = UDim2.new(0.0488, 0, 0, 0)
+	toggleText.Size = UDim2.new(0, (Info.Hotkey or Info.AllowHotkeyChange) and 92 or 156, 0, 27)
+	toggleText.Parent = toggle
 
-    local hotkeyFrame
-    local hotkeyFrameText
+	local hotkeyFrame
+	local hotkeyFrameText
 
-    if Info.Hotkey or Info.AllowHotkeyChange then
-        hotkeyFrame = Instance.new("Frame")
-        hotkeyFrame.Name = "ToggleHotkeyFrame"
-        hotkeyFrame.BackgroundColor3 = Color3.fromRGB(68, 68, 68)
-        hotkeyFrame.AnchorPoint = Vector2.new(1, 0)
-        hotkeyFrame.BorderSizePixel = 0
-        hotkeyFrame.Position = UDim2.new(1, -38, 0.222, 0)
-        hotkeyFrame.Size = UDim2.new(0, 30, 0, 15)
-        hotkeyFrame.Parent = toggle
+	if Info.Hotkey or Info.AllowHotkeyChange then
+		hotkeyFrame = Instance.new("Frame")
+		hotkeyFrame.Name = "ToggleHotkeyFrame"
+		hotkeyFrame.BackgroundColor3 = Color3.fromRGB(68, 68, 68)
+		hotkeyFrame.AnchorPoint = Vector2.new(1, 0)
+		hotkeyFrame.BorderSizePixel = 0
+		hotkeyFrame.Position = UDim2.new(1, -38, 0.222, 0)
+		hotkeyFrame.Size = UDim2.new(0, 30, 0, 15)
+		hotkeyFrame.Parent = toggle
 
-        local hkCorner = Instance.new("UICorner")
-        hkCorner.CornerRadius = UDim.new(0, 3)
-        hkCorner.Parent = hotkeyFrame
+		local hkCorner = Instance.new("UICorner")
+		hkCorner.CornerRadius = UDim.new(0, 3)
+		hkCorner.Parent = hotkeyFrame
 
-        local hkStroke = Instance.new("UIStroke")
-        hkStroke.Color = Color3.fromRGB(84, 84, 84)
-        hkStroke.Parent = hotkeyFrame
+		local hkStroke = Instance.new("UIStroke")
+		hkStroke.Color = Color3.fromRGB(84, 84, 84)
+		hkStroke.Parent = hotkeyFrame
 
-        hotkeyFrameText = Instance.new("TextLabel")
-        hotkeyFrameText.Name = "ToggleHotkeyText"
-        hotkeyFrameText.Font = Enum.Font.GothamBold
-        hotkeyFrameText.Text = CurrentHotkey and CurrentHotkey.Name or "None"
-        hotkeyFrameText.TextColor3 = Color3.fromRGB(217, 217, 217)
-        hotkeyFrameText.TextSize = 11
-        hotkeyFrameText.BackgroundTransparency = 1
-        hotkeyFrameText.Size = UDim2.new(1, 0, 0, 15)
-        hotkeyFrameText.Parent = hotkeyFrame
+		hotkeyFrameText = Instance.new("TextLabel")
+		hotkeyFrameText.Name = "ToggleHotkeyText"
+		hotkeyFrameText.Font = Enum.Font.GothamBold
+		hotkeyFrameText.Text = CurrentHotkey and CurrentHotkey.Name or "None"
+		hotkeyFrameText.TextColor3 = Color3.fromRGB(217, 217, 217)
+		hotkeyFrameText.TextSize = 11
+		hotkeyFrameText.BackgroundTransparency = 1
+		hotkeyFrameText.Size = UDim2.new(1, 0, 0, 15)
+		hotkeyFrameText.Parent = hotkeyFrame
 
-        local function sizeHotkeyFrame()
-            local w = hotkeyFrameText.TextBounds.X + 10
-            hotkeyFrame.Size = UDim2.new(0, w, 0, 15)
-        end
-        sizeHotkeyFrame()
-        hotkeyFrameText:GetPropertyChangedSignal("Text"):Connect(sizeHotkeyFrame)
+		local function sizeHotkeyFrame()
+			local w = hotkeyFrameText.TextBounds.X + 10
+			hotkeyFrame.Size = UDim2.new(0, w, 0, 15)
+		end
+		sizeHotkeyFrame()
+		hotkeyFrameText:GetPropertyChangedSignal("Text"):Connect(sizeHotkeyFrame)
 
-        if Info.AllowHotkeyChange then
-            local hotkeyPickBtn = Instance.new("TextButton")
-            hotkeyPickBtn.Name = "ToggleHotkeyPick"
-            hotkeyPickBtn.Text = ""
-            hotkeyPickBtn.BackgroundTransparency = 1
-            hotkeyPickBtn.Size = UDim2.new(1, 0, 1, 0)
-            hotkeyPickBtn.Parent = hotkeyFrame
+		if Info.AllowHotkeyChange then
+			local hotkeyPickBtn = Instance.new("TextButton")
+			hotkeyPickBtn.Name = "ToggleHotkeyPick"
+			hotkeyPickBtn.Text = ""
+			hotkeyPickBtn.BackgroundTransparency = 1
+			hotkeyPickBtn.Size = UDim2.new(1, 0, 1, 0)
+			hotkeyPickBtn.Parent = hotkeyFrame
 
-            hotkeyPickBtn.MouseButton1Click:Connect(function()
-                if HotkeyPickConn then
-                    HotkeyPickConn:Disconnect()
-                    HotkeyPickConn = nil
-                end
-                HotkeyChanging = true
-                hotkeyFrameText.Text = "..."
-                HotkeyPickConn = UserInputService.InputBegan:Connect(function(inp, processed)
-                    if inp.UserInputType ~= Enum.UserInputType.Keyboard then
-                        return
-                    end
-                    if table.find(Blacklist, inp.KeyCode) then
-                        return
-                    end
-                    if processed then
-                        return
-                    end
-                    HotkeyPickConn:Disconnect()
-                    HotkeyPickConn = nil
-                    CurrentHotkey = inp.KeyCode
-                    hotkeyFrameText.Text = inp.KeyCode.Name
-                    sizeHotkeyFrame()
-                    task.spawn(function()
-                        wait(0.1)
-                        HotkeyChanging = false
-                    end)
-                end)
-            end)
-        end
-    end
+			hotkeyPickBtn.MouseButton1Click:Connect(function()
+				if HotkeyPickConn then
+					HotkeyPickConn:Disconnect()
+					HotkeyPickConn = nil
+				end
+				HotkeyChanging = true
+				hotkeyFrameText.Text = "..."
+				HotkeyPickConn = UserInputService.InputBegan:Connect(function(inp, processed)
+					if inp.UserInputType ~= Enum.UserInputType.Keyboard then
+						return
+					end
+					if table.find(Blacklist, inp.KeyCode) then
+						return
+					end
+					if processed then
+						return
+					end
+					HotkeyPickConn:Disconnect()
+					HotkeyPickConn = nil
+					CurrentHotkey = inp.KeyCode
+					hotkeyFrameText.Text = inp.KeyCode.Name
+					sizeHotkeyFrame()
+					task.spawn(function()
+						wait(0.1)
+						HotkeyChanging = false
+					end)
+				end)
+			end)
+		end
+	end
 
-    local toggleButton = Instance.new("TextButton")
-    toggleButton.Name = "ToggleButton"
-    toggleButton.Font = Enum.Font.SourceSans
-    toggleButton.Text = ""
-    toggleButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-    toggleButton.TextSize = 14
-    toggleButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    toggleButton.BackgroundTransparency = 1
-    toggleButton.Size = UDim2.new(0, 162, 0, 27)
-    toggleButton.Parent = toggle
+	local toggleButton = Instance.new("TextButton")
+	toggleButton.Name = "ToggleButton"
+	toggleButton.Font = Enum.Font.SourceSans
+	toggleButton.Text = ""
+	toggleButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+	toggleButton.TextSize = 14
+	toggleButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	toggleButton.BackgroundTransparency = 1
+	toggleButton.Size = UDim2.new(0, 162, 0, 27)
+	toggleButton.Parent = toggle
 
-    local toggleFrame = Instance.new("Frame")
-    toggleFrame.Name = "ToggleFrame"
-    toggleFrame.BackgroundColor3 = Color3.fromRGB(68, 68, 68)
-    toggleFrame.BorderSizePixel = 0
-    toggleFrame.AnchorPoint = Vector2.new(1, 0)
-    toggleFrame.Position = UDim2.new(1, -4, 0.222, 0)
-    toggleFrame.Size = UDim2.new(0, 30, 0, 15)
-    toggleFrame.Parent = toggle
+	local toggleFrame = Instance.new("Frame")
+	toggleFrame.Name = "ToggleFrame"
+	toggleFrame.BackgroundColor3 = Color3.fromRGB(68, 68, 68)
+	toggleFrame.BorderSizePixel = 0
+	toggleFrame.AnchorPoint = Vector2.new(1, 0)
+	toggleFrame.Position = UDim2.new(1, -4, 0.222, 0)
+	toggleFrame.Size = UDim2.new(0, 30, 0, 15)
+	toggleFrame.Parent = toggle
 
-    ColorElements[toggleFrame] = {Type = "Toggle", Enabled = false}
+	ColorElements[toggleFrame] = {Type = "Toggle", Enabled = false}
 
-    local toggleUICorner = Instance.new("UICorner")
-    toggleUICorner.Name = "ToggleUICorner"
-    toggleUICorner.CornerRadius = UDim.new(0, 100)
-    toggleUICorner.Parent = toggleFrame
+	local toggleUICorner = Instance.new("UICorner")
+	toggleUICorner.Name = "ToggleUICorner"
+	toggleUICorner.CornerRadius = UDim.new(0, 100)
+	toggleUICorner.Parent = toggleFrame
 
-    local circleIcon = Instance.new("ImageLabel")
-    circleIcon.Name = "CheckIcon"
-    circleIcon.Image = getcustomasset("Shaman/Circle.png")
-    circleIcon.ImageColor3 = Color3.fromRGB(217, 217, 217)
-    circleIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    circleIcon.BackgroundTransparency = 1
-    circleIcon.Position = UDim2.new(0, 1, 0.067, 0)
-    circleIcon.Size = UDim2.new(0, 13, 0, 13)
-    circleIcon.Parent = toggleFrame
+	local circleIcon = Instance.new("ImageLabel")
+	circleIcon.Name = "CheckIcon"
+	circleIcon.Image = getcustomasset("Shaman/Circle.png")
+	circleIcon.ImageColor3 = Color3.fromRGB(217, 217, 217)
+	circleIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	circleIcon.BackgroundTransparency = 1
+	circleIcon.Position = UDim2.new(0, 1, 0.067, 0)
+	circleIcon.Size = UDim2.new(0, 13, 0, 13)
+	circleIcon.Parent = toggleFrame
 
-    local function tweenToggleColors(on)
-        if on and not EditOpened then
-            TweenService:Create(toggleFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundColor3 = _G.UIColor}):Play()
-        elseif not on then
-            TweenService:Create(toggleFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundColor3 = Color3.fromRGB(68, 68, 68)}):Play()
-        end
-    end
+	local function tweenToggleColors(on)
+		if on and not EditOpened then
+			TweenService:Create(toggleFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundColor3 = _G.UIColor}):Play()
+		elseif not on then
+			TweenService:Create(toggleFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundColor3 = Color3.fromRGB(68, 68, 68)}):Play()
+		end
+	end
 
-    function insidetoggle:Set(bool)
-        Toggled = bool
-        if Info.Flag ~= nil then
-            library.Flags[Info.Flag] = Toggled
-        end
-        ColorElements[toggleFrame].Enabled = Toggled
+	function insidetoggle:Set(bool)
+		Toggled = bool
+		if Info.Flag ~= nil then
+			library.Flags[Info.Flag] = Toggled
+		end
+		ColorElements[toggleFrame].Enabled = Toggled
 
-        TweenService:Create(circleIcon, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Position = Toggled and UDim2.new(0, 16, 0.067, 0) or UDim2.new(0, 1, 0.067, 0)}):Play()
-        tweenToggleColors(Toggled)
-        pcall(Info.Callback, Toggled)
-    end
+		TweenService:Create(circleIcon, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Position = Toggled and UDim2.new(0, 16, 0.067, 0) or UDim2.new(0, 1, 0.067, 0)}):Play()
+		tweenToggleColors(Toggled)
+		pcall(Info.Callback, Toggled)
+	end
 
-    function insidetoggle:Get()
-        return Toggled
-    end
+	function insidetoggle:Get()
+		return Toggled
+	end
 
-    function insidetoggle:SetHotkey(keyCode)
-        CurrentHotkey = keyCode
-        if hotkeyFrameText then
-            hotkeyFrameText.Text = keyCode and keyCode.Name or "None"
-        end
-    end
+	function insidetoggle:SetHotkey(keyCode)
+		CurrentHotkey = keyCode
+		if hotkeyFrameText then
+			hotkeyFrameText.Text = keyCode and keyCode.Name or "None"
+		end
+	end
 
-    function insidetoggle:GetHotkey()
-        return CurrentHotkey
-    end
+	function insidetoggle:GetHotkey()
+		return CurrentHotkey
+	end
 
-    if Info.Default then
-        task.spawn(function()
-            insidetoggle:Set(true)
-        end)
-    end
+	if Info.Default then
+		task.spawn(function()
+			insidetoggle:Set(true)
+		end)
+	end
 
-    toggleButton.MouseButton1Click:Connect(function()
-        insidetoggle:Set(not Toggled)
-    end)
+	toggleButton.MouseButton1Click:Connect(function()
+		insidetoggle:Set(not Toggled)
+	end)
 
-    UserInputService.InputBegan:Connect(function(input, gameProcessed)
-        if HotkeyChanging then
-            return
-        end
-        if not CurrentHotkey then
-            return
-        end
-        if input.UserInputType ~= Enum.UserInputType.Keyboard then
-            return
-        end
-        if input.KeyCode ~= CurrentHotkey then
-            return
-        end
-        if not Info.HotkeyIgnoreGameProcessed and gameProcessed then
-            return
-        end
-        if UserInputService:GetFocusedTextBox() ~= nil then
-            return
-        end
-        insidetoggle:Set(not Toggled)
-    end)
+	UserInputService.InputBegan:Connect(function(input, gameProcessed)
+		if HotkeyChanging then
+			return
+		end
+		if not CurrentHotkey then
+			return
+		end
+		if input.UserInputType ~= Enum.UserInputType.Keyboard then
+			return
+		end
+		if input.KeyCode ~= CurrentHotkey then
+			return
+		end
+		if not Info.HotkeyIgnoreGameProcessed and gameProcessed then
+			return
+		end
+		if UserInputService:GetFocusedTextBox() ~= nil then
+			return
+		end
+		insidetoggle:Set(not Toggled)
+	end)
 
-    return insidetoggle
+	return insidetoggle
 end
 
 function sectiontable:Slider(Info)
@@ -1347,7 +1375,7 @@ if Info.Default ~= nil then
     end)
     if Info.Flag ~= nil then
         library.Flags[Info.Flag] = Info.Default
-    end
+	end
 end
 
 local insidedropdown = {}
@@ -1473,7 +1501,7 @@ dropdownContainerTextButton.MouseButton1Click:Connect(function()
     end)
     if Info.Flag ~= nil then
         library.Flags[Info.Flag] = dropdownbuttonText.Text
-    end
+	end
     dropdownText.Text = dropdownbuttonText.Text
     
     TweenService:Create(dropdownIcon, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Rotation = DropdownOpened and -180 or -90}):Play()
@@ -1565,7 +1593,7 @@ if Info.Default ~= nil then
     end)
     if Info.Flag ~= nil then
         library.Flags[Info.Flag] = Info.Default
-    end
+	end
 end
 
 local insideradio = {}
@@ -1738,7 +1766,7 @@ radioTextButton.MouseButton1Click:Connect(function()
     end)
     if Info.Flag ~= nil then
         library.Flags[Info.Flag] = radioText.Text
-    end
+	end
     
     ColorElements[radioInner].Enabled = true
     ColorElements[radioOuter].Enabled = true
@@ -1792,8 +1820,8 @@ Closed:GetPropertyChangedSignal("Value"):Connect(function()
     TweenService:Create(radioButton, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = RadioOpened and UDim2.new(0, 162, 0, RadioYSize) or UDim2.new(0, 162, 0, 27)}):Play()
     TweenService:Create(radioContainer, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = RadioOpened and UDim2.new(0, 162, 0, RadioYSize) or UDim2.new(0, 162, 0, 27)}):Play()
     TweenService:Create(radioContainer, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = RadioOpened and .96 or 1}):Play()
-    TweenService:Create(sectionFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = RadioOpened and UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset + RadioYSize - 27) or UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset - RadioYSize + 27)}):Play()
-    TweenService:Create(section, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = RadioOpened and UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset + RadioYSize - 27 + 4) or UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset - RadioYSize + 31)}):Play()
+    TweenService:Create(sectionFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = RadioOpened and UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset + RadioYSize - 27) or UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset + RadioYSize - 27)}):Play()
+    TweenService:Create(section, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = RadioOpened and UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset + RadioYSize - 27 + 4) or UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset + RadioYSize - 27 + 4)}):Play()
     end
 end)
 
@@ -1843,11 +1871,6 @@ function tab:Select()
     TweenService:Create(uIStroke, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Transparency = 0.45}):Play()
     leftContainer.Visible = true
     rightContainer.Visible = true
-end
-
-if not FirstTabSelected then
-    tab:Select()
-    FirstTabSelected = true
 end
 
 return tab
