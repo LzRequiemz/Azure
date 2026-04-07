@@ -108,14 +108,6 @@ makefolder("Shaman")
 local Circle = request({Url = "https://raw.githubusercontent.com/Rain-Design/Icons/main/Circle.png", Method = "GET"})
 writefile("Shaman/Circle.png", Circle.Body)
 dText.Text = "Downloaded: Circle.png"
-    
-local ColorDropper = request({Url = "https://raw.githubusercontent.com/Rain-Design/Icons/main/ColorDropper.png", Method = "GET"})
-writefile("Shaman/ColorDropper.png", ColorDropper.Body)
-dText.Text = "Downloaded: ColorDropper.png"
-
-local Close = request({Url = "https://raw.githubusercontent.com/Rain-Design/Icons/main/Close.png", Method = "GET"})
-writefile("Shaman/Close.png", Close.Body)
-dText.Text = "Downloaded: Close.png"
 
 local CollapseArrow = request({Url = "https://raw.githubusercontent.com/Rain-Design/Icons/main/CollapseArrow.png", Method = "GET"})
 writefile("Shaman/CollapseArrow.png", CollapseArrow.Body)
@@ -328,37 +320,13 @@ textLabel.Size = UDim2.new(0, 51, 0, 30)
 textLabel.ZIndex = 2
 textLabel.Parent = topbar
 
-local closeButton = Instance.new("ImageButton")
-closeButton.Name = "CloseButton"
-closeButton.Image = getcustomasset("Shaman/Close.png")
-closeButton.ImageColor3 = Color3.fromRGB(237, 237, 237)
-closeButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.BackgroundTransparency = 1
-closeButton.Position = UDim2.new(0.947, 0, 0.194, 0)
-closeButton.Size = UDim2.new(0, 17, 0, 17)
-closeButton.ZIndex = 2
-closeButton.Parent = topbar
-
-closeButton.MouseButton1Click:Once(function()
-    shamanScreenGui:Destroy()
-    tooltipScreenGui:Destroy()
-end)
-
-closeButton.MouseEnter:Connect(function()
-    TweenService:Create(closeButton, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = Color3.fromRGB(217, 97, 99)}):Play()
-end)
-
-closeButton.MouseLeave:Connect(function()
-    TweenService:Create(closeButton, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = Color3.fromRGB(217, 217, 217)}):Play()
-end)
-
 local minimizeButton = Instance.new("ImageButton")
 minimizeButton.Name = "MinimizeButton"
 minimizeButton.Image = "rbxassetid://10664064072"
 minimizeButton.ImageColor3 = Color3.fromRGB(237, 237, 237)
 minimizeButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 minimizeButton.BackgroundTransparency = 1
-minimizeButton.Position = UDim2.new(0.893, 0, 0.194, 0)
+minimizeButton.Position = UDim2.new(0.947, 0, 0.194, 0)
 minimizeButton.Size = UDim2.new(0, 17, 0, 17)
 minimizeButton.ZIndex = 2
 minimizeButton.Parent = topbar
