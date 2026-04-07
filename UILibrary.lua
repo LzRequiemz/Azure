@@ -720,7 +720,7 @@ section.Size = UDim2.new(0, 162, 0, 27)
 section.Parent = Side
 
 local Closed = Instance.new("BoolValue", section)
-Closed.Value = true
+Closed.Value = false
 
 local sectionFrame = Instance.new("Frame")
 sectionFrame.Name = "SectionFrame"
@@ -796,16 +796,8 @@ sectionIcon.Size = UDim2.new(0, 13, 0, 13)
 sectionIcon.ZIndex = 1
 sectionIcon.Parent = section
 
-sectionButton.MouseButton1Click:Connect(function()
-    Closed.Value = not Closed.Value
-    --#d96163
-    
-    
-    TweenService:Create(section, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = Closed.Value and UDim2.new(0, 162, 0, SizeY + 4) or UDim2.new(0, 162, 0, 27)}):Play()
-    TweenService:Create(sectionFrame, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = Closed.Value and UDim2.new(0, 162, 0, SizeY) or UDim2.new(0, 162, 0, 23)}):Play()
-    TweenService:Create(sectionIcon, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = Closed.Value and Color3.fromRGB(217, 97, 99) or Color3.fromRGB(217, 217, 217)}):Play()
-    TweenService:Create(sectionIcon, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Rotation = Closed.Value and 45 or 0}):Play()
-end)
+TweenService:Create(section, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = UDim2.new(0, 162, 0, SizeY + 4)}):Play()
+TweenService:Create(sectionFrame, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = UDim2.new(0, 162, 0, SizeY)}):Play()
 
 function sectiontable:Label(Info)
 Info.Text = Info.Text or "Label"
@@ -1942,6 +1934,8 @@ tabTextButton.MouseButton1Click:Connect(function()
         if v ~= tabButton and v.Name == "TabButton" then
             TweenService:Create(v.TabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1}):Play()
             TweenService:Create(uIStroke, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Transparency = 1}):Play()
+            TweenService:Create(section, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = UDim2.new(0, 162, 0, SizeY + 4)}):Play()
+            TweenService:Create(sectionFrame, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = UDim2.new(0, 162, 0, SizeY)}):Play()
         end
     end
     TweenService:Create(tabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = .85}):Play()
@@ -1962,6 +1956,8 @@ function tab:Select()
         if v ~= tabButton and v.Name == "TabButton" then
             TweenService:Create(v.TabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1}):Play()
             TweenService:Create(uIStroke, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Transparency = 1}):Play()
+            TweenService:Create(section, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = UDim2.new(0, 162, 0, SizeY + 4)}):Play()
+            TweenService:Create(sectionFrame, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = UDim2.new(0, 162, 0, SizeY)}):Play()
         end
     end
     TweenService:Create(tabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = .85}):Play()
