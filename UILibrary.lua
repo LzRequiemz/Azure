@@ -1571,7 +1571,6 @@ radioButtonIcon.Position = UDim2.new(0, 155, 0, 7)
 radioButtonIcon.Size = UDim2.new(0, 13, 0, 13)
 radioButtonIcon.Parent = button
 
-
 local radioContainer = Instance.new("Frame")
 radioContainer.Name = "RadioContainer"
 radioContainer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
