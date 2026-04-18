@@ -428,23 +428,23 @@ tabFrame.Size = UDim2.new(0, 107, 0, 23)
 tabFrame.ZIndex = 2
 tabFrame.Parent = tabButton
 
-local uIStroke = Instance.new("UIStroke")
+--[[local uIStroke = Instance.new("UIStroke")
 uIStroke.Name = "UIStroke"
 uIStroke.Color = Color3.fromRGB(68, 68, 68) -- 183, 248, 219
 uIStroke.Transparency = 0.43
-uIStroke.Parent = tabFrame
+uIStroke.Parent = tabFrame]]
 
 tabFrame.MouseEnter:Connect(function()
     if TabSelected ~= tabFrame or TabSelected == nil then
         TweenService:Create(tabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = .93}):Play()
-        TweenService:Create(uIStroke, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Transparency = 0.43}):Play()
+        --TweenService:Create(uIStroke, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Transparency = 0.43}):Play()
     end
 end)
 
 tabFrame.MouseLeave:Connect(function()
     if TabSelected ~= tabFrame or TabSelected == nil then
         TweenService:Create(tabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1}):Play()
-        TweenService:Create(uIStroke, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Transparency = 1}):Play()
+        --TweenService:Create(uIStroke, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Transparency = 1}):Play()
     end
 end)
 
@@ -1737,11 +1737,11 @@ tabTextButton.MouseButton1Click:Connect(function()
     for _,v in pairs(scrollingContainer:GetChildren()) do
         if v ~= tabButton and v.Name == "TabButton" then
             TweenService:Create(v.TabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1}):Play()
-            TweenService:Create(uIStroke, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Transparency = 1}):Play()
+            --TweenService:Create(uIStroke, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Transparency = 1}):Play()
         end
     end
     TweenService:Create(tabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = .85}):Play()
-    TweenService:Create(uIStroke, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Transparency = 0.45}):Play()
+    --TweenService:Create(uIStroke, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Transparency = 0.45}):Play()
     leftContainer.Visible = true
     rightContainer.Visible = true
 end)
@@ -1758,11 +1758,11 @@ function tab:Select()
     for _,v in pairs(scrollingContainer:GetChildren()) do
         if v ~= tabButton and v.Name == "TabButton" then
             TweenService:Create(v.TabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1}):Play()
-            TweenService:Create(uIStroke, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Transparency = 1}):Play()
+            --TweenService:Create(uIStroke, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Transparency = 1}):Play()
         end
     end
     TweenService:Create(tabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = .85}):Play()
-    TweenService:Create(uIStroke, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Transparency = 0.45}):Play()
+    --TweenService:Create(uIStroke, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Transparency = 0.45}):Play()
     leftContainer.Visible = true
     rightContainer.Visible = true
 end
