@@ -408,7 +408,7 @@ scrollingContainer.Parent = tabContainer
 
 function window:Tab(Info)
 Info.Text = Info.Text or "Tab"
-Info.Visible = Info.Visible ~= false  -- Default to false if not set
+Info.Visible = Info.Visible == false  -- Default to false if not set
 
 local tab = {}
 
@@ -570,7 +570,7 @@ uICorner8.Parent = rightContainer
 function tab:Section(Info)
 Info.Text = Info.Text or "Section"
 Info.Side = Info.Side or "Left"
-Info.Visible = Info.Visible ~= false  -- Default to false if not set
+Info.Visible = Info.Visible == false  -- Default to false if not set
 
 local SizeY = 23
 
