@@ -569,7 +569,7 @@ uICorner8.Parent = rightContainer
 function tab:Section(Info)
 Info.Text = Info.Text or "Section"
 Info.Side = Info.Side or "Left"
-Info.Visible = Info.Visible == true
+Info.Visible = Info.Visible ~= false  -- Default to false if not set
 
 local SizeY = 23
 
