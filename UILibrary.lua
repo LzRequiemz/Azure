@@ -569,6 +569,7 @@ uICorner8.Parent = rightContainer
 function tab:Section(Info)
 Info.Text = Info.Text or "Section"
 Info.Side = Info.Side or "Left"
+Info.Visible = Info.Visible == true
 
 local SizeY = 23
 
@@ -588,6 +589,7 @@ section.BackgroundColor3 = Color3.fromRGB(42, 42, 42)
 section.BackgroundTransparency = 1
 section.Size = UDim2.new(0, 162, 0, 27)
 section.Parent = Side
+section.Visible = Info.Visible
 
 local sectionFrame = Instance.new("Frame")
 sectionFrame.Name = "SectionFrame"
