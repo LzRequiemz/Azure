@@ -408,6 +408,7 @@ scrollingContainer.Parent = tabContainer
 
 function window:Tab(Info)
 Info.Text = Info.Text or "Tab"
+Info.Visible = Info.Visible ~= false  -- Default to false if not set
 
 local tab = {}
 
@@ -524,7 +525,7 @@ leftContainer.Position = UDim2.new(0.253, 0, 0.0935, 0)
 leftContainer.Selectable = false
 leftContainer.Size = UDim2.new(0, 168, 0, 287)
 leftContainer.Parent = main
-leftContainer.Visible = false
+leftContainer.Visible = Info.Visible
 
 local uIListLayout2 = Instance.new("UIListLayout")
 uIListLayout2.Name = "UIListLayout"
@@ -548,7 +549,7 @@ rightContainer.Position = UDim2.new(0.627, 0, 0.0935, 0)
 rightContainer.Selectable = false
 rightContainer.Size = UDim2.new(0, 168, 0, 287)
 rightContainer.Parent = main
-rightContainer.Visible = false
+rightContainer.Visible = Info.Visible
 
 local uIListLayout3 = Instance.new("UIListLayout")
 uIListLayout3.Name = "UIListLayout"
