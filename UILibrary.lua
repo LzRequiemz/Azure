@@ -408,7 +408,6 @@ scrollingContainer.Parent = tabContainer
 
 function window:Tab(Info)
 Info.Text = Info.Text or "Tab"
-Info.Visible = Info.Visible == false  -- Default to false if not set
 
 local tab = {}
 
@@ -525,7 +524,7 @@ leftContainer.Position = UDim2.new(0.253, 0, 0.0935, 0)
 leftContainer.Selectable = false
 leftContainer.Size = UDim2.new(0, 168, 0, 287)
 leftContainer.Parent = main
-leftContainer.Visible = Info.Visible
+leftContainer.Visible = false
 
 local uIListLayout2 = Instance.new("UIListLayout")
 uIListLayout2.Name = "UIListLayout"
@@ -549,7 +548,7 @@ rightContainer.Position = UDim2.new(0.627, 0, 0.0935, 0)
 rightContainer.Selectable = false
 rightContainer.Size = UDim2.new(0, 168, 0, 287)
 rightContainer.Parent = main
-rightContainer.Visible = Info.Visible
+rightContainer.Visible = false
 
 local uIListLayout3 = Instance.new("UIListLayout")
 uIListLayout3.Name = "UIListLayout"
@@ -570,7 +569,6 @@ uICorner8.Parent = rightContainer
 function tab:Section(Info)
 Info.Text = Info.Text or "Section"
 Info.Side = Info.Side or "Left"
-Info.Visible = Info.Visible == false  -- Default to false if not set
 
 local SizeY = 23
 
@@ -590,7 +588,6 @@ section.BackgroundColor3 = Color3.fromRGB(42, 42, 42)
 section.BackgroundTransparency = 1
 section.Size = UDim2.new(0, 162, 0, 27)
 section.Parent = Side
-section.Visible = Info.Visible
 
 local sectionFrame = Instance.new("Frame")
 sectionFrame.Name = "SectionFrame"
