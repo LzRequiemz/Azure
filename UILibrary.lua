@@ -321,8 +321,10 @@ textLabel.ZIndex = 2
 textLabel.Parent = topbar
 
 local minimizeButton = Instance.new("ImageButton")
-minimizeButton.Name = "MinimizeButton"
-minimizeButton.Image = "rbxassetid://10664064072"
+minimizeButton.Name = "UIColorButton"
+minimizeButton.Image = "rbxassetid://3926305904"
+minimizeButton.ImageRectOffset = Vector2.new(284, 4)
+minimizeButton.ImageRectSize = Vector2.new(24, 24)
 minimizeButton.ImageColor3 = Color3.fromRGB(237, 237, 237)
 minimizeButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 minimizeButton.BackgroundTransparency = 1
@@ -331,37 +333,191 @@ minimizeButton.Size = UDim2.new(0, 17, 0, 17)
 minimizeButton.ZIndex = 2
 minimizeButton.Parent = topbar
 
+local colorPicker = Instance.new("Frame")
+colorPicker.Name = "UIColorPicker"
+colorPicker.AnchorPoint = Vector2.new(1, 0)
+colorPicker.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+colorPicker.BorderSizePixel = 0
+colorPicker.Position = UDim2.new(1, -6, 0, 34)
+colorPicker.Size = UDim2.new(0, 180, 0, 155)
+colorPicker.Visible = false
+colorPicker.ZIndex = 4
+colorPicker.Parent = topbar
+
+local pickerCorner = Instance.new("UICorner")
+pickerCorner.CornerRadius = UDim.new(0, 4)
+pickerCorner.Parent = colorPicker
+
+local pickerStroke = Instance.new("UIStroke")
+pickerStroke.Color = Color3.fromRGB(55, 55, 55)
+pickerStroke.Parent = colorPicker
+
+local wheel = Instance.new("ImageLabel")
+wheel.Name = "ColorWheel"
+wheel.BackgroundTransparency = 1
+wheel.Image = "rbxassetid://6020299385"
+wheel.Position = UDim2.new(0, 8, 0, 8)
+wheel.Size = UDim2.new(0, 120, 0, 120)
+wheel.ZIndex = 5
+wheel.Parent = colorPicker
+
+local wheelCursor = Instance.new("Frame")
+wheelCursor.Name = "WheelCursor"
+wheelCursor.AnchorPoint = Vector2.new(0.5, 0.5)
+wheelCursor.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+wheelCursor.BorderSizePixel = 0
+wheelCursor.Size = UDim2.new(0, 6, 0, 6)
+wheelCursor.Position = UDim2.new(0.5, 0, 0.5, 0)
+wheelCursor.ZIndex = 6
+wheelCursor.Parent = wheel
+
+local wheelCursorCorner = Instance.new("UICorner")
+wheelCursorCorner.CornerRadius = UDim.new(0, 100)
+wheelCursorCorner.Parent = wheelCursor
+
+local valueBar = Instance.new("Frame")
+valueBar.Name = "ValueBar"
+valueBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+valueBar.BorderSizePixel = 0
+valueBar.Position = UDim2.new(0, 137, 0, 8)
+valueBar.Size = UDim2.new(0, 12, 0, 120)
+valueBar.ZIndex = 5
+valueBar.Parent = colorPicker
+
+local valueCorner = Instance.new("UICorner")
+valueCorner.CornerRadius = UDim.new(0, 3)
+valueCorner.Parent = valueBar
+
+local valueGradient = Instance.new("UIGradient")
+valueGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0))
+})
+valueGradient.Rotation = 90
+valueGradient.Parent = valueBar
+
+local valueCursor = Instance.new("Frame")
+valueCursor.Name = "ValueCursor"
+valueCursor.AnchorPoint = Vector2.new(0.5, 0.5)
+valueCursor.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+valueCursor.BorderSizePixel = 0
+valueCursor.Position = UDim2.new(0.5, 0, 0, 0)
+valueCursor.Size = UDim2.new(0, 14, 0, 2)
+valueCursor.ZIndex = 6
+valueCursor.Parent = valueBar
+
+local preview = Instance.new("Frame")
+preview.Name = "Preview"
+preview.BackgroundColor3 = _G.UIColor
+preview.BorderSizePixel = 0
+preview.Position = UDim2.new(0, 8, 0, 134)
+preview.Size = UDim2.new(0, 141, 0, 13)
+preview.ZIndex = 5
+preview.Parent = colorPicker
+
+local previewCorner = Instance.new("UICorner")
+previewCorner.CornerRadius = UDim.new(0, 3)
+previewCorner.Parent = preview
+
+local function refreshUIColorElements()
+    for element, data in pairs(ColorElements) do
+        if element and element.Parent and data then
+            local shouldUseColor = data.Type == "Slider" or data.Type == "Accent" or (data.Type == "Toggle" and data.Enabled)
+            if shouldUseColor then
+                if element:IsA("Frame") then
+                    element.BackgroundColor3 = _G.UIColor
+                elseif element:IsA("ImageLabel") or element:IsA("ImageButton") then
+                    element.ImageColor3 = _G.UIColor
+                end
+            elseif data.Type == "Toggle" and element:IsA("Frame") then
+                element.BackgroundColor3 = Color3.fromRGB(68, 68, 68)
+            end
+        end
+    end
+    preview.BackgroundColor3 = _G.UIColor
+end
+
+local hue = 0
+local sat = 1
+local val = 1
+local pickingWheel = false
+local pickingValue = false
+
+local function updateFromPicker()
+    _G.UIColor = Color3.fromHSV(hue, sat, val)
+    valueGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromHSV(hue, sat, 1)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0))
+    })
+    refreshUIColorElements()
+end
+
+local function updateWheel()
+    local px = math.clamp(Mouse.X - wheel.AbsolutePosition.X, 0, wheel.AbsoluteSize.X)
+    local py = math.clamp(Mouse.Y - wheel.AbsolutePosition.Y, 0, wheel.AbsoluteSize.Y)
+    local center = Vector2.new(wheel.AbsoluteSize.X / 2, wheel.AbsoluteSize.Y / 2)
+    local pos = Vector2.new(px, py)
+    local offset = pos - center
+    local radius = wheel.AbsoluteSize.X / 2
+    local dist = math.min(offset.Magnitude, radius)
+    local dir = offset.Magnitude > 0 and offset.Unit or Vector2.new(1, 0)
+    local clamped = center + dir * dist
+    local angle = math.atan2(clamped.Y - center.Y, clamped.X - center.X)
+
+    hue = (angle / (2 * math.pi)) % 1
+    sat = math.clamp(dist / radius, 0, 1)
+    wheelCursor.Position = UDim2.new(0, clamped.X, 0, clamped.Y)
+    updateFromPicker()
+end
+
+local function updateValue()
+    local py = math.clamp(Mouse.Y - valueBar.AbsolutePosition.Y, 0, valueBar.AbsoluteSize.Y)
+    val = 1 - (py / valueBar.AbsoluteSize.Y)
+    valueCursor.Position = UDim2.new(0.5, 0, 0, py)
+    updateFromPicker()
+end
+
 minimizeButton.MouseEnter:Connect(function()
-    TweenService:Create(minimizeButton, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = Color3.fromRGB(194, 162, 76)}):Play()
+    TweenService:Create(minimizeButton, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = _G.UIColor}):Play()
 end)
 
 minimizeButton.MouseLeave:Connect(function()
     TweenService:Create(minimizeButton, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = Color3.fromRGB(217, 217, 217)}):Play()
 end)
 
-local Opened = true
-
 minimizeButton.MouseButton1Click:Connect(function()
-    Opened = not Opened
-    
-    topbar.Frame.Visible = Opened
-    task.spawn(function()
-    if Opened then
-        wait(.15)
+    colorPicker.Visible = not colorPicker.Visible
+end)
+
+wheel.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        pickingWheel = true
+        updateWheel()
     end
-    for _,v in pairs(main:GetChildren()) do
-        if v.Name == "TabContainer" then
-            v.Visible = Opened
+end)
+
+valueBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        pickingValue = true
+        updateValue()
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        if pickingWheel then
+            updateWheel()
+        elseif pickingValue then
+            updateValue()
         end
     end
-    for _,v in pairs(main:GetChildren()) do
-       if (v.Name == "LeftContainer" or v.Name == "RightContainer") and v.Visible then
-           v.Size = Opened and UDim2.new(0, 168,0, 287) or UDim2.new(0, 168,0, 0)
-       end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        pickingWheel = false
+        pickingValue = false
     end
-    end)
-    
-    TweenService:Create(main, TweenInfo.new(.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = Opened and UDim2.new(0, 450,0, 321) or UDim2.new(0, 450,0, 30)}):Play()
 end)
 
 local tabContainer = Instance.new("Frame")
@@ -484,6 +640,7 @@ lineFrame.BackgroundColor3 = _G.UIColor
 lineFrame.BorderSizePixel = 0
 lineFrame.Size = UDim2.new(0, 2, 0, 23)
 lineFrame.Parent = tabFrame
+ColorElements[lineFrame] = {Type = "Accent", Enabled = true}
 
 local selected = Instance.new("Frame")
 selected.Name = "Selected"
