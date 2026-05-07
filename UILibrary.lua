@@ -449,8 +449,8 @@ local function updateWheel()
     local dir = offset.Magnitude > 0 and offset.Unit or Vector2.new(1, 0)
     local clamped = center + dir * dist
     local angle = math.atan2(clamped.Y - center.Y, clamped.X - center.X)
-
-    hue = ((angle / (2 * math.pi)) + 0.5) % 1
+    
+    hue = ((-angle / (2 * math.pi)) + 0.5) % 1
     sat = math.clamp(dist / radius, 0, 1)
     wheelCursor.Position = UDim2.new(0, clamped.X, 0, clamped.Y)
     updateFromPicker()
