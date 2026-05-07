@@ -448,7 +448,7 @@ local function updateWheel()
     local dist = math.min(offset.Magnitude, radius)
     local dir = offset.Magnitude > 0 and offset.Unit or Vector2.new(1, 0)
     local clamped = center + dir * dist
-    local angle = math.atan2(center.Y - clamped.Y, clamped.X - center.X)
+    local angle = math.atan2(clamped.Y - center.Y, clamped.X - center.X)
 
     hue = ((angle / (2 * math.pi)) + 0.8) % 1
     sat = math.clamp(dist / radius, 0, 1)
