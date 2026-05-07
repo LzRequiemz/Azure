@@ -339,7 +339,7 @@ colorPicker.AnchorPoint = Vector2.new(1, 0)
 colorPicker.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 colorPicker.BorderSizePixel = 0
 colorPicker.Position = UDim2.new(1, -6, 0, 34)
-colorPicker.Size = UDim2.new(0, 160, 0, 140)
+colorPicker.Size = UDim2.new(0, 180, 0, 155)
 colorPicker.Visible = false
 colorPicker.ZIndex = 4
 colorPicker.Parent = topbar
@@ -406,6 +406,19 @@ valueCursor.Size = UDim2.new(0, 14, 0, 2)
 valueCursor.ZIndex = 6
 valueCursor.Parent = valueBar
 
+local preview = Instance.new("Frame")
+preview.Name = "Preview"
+preview.BackgroundColor3 = _G.UIColor
+preview.BorderSizePixel = 0
+preview.Position = UDim2.new(0, 8, 0, 134)
+preview.Size = UDim2.new(0, 141, 0, 13)
+preview.ZIndex = 5
+preview.Parent = colorPicker
+
+local previewCorner = Instance.new("UICorner")
+previewCorner.CornerRadius = UDim.new(0, 3)
+previewCorner.Parent = preview
+
 local function refreshUIColorElements()
     for element, data in pairs(ColorElements) do
         if element and element.Parent and data then
@@ -421,6 +434,7 @@ local function refreshUIColorElements()
             end
         end
     end
+    preview.BackgroundColor3 = _G.UIColor
 end
 
 local hue = 0
@@ -448,12 +462,9 @@ local function updateWheel()
     local dist = math.min(offset.Magnitude, radius)
     local dir = offset.Magnitude > 0 and offset.Unit or Vector2.new(1, 0)
     local clamped = center + dir * dist
-    local angle = math.atan2(
-        center.Y - clamped.Y,
-        clamped.X - center.X
-    )
-    
-    hue = ((angle / (2 * math.pi)) + 0.5) % 1
+    local angle = math.atan2(center.Y - clamped.Y, clamped.X - center.X)
+
+    hue = (angle / (2 * math.pi)) % 1
     sat = math.clamp(dist / radius, 0, 1)
     wheelCursor.Position = UDim2.new(0, clamped.X, 0, clamped.Y)
     updateFromPicker()
