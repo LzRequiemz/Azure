@@ -339,7 +339,7 @@ colorPicker.AnchorPoint = Vector2.new(1, 0)
 colorPicker.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 colorPicker.BorderSizePixel = 0
 colorPicker.Position = UDim2.new(1, -6, 0, 34)
-colorPicker.Size = UDim2.new(0, 180, 0, 155)
+colorPicker.Size = UDim2.new(0, 160, 0, 140)
 colorPicker.Visible = false
 colorPicker.ZIndex = 4
 colorPicker.Parent = topbar
@@ -406,18 +406,6 @@ valueCursor.Size = UDim2.new(0, 14, 0, 2)
 valueCursor.ZIndex = 6
 valueCursor.Parent = valueBar
 
-local preview = Instance.new("Frame")
-preview.Name = "Preview"
-preview.BackgroundColor3 = _G.UIColor
-preview.BorderSizePixel = 0
-preview.Position = UDim2.new(0, 8, 0, 134)
-preview.Size = UDim2.new(0, 141, 0, 13)
-preview.ZIndex = 5
-preview.Parent = colorPicker
-
-local previewCorner = Instance.new("UICorner")
-previewCorner.CornerRadius = UDim.new(0, 3)
-previewCorner.Parent = preview
 
 local function refreshUIColorElements()
     for element, data in pairs(ColorElements) do
@@ -434,7 +422,6 @@ local function refreshUIColorElements()
             end
         end
     end
-    preview.BackgroundColor3 = _G.UIColor
 end
 
 local hue = 0
