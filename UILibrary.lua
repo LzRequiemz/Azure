@@ -219,7 +219,7 @@ end
 
 local main = Instance.new("Frame")
 main.Name = "Main"
-main.BackgroundColor3 = Color3.fromRGB(27, 27, 27)
+main.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 main.BorderSizePixel = 0
 main.ClipsDescendants = true
 main.Position = UDim2.new(0.361, 0, 0.308, 0)
@@ -366,7 +366,7 @@ end)
 
 local tabContainer = Instance.new("Frame")
 tabContainer.Name = "TabContainer"
-tabContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+tabContainer.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 tabContainer.Position = UDim2.new(0, 0, 0.0935, 0)
 tabContainer.Size = UDim2.new(0, 114, 0, 291)
 tabContainer.Parent = main
@@ -378,7 +378,7 @@ uICorner2.Parent = tabContainer
 
 local fix = Instance.new("Frame")
 fix.Name = "Fix"
-fix.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+fix.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 fix.BorderSizePixel = 0
 fix.Position = UDim2.new(0.895, 0, 0, 0)
 fix.Size = UDim2.new(0, 11, 0, 285)
@@ -386,7 +386,7 @@ fix.Parent = tabContainer
 
 local fix1 = Instance.new("Frame")
 fix1.Name = "Fix"
-fix1.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+fix1.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 fix1.BorderSizePixel = 0
 fix1.Position = UDim2.new(0, 0, -0.00351, 0)
 fix1.Size = UDim2.new(0, 11, 0, 79)
