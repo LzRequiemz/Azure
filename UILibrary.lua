@@ -355,7 +355,7 @@ pickerStroke.Parent = colorPicker
 local wheel = Instance.new("ImageLabel")
 wheel.Name = "ColorWheel"
 wheel.BackgroundTransparency = 1
-wheel.Image = "rbxassetid://7393858625"
+wheel.Image = "rbxassetid://6020299385"
 wheel.Position = UDim2.new(0, 8, 0, 8)
 wheel.Size = UDim2.new(0, 120, 0, 120)
 wheel.ZIndex = 5
@@ -450,7 +450,7 @@ local function updateWheel()
     local clamped = center + dir * dist
     local angle = math.atan2(center.Y - clamped.Y, clamped.X - center.X)
 
-    hue = (angle / (2 * math.pi)) % 1
+    hue = ((angle / (2 * math.pi)) + 0.8) % 1
     sat = math.clamp(dist / radius, 0, 1)
     wheelCursor.Position = UDim2.new(0, clamped.X, 0, clamped.Y)
     updateFromPicker()
