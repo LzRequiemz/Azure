@@ -322,7 +322,7 @@ textLabel.Parent = topbar
 
 local minimizeButton = Instance.new("ImageButton")
 minimizeButton.Name = "UIColorButton"
-minimizeButton.Image = "rbxassetid://3926305904"
+minimizeButton.Image = "rbxassetid://14008802626"
 minimizeButton.ImageRectOffset = Vector2.new(284, 4)
 minimizeButton.ImageRectSize = Vector2.new(24, 24)
 minimizeButton.ImageColor3 = Color3.fromRGB(237, 237, 237)
