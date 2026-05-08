@@ -109,6 +109,10 @@ local Circle = request({Url = "https://raw.githubusercontent.com/Rain-Design/Ico
 writefile("Shaman/Circle.png", Circle.Body)
 dText.Text = "Downloaded: Circle.png"
 
+local ColorDropper = request({Url = "https://raw.githubusercontent.com/Rain-Design/Icons/main/ColorDropper.png", Method = "GET"})
+writefile("Shaman/ColorDropper.png", ColorDropper.Body)
+dText.Text = "Downloaded: ColorDropper.png"
+
 local CollapseArrow = request({Url = "https://raw.githubusercontent.com/Rain-Design/Icons/main/CollapseArrow.png", Method = "GET"})
 writefile("Shaman/CollapseArrow.png", CollapseArrow.Body)
 dText.Text = "Downloaded: CollapseArrow.png"
@@ -361,7 +365,7 @@ window.TitleLabel = titleLabel
 
 local minimizeButton = Instance.new("ImageButton")
 minimizeButton.Name = "UIColorButton"
-minimizeButton.Image = "rbxassetid://126632637795074"
+minimizeButton.Image = getcustomasset("Shaman/ColorDropper.png")
 minimizeButton.ImageRectOffset = Vector2.new(284, 4)
 minimizeButton.ImageRectSize = Vector2.new(24, 24)
 minimizeButton.ImageColor3 = _G.UIColor
