@@ -310,6 +310,7 @@ local textLabel = Instance.new("TextLabel")
 textLabel.Name = "TextLabel"
 textLabel.Font = Enum.Font.GothamBold
 textLabel.Text = Info.Text
+textLabel.RichText = true
 textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 textLabel.TextSize = 12
 textLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -322,7 +323,7 @@ textLabel.Parent = topbar
 
 local minimizeButton = Instance.new("ImageButton")
 minimizeButton.Name = "UIColorButton"
-minimizeButton.Image = "rbxassetid://129261498595427"
+minimizeButton.Image = "rbxassetid://3926305904"
 minimizeButton.ImageRectOffset = Vector2.new(284, 4)
 minimizeButton.ImageRectSize = Vector2.new(24, 24)
 minimizeButton.ImageColor3 = Color3.fromRGB(237, 237, 237)
@@ -355,7 +356,7 @@ pickerStroke.Parent = colorPicker
 local wheel = Instance.new("ImageLabel")
 wheel.Name = "ColorWheel"
 wheel.BackgroundTransparency = 1
-wheel.Image = "rbxassetid://78013985921887"
+wheel.Image = "rbxassetid://6020299385"
 wheel.Position = UDim2.new(0, 8, 0, 8)
 wheel.Size = UDim2.new(0, 120, 0, 120)
 wheel.ZIndex = 5
@@ -406,7 +407,6 @@ valueCursor.Size = UDim2.new(0, 14, 0, 2)
 valueCursor.ZIndex = 6
 valueCursor.Parent = valueBar
 
-
 local function refreshUIColorElements()
     for element, data in pairs(ColorElements) do
         if element and element.Parent and data then
@@ -449,9 +449,12 @@ local function updateWheel()
     local dist = math.min(offset.Magnitude, radius)
     local dir = offset.Magnitude > 0 and offset.Unit or Vector2.new(1, 0)
     local clamped = center + dir * dist
-    local angle = math.atan2(center.Y - clamped.Y, clamped.X - center.X)
-
-    hue = (angle / (2 * math.pi)) % 1
+    local angle = math.atan2(
+        center.Y - clamped.Y,
+        clamped.X - center.X
+    )
+    
+    hue = ((angle / (2 * math.pi)) + 0.5) % 1
     sat = math.clamp(dist / radius, 0, 1)
     wheelCursor.Position = UDim2.new(0, clamped.X, 0, clamped.Y)
     updateFromPicker()
