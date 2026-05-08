@@ -361,11 +361,11 @@ window.TitleLabel = titleLabel
 
 local minimizeButton = Instance.new("ImageButton")
 minimizeButton.Name = "UIColorButton"
-minimizeButton.Image = "rbxassetid://2901323214"
+minimizeButton.Image = "rbxassetid://126632637795074"
 minimizeButton.ImageRectOffset = Vector2.new(284, 4)
 minimizeButton.ImageRectSize = Vector2.new(24, 24)
 minimizeButton.ImageColor3 = _G.UIColor
-minimizeButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+minimizeButton.BackgroundColor3 = _G.UIColor
 minimizeButton.BackgroundTransparency = 1
 minimizeButton.Position = UDim2.new(0.947, 0, 0.194, 0)
 minimizeButton.Size = UDim2.new(0, 17, 0, 17)
