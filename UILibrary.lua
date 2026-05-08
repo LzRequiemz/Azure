@@ -495,6 +495,7 @@ local function updateWheel()
     hue = ((angle / (2 * math.pi)) + 0.5) % 1
     sat = math.clamp(dist / radius, 0, 1)
     wheelCursor.Position = UDim2.new(0, clamped.X, 0, clamped.Y)
+    scriptNameLabel.TextColor3 = _G.UIColor
     updateFromPicker()
 end
 
