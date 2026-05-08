@@ -372,7 +372,7 @@ minimizeButton.ImageColor3 = _G.UIColor
 minimizeButton.BackgroundColor3 = _G.UIColor
 minimizeButton.BackgroundTransparency = 1
 minimizeButton.Position = UDim2.new(0.947, 0, 0.194, 0)
-minimizeButton.Size = UDim2.new(0, 17, 0, 17)
+minimizeButton.Size = UDim2.new(0, 15, 0, 15)
 minimizeButton.ZIndex = 2
 minimizeButton.Parent = topbar
 
@@ -384,7 +384,7 @@ colorPicker.BorderSizePixel = 0
 colorPicker.Position = UDim2.new(1, -6, 0, 34)
 colorPicker.Size = UDim2.new(0, 160, 0, 140)
 colorPicker.Visible = false
-colorPicker.ZIndex = 4
+colorPicker.ZIndex = 10
 colorPicker.Parent = topbar
 
 local pickerCorner = Instance.new("UICorner")
@@ -401,7 +401,7 @@ wheel.BackgroundTransparency = 1
 wheel.Image = "rbxassetid://6020299385"
 wheel.Position = UDim2.new(0, 8, 0, 8)
 wheel.Size = UDim2.new(0, 120, 0, 120)
-wheel.ZIndex = 5
+wheel.ZIndex = 15
 wheel.Parent = colorPicker
 
 local wheelCursor = Instance.new("Frame")
@@ -411,7 +411,7 @@ wheelCursor.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 wheelCursor.BorderSizePixel = 0
 wheelCursor.Size = UDim2.new(0, 6, 0, 6)
 wheelCursor.Position = UDim2.new(0.5, 0, 0.5, 0)
-wheelCursor.ZIndex = 6
+wheelCursor.ZIndex = 16
 wheelCursor.Parent = wheel
 
 local wheelCursorCorner = Instance.new("UICorner")
@@ -424,7 +424,7 @@ valueBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 valueBar.BorderSizePixel = 0
 valueBar.Position = UDim2.new(0, 137, 0, 8)
 valueBar.Size = UDim2.new(0, 12, 0, 120)
-valueBar.ZIndex = 5
+valueBar.ZIndex = 15
 valueBar.Parent = colorPicker
 
 local valueCorner = Instance.new("UICorner")
@@ -446,7 +446,7 @@ valueCursor.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 valueCursor.BorderSizePixel = 0
 valueCursor.Position = UDim2.new(0.5, 0, 0, 0)
 valueCursor.Size = UDim2.new(0, 14, 0, 2)
-valueCursor.ZIndex = 6
+valueCursor.ZIndex = 16
 valueCursor.Parent = valueBar
 
 local function refreshUIColorElements()
