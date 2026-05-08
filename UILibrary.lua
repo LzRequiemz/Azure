@@ -137,7 +137,7 @@ end
 function library:Window(Info)
 Info.ScriptName = Info.ScriptName or "Shaman"
 Info.Text = Info.Text or "Shaman"
-Info.LabelColor = Info.LabelColor or Color3.fromRGB(255, 255, 255)
+Info.LabelColor = Info.LabelColor or Color3.fromRGB(225, 0, 0)
 
 local window = {}
 
@@ -503,6 +503,7 @@ local function updateValue()
     local py = math.clamp(Mouse.Y - valueBar.AbsolutePosition.Y, 0, valueBar.AbsoluteSize.Y)
     val = 1 - (py / valueBar.AbsoluteSize.Y)
     valueCursor.Position = UDim2.new(0.5, 0, 0, py)
+    scriptNameLabel.TextColor3 = Info.LabelColor
     updateFromPicker()
 end
 
