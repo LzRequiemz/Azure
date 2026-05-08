@@ -135,7 +135,9 @@ function library:GetXY(GuiObject)
 end
 
 function library:Window(Info)
+Info.ScriptName = Info.ScriptName or "Shaman"
 Info.Text = Info.Text or "Shaman"
+Info.LabelColor = Info.LabelColor or Color3.fromRGB(255, 255, 255)
 
 local window = {}
 
@@ -306,20 +308,57 @@ uIGradient.Color = ColorSequence.new({
 uIGradient.Enabled = false
 uIGradient.Parent = frame1
 
-local textLabel = Instance.new("TextLabel")
-textLabel.Name = "TextLabel"
-textLabel.Font = Enum.Font.GothamBold
-textLabel.Text = Info.Text
-textLabel.RichText = true
-textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-textLabel.TextSize = 12
-textLabel.TextXAlignment = Enum.TextXAlignment.Left
-textLabel.BackgroundColor3 = Color3.fromRGB(237, 237, 237)
-textLabel.BackgroundTransparency = 1
-textLabel.Position = UDim2.new(0.015, 0, 0, 0)
-textLabel.Size = UDim2.new(0, 51, 0, 30)
-textLabel.ZIndex = 2
-textLabel.Parent = topbar
+local titleLevel = Instance.new("Frame")
+titleLevel.Name = "TitleLevel"
+titleLevel.BackgroundTransparency = 1
+titleLevel.ClipsDescendants = true
+titleLevel.Position = UDim2.new(0.015, 0, 0, 0)
+titleLevel.Size = UDim2.new(0.87, -8, 0, 30)
+titleLevel.ZIndex = 2
+titleLevel.Parent = topbar
+
+local titleListLayout = Instance.new("UIListLayout")
+titleListLayout.Name = "UIListLayout"
+titleListLayout.FillDirection = Enum.FillDirection.Horizontal
+titleListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+titleListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+titleListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+titleListLayout.Padding = UDim.new(0, 6)
+titleListLayout.Parent = titleLevel
+
+local scriptNameLabel = Instance.new("TextLabel")
+scriptNameLabel.Name = "ScriptNameLabel"
+scriptNameLabel.LayoutOrder = 1
+scriptNameLabel.Font = Enum.Font.GothamBold
+scriptNameLabel.Text = Info.ScriptName
+scriptNameLabel.RichText = true
+scriptNameLabel.TextColor3 = Info.LabelColor
+scriptNameLabel.TextSize = 12
+scriptNameLabel.TextXAlignment = Enum.TextXAlignment.Left
+scriptNameLabel.BackgroundTransparency = 1
+scriptNameLabel.AutomaticSize = Enum.AutomaticSize.X
+scriptNameLabel.Size = UDim2.fromOffset(0, 30)
+scriptNameLabel.ZIndex = 2
+scriptNameLabel.Parent = titleLevel
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Name = "TitleLabel"
+titleLabel.LayoutOrder = 2
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.Text = Info.Text
+titleLabel.RichText = true
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextSize = 12
+titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+titleLabel.BackgroundTransparency = 1
+titleLabel.AutomaticSize = Enum.AutomaticSize.X
+titleLabel.Size = UDim2.fromOffset(0, 30)
+titleLabel.ZIndex = 2
+titleLabel.Parent = titleLevel
+
+window.TitleLevel = titleLevel
+window.ScriptNameLabel = scriptNameLabel
+window.TitleLabel = titleLabel
 
 local minimizeButton = Instance.new("ImageButton")
 minimizeButton.Name = "UIColorButton"
