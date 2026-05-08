@@ -503,7 +503,7 @@ local function updateValue()
     local py = math.clamp(Mouse.Y - valueBar.AbsolutePosition.Y, 0, valueBar.AbsoluteSize.Y)
     val = 1 - (py / valueBar.AbsoluteSize.Y)
     valueCursor.Position = UDim2.new(0.5, 0, 0, py)
-    scriptNameLabel.TextColor3 = Info.LabelColor
+    scriptNameLabel.TextColor3 = _G.UIColor
     updateFromPicker()
 end
 
