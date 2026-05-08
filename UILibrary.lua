@@ -454,6 +454,12 @@ local function refreshUIColorElements()
                     element.BackgroundColor3 = _G.UIColor
                 elseif element:IsA("ImageLabel") or element:IsA("ImageButton") then
                     element.ImageColor3 = _G.UIColor
+
+                elseif element:IsA("TextLabel")
+                    or element:IsA("TextButton")
+                    or element:IsA("TextBox") then
+
+                    element.TextColor3 = _G.UIColor
                 end
             elseif data.Type == "Toggle" and element:IsA("Frame") then
                 element.BackgroundColor3 = Color3.fromRGB(68, 68, 68)
@@ -670,6 +676,7 @@ lineFrame.BorderSizePixel = 0
 lineFrame.Size = UDim2.new(0, 2, 0, 23)
 lineFrame.Parent = tabFrame
 ColorElements[lineFrame] = {Type = "Accent", Enabled = true}
+ColorElements[scriptNameLabel] = {Type = "Accent", Enabled = true}
 
 local selected = Instance.new("Frame")
 selected.Name = "Selected"
