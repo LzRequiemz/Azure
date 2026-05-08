@@ -475,6 +475,7 @@ local function updateFromPicker()
         ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0))
     })
     refreshUIColorElements()
+    scriptNameLabel.TextColor3 = _G.UIColor
 end
 
 local function updateWheel()
@@ -495,7 +496,6 @@ local function updateWheel()
     hue = ((angle / (2 * math.pi)) + 0.5) % 1
     sat = math.clamp(dist / radius, 0, 1)
     wheelCursor.Position = UDim2.new(0, clamped.X, 0, clamped.Y)
-    scriptNameLabel.TextColor3 = _G.UIColor
     updateFromPicker()
 end
 
@@ -503,7 +503,6 @@ local function updateValue()
     local py = math.clamp(Mouse.Y - valueBar.AbsolutePosition.Y, 0, valueBar.AbsoluteSize.Y)
     val = 1 - (py / valueBar.AbsoluteSize.Y)
     valueCursor.Position = UDim2.new(0.5, 0, 0, py)
-    scriptNameLabel.TextColor3 = _G.UIColor
     updateFromPicker()
 end
 
