@@ -137,7 +137,6 @@ end
 function library:Window(Info)
 Info.ScriptName = Info.ScriptName or "Shaman"
 Info.Text = Info.Text or "Shaman"
-Info.LabelColor = Info.LabelColor or Color3.fromRGB(225, 0, 0)
 
 local window = {}
 
@@ -332,7 +331,7 @@ scriptNameLabel.LayoutOrder = 1
 scriptNameLabel.Font = Enum.Font.GothamBold
 scriptNameLabel.Text = Info.ScriptName
 scriptNameLabel.RichText = true
-scriptNameLabel.TextColor3 = Info.LabelColor
+scriptNameLabel.TextColor3 = _G.UIColor
 scriptNameLabel.TextSize = 12
 scriptNameLabel.TextXAlignment = Enum.TextXAlignment.Left
 scriptNameLabel.BackgroundTransparency = 1
