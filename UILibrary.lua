@@ -153,36 +153,26 @@ local tooltipScreenGui = Instance.new("ScreenGui")
 tooltipScreenGui.Name = "Tooltips"
 tooltipScreenGui.Parent = CoreGui
 
-local prevNotifs = CoreGui:FindFirstChild("ShamanNotifications")
-if prevNotifs then
-	prevNotifs:Destroy()
-end
-
-local notificationScreenGui = Instance.new("ScreenGui")
-notificationScreenGui.Name = "ShamanNotifications"
-notificationScreenGui.ResetOnSpawn = false
-notificationScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-notificationScreenGui.DisplayOrder = 100
-notificationScreenGui.Parent = CoreGui
-
+local slideGui = Instance.new("ScreenGui")
 local slideFrame = Instance.new("Frame")
+local uil = Instance.new('UIListLayout')
+
+slideGui.Parent = CoreGui
+slideGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+slideFrame.Parent = slideGui
 slideFrame.Name = "SlideFrame"
 slideFrame.BackgroundTransparency = 1
 slideFrame.BackgroundColor3 = Color3.fromRGB(255,255,255)
 slideFrame.BorderSizePixel = 0
 slideFrame.ClipsDescendants = false
-slideFrame.AnchorPoint = Vector2.new(0, 1)
-slideFrame.Position = UDim2.new(0, 16, 1, -16)
-slideFrame.Size = UDim2.new(0, 560, 0.5, -32)
-slideFrame.Parent = notificationScreenGui
+slideFrame.Size = UDim2.new(.5,0,.5,0)
+slideFrame.Position = UDim2.new(-0.0001,0,-0.14,0)
+slideFrame.ClipsDescendants = true
 
-local uil = Instance.new("UIListLayout")
 uil.Parent = slideFrame
-uil.FillDirection = Enum.FillDirection.Vertical
-uil.HorizontalAlignment = Enum.HorizontalAlignment.Left
-uil.VerticalAlignment = Enum.VerticalAlignment.Bottom
-uil.Padding = UDim.new(0, 10)
-uil.SortOrder = Enum.SortOrder.LayoutOrder
+uil.VerticalAlignment = "Bottom"
+uil.Padding = UDim.new(0,10)
 
 local function Tooltip(text)
 local tooltip = Instance.new("Frame")
@@ -255,35 +245,17 @@ local function AddTooltip(element, text)
 end
 
 
-local notifyLayoutSeed = 0
-
--- Supports win.Notify("msg"), win:Notify("msg"), win.Notify({ Text = "msg" }), win:Notify({ Text = "msg" })
-local function Notify(a, b)
-    local payload = b ~= nil and b or a
-    local text
-    if typeof(payload) == "table" then
-        text = tostring(payload.Text or payload.Message or "")
-    elseif typeof(payload) == "string" then
-        text = payload
-    else
-        text = tostring(payload or "")
-    end
-
-    local tb = TextService:GetTextSize(
+local function Notify(text)
+    local textSize = TextService:GetTextSize(
         text,
         15,
         Enum.Font.Code,
-        Vector2.new(520, math.huge)
+        Vector2.new(math.huge, 20)
     )
-    local w = math.clamp(tb.X + 20, 40, 540)
-    local h = math.max(22, tb.Y + 8)
 
     local notifText = Instance.new("TextLabel")
-    notifText.Name = "Notification"
 
-    notifyLayoutSeed -= 1
-    notifText.LayoutOrder = notifyLayoutSeed
-
+    -- TextLabel setup
     local uiCorner = Instance.new("UICorner")
     uiCorner.Name = "UICorner"
     uiCorner.CornerRadius = UDim.new(0, 3)
@@ -299,14 +271,12 @@ local function Notify(a, b)
     notifText.BackgroundTransparency = 0
     notifText.BorderSizePixel = 0
     notifText.Position = UDim2.new(0, 0, 0, 0)
-    notifText.AutomaticSize = Enum.AutomaticSize.None
-    notifText.Size = UDim2.new(0, w, 0, h)
+    notifText.Size = UDim2.new(0, textSize.X + 10, 0, 20)
     notifText.Font = Enum.Font.Code
     notifText.Text = "  " .. text
     notifText.TextColor3 = Color3.fromRGB(255, 255, 255)
     notifText.TextSize = 15
     notifText.TextXAlignment = Enum.TextXAlignment.Left
-    notifText.TextYAlignment = Enum.TextYAlignment.Center
     notifText.TextWrapped = true
     notifText.TextTransparency = 0
     notifText.TextStrokeTransparency = 0
@@ -318,18 +288,19 @@ local function Notify(a, b)
 
         local info = TweenInfo.new(1)
 
-        TweenService:Create(uiStroke, info, { Transparency = 1 }):Play()
-        TweenService:Create(
+        local tweenText = TweenService:Create(
             notifText,
             info,
-            { TextTransparency = 1, BackgroundTransparency = 1, TextStrokeTransparency = 1 }
-        ):Play()
+            { TextTransparency = 1, BackgroundTransparency = 1 }
+        )
 
-        task.delay(1.05, function()
-            if notifText.Parent then
-                notifText:Destroy()
-            end
-        end)
+
+        tweenText:Play()
+
+        tweenText.Completed:Wait()
+        task.wait(0.2)
+
+        notifText:Destroy()
     end)
 end
 
@@ -2102,8 +2073,6 @@ local uIStroke2 = Instance.new("UIStroke")
 uIStroke2.Name = "UIStroke"
 uIStroke2.Color = Color3.fromRGB(61, 61, 61)
 uIStroke2.Parent = main
-
-window.Notify = Notify
 
 return window
 end
