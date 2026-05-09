@@ -170,65 +170,6 @@ uil.Parent = slideFrame
 uil.VerticalAlignment = "Bottom"
 uil.Padding = UDim.new(0,10)
 
-local function Notify(text)
-    local textSize = TextService:GetTextSize(
-        text,
-        15,
-        Enum.Font.Code,
-        Vector2.new(math.huge, 20)
-    )
-
-    local notifText = Instance.new("TextLabel")
-
-    -- TextLabel setup
-    local uiCorner = Instance.new("UICorner")
-    uiCorner.Name = "UICorner"
-    uiCorner.CornerRadius = UDim.new(0, 3)
-    uiCorner.Parent = notifText
-
-    local uiStroke = Instance.new("UIStroke")
-    uiStroke.Name = "UIStroke"
-    uiStroke.Color = Color3.fromRGB(98, 98, 98)
-    uiStroke.Parent = notifText
-
-    notifText.Parent = slideFrame
-    notifText.BackgroundColor3 = Color3.fromRGB(13, 13, 13)
-    notifText.BackgroundTransparency = 0
-    notifText.BorderSizePixel = 0
-    notifText.Position = UDim2.new(0, 0, 0, 0)
-    notifText.Size = UDim2.new(0, textSize.X + 10, 0, 20)
-    notifText.Font = Enum.Font.Code
-    notifText.Text = "  " .. text
-    notifText.TextColor3 = Color3.fromRGB(255, 255, 255)
-    notifText.TextSize = 15
-    notifText.TextXAlignment = Enum.TextXAlignment.Left
-    notifText.TextWrapped = true
-    notifText.TextTransparency = 0
-    notifText.TextStrokeTransparency = 0
-    notifText.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-    notifText.ZIndex = 2
-
-    task.spawn(function()
-        task.wait(2)
-
-        local info = TweenInfo.new(1)
-
-        local tweenText = TweenService:Create(
-            notifText,
-            info,
-            { TextTransparency = 1, BackgroundTransparency = 1 }
-        )
-
-
-        tweenText:Play()
-
-        tweenText.Completed:Wait()
-        task.wait(0.2)
-
-        notifText:Destroy()
-    end)
-end
-
 local function Tooltip(text)
 local tooltip = Instance.new("Frame")
 tooltip.Name = "Tooltip"
@@ -298,6 +239,67 @@ local function AddTooltip(element, text)
         Update()
     end)
 end
+
+
+local function Notify(text)
+    local textSize = TextService:GetTextSize(
+        text,
+        15,
+        Enum.Font.Code,
+        Vector2.new(math.huge, 20)
+    )
+
+    local notifText = Instance.new("TextLabel")
+
+    -- TextLabel setup
+    local uiCorner = Instance.new("UICorner")
+    uiCorner.Name = "UICorner"
+    uiCorner.CornerRadius = UDim.new(0, 3)
+    uiCorner.Parent = notifText
+
+    local uiStroke = Instance.new("UIStroke")
+    uiStroke.Name = "UIStroke"
+    uiStroke.Color = Color3.fromRGB(98, 98, 98)
+    uiStroke.Parent = notifText
+
+    notifText.Parent = slideFrame
+    notifText.BackgroundColor3 = Color3.fromRGB(13, 13, 13)
+    notifText.BackgroundTransparency = 0
+    notifText.BorderSizePixel = 0
+    notifText.Position = UDim2.new(0, 0, 0, 0)
+    notifText.Size = UDim2.new(0, textSize.X + 10, 0, 20)
+    notifText.Font = Enum.Font.Code
+    notifText.Text = "  " .. text
+    notifText.TextColor3 = Color3.fromRGB(255, 255, 255)
+    notifText.TextSize = 15
+    notifText.TextXAlignment = Enum.TextXAlignment.Left
+    notifText.TextWrapped = true
+    notifText.TextTransparency = 0
+    notifText.TextStrokeTransparency = 0
+    notifText.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    notifText.ZIndex = 2
+
+    task.spawn(function()
+        task.wait(2)
+
+        local info = TweenInfo.new(1)
+
+        local tweenText = TweenService:Create(
+            notifText,
+            info,
+            { TextTransparency = 1, BackgroundTransparency = 1 }
+        )
+
+
+        tweenText:Play()
+
+        tweenText.Completed:Wait()
+        task.wait(0.2)
+
+        notifText:Destroy()
+    end)
+end
+
 
 local main = Instance.new("Frame")
 main.Name = "Main"
