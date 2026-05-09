@@ -185,7 +185,7 @@ function Notify(text)
     notifText.BackgroundTransparency = 0
     notifText.BorderSizePixel = 0
     notifText.Position = UDim2.new(0, 0, 0, 0)
-    notifText.Size = UDim2.new(0, textSize.X + 10, 0, 20)
+    notifText.Size = UDim2.new(0, textSize.X + 15, 0, 40)
     notifText.Font = Enum.Font.Code
     notifText.Text = " " .. text .. " "
     notifText.TextColor3 = Color3.fromRGB(255, 255, 255)
