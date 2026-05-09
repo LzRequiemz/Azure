@@ -1,4 +1,5 @@
 local CoreGui = game:GetService("CoreGui")
+local TextService = game:GetService("TextService")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
@@ -161,6 +162,12 @@ uil.VerticalAlignment = "Bottom"
 uil.Padding = UDim.new(0,10)
 
 function Notify(text)
+    local textSize = TextService:GetTextSize(
+        text,
+        15,
+        Enum.Font.Code,
+        Vector2.new(math.huge, 20)
+    )
     local notifText = Instance.new("TextLabel")
 
     local uiCorner = Instance.new("UICorner")
@@ -178,7 +185,7 @@ function Notify(text)
     notifText.BackgroundTransparency = 0
     notifText.BorderSizePixel = 0
     notifText.Position = UDim2.new(0, 0, 0, 0)
-    notifText.Size = UDim2.new(0,9*string.len(text),0,40)
+    notifText.Size = UDim2.new(0, textSize.X + 10, 0, 20)
     notifText.Font = Enum.Font.Code
     notifText.Text = " " .. text .. " "
     notifText.TextColor3 = Color3.fromRGB(255, 255, 255)
