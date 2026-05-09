@@ -1,5 +1,6 @@
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
+local TextService = game:GetService("TextService")
 local UserInputService = game:GetService("UserInputService")
 
 local Mouse = game.Players.LocalPlayer:GetMouse()
@@ -9,6 +10,10 @@ local Blacklist = {Enum.KeyCode.Unknown, Enum.KeyCode.CapsLock, Enum.KeyCode.Esc
 if CoreGui:FindFirstChild("Shaman") then
     CoreGui.Shaman:Destroy()
     CoreGui.Tooltips:Destroy()
+    local oldNotifs = CoreGui:FindFirstChild("ShamanNotifications")
+    if oldNotifs then
+        oldNotifs:Destroy()
+    end
 end
 
 local function CheckTable(table)
@@ -22,6 +27,26 @@ end
 local TabSelected = nil
 local EditOpened = false
 local ColorElements = {}
+
+task.spawn(function()
+while true do
+if EditOpened and CheckTable(ColorElements) > 0 then
+local hue = tick() % 7 / 7
+local color = Color3.fromHSV(hue, 1, 1)
+
+for frame, v in pairs(ColorElements) do
+    if v.Enabled then
+        if frame.ClassName == "Frame" then
+        frame.BackgroundColor3 = color
+        else
+        frame.ImageColor3 = color
+        end
+    end
+end
+end
+wait()
+end
+end)
 
 local library = {
     Flags = {}
@@ -108,10 +133,14 @@ makefolder("Shaman")
 local Circle = request({Url = "https://raw.githubusercontent.com/Rain-Design/Icons/main/Circle.png", Method = "GET"})
 writefile("Shaman/Circle.png", Circle.Body)
 dText.Text = "Downloaded: Circle.png"
-
+    
 local ColorDropper = request({Url = "https://raw.githubusercontent.com/Rain-Design/Icons/main/ColorDropper.png", Method = "GET"})
 writefile("Shaman/ColorDropper.png", ColorDropper.Body)
 dText.Text = "Downloaded: ColorDropper.png"
+
+local Close = request({Url = "https://raw.githubusercontent.com/Rain-Design/Icons/main/Close.png", Method = "GET"})
+writefile("Shaman/Close.png", Close.Body)
+dText.Text = "Downloaded: Close.png"
 
 local CollapseArrow = request({Url = "https://raw.githubusercontent.com/Rain-Design/Icons/main/CollapseArrow.png", Method = "GET"})
 writefile("Shaman/CollapseArrow.png", CollapseArrow.Body)
@@ -139,10 +168,10 @@ function library:GetXY(GuiObject)
 end
 
 function library:Window(Info)
-Info.ScriptName = Info.ScriptName or "Shaman"
 Info.Text = Info.Text or "Shaman"
 
 local window = {}
+local windowFirstTab = true
 
 local shamanScreenGui = Instance.new("ScreenGui")
 shamanScreenGui.Name = "Shaman"
@@ -151,6 +180,37 @@ shamanScreenGui.Parent = CoreGui
 local tooltipScreenGui = Instance.new("ScreenGui")
 tooltipScreenGui.Name = "Tooltips"
 tooltipScreenGui.Parent = CoreGui
+
+local prevNotifs = CoreGui:FindFirstChild("ShamanNotifications")
+if prevNotifs then
+	prevNotifs:Destroy()
+end
+
+local notificationScreenGui = Instance.new("ScreenGui")
+notificationScreenGui.Name = "ShamanNotifications"
+notificationScreenGui.ResetOnSpawn = false
+notificationScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+notificationScreenGui.DisplayOrder = 100
+notificationScreenGui.Parent = CoreGui
+
+local notificationHolder = Instance.new("Frame")
+notificationHolder.Name = "NotificationHolder"
+notificationHolder.BackgroundTransparency = 1
+notificationHolder.BorderSizePixel = 0
+notificationHolder.AnchorPoint = Vector2.new(1, 1)
+notificationHolder.Position = UDim2.new(1, -16, 1, -16)
+notificationHolder.Size = UDim2.new(0, 420, 1, -32)
+notificationHolder.Parent = notificationScreenGui
+
+local notificationListLayout = Instance.new("UIListLayout")
+notificationListLayout.FillDirection = Enum.FillDirection.Vertical
+notificationListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+notificationListLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
+notificationListLayout.Padding = UDim.new(0, 8)
+notificationListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+notificationListLayout.Parent = notificationHolder
+
+local notificationLayoutSeed = 0
 
 local function Tooltip(text)
 local tooltip = Instance.new("Frame")
@@ -224,7 +284,7 @@ end
 
 local main = Instance.new("Frame")
 main.Name = "Main"
-main.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+main.BackgroundColor3 = Color3.fromRGB(27, 27, 27)
 main.BorderSizePixel = 0
 main.ClipsDescendants = true
 main.Position = UDim2.new(0.361, 0, 0.308, 0)
@@ -311,257 +371,169 @@ uIGradient.Color = ColorSequence.new({
 uIGradient.Enabled = false
 uIGradient.Parent = frame1
 
-local titleLevel = Instance.new("Frame")
-titleLevel.Name = "TitleLevel"
-titleLevel.BackgroundTransparency = 1
-titleLevel.ClipsDescendants = true
-titleLevel.Position = UDim2.new(0.015, 0, 0, 0)
-titleLevel.Size = UDim2.new(0.87, -8, 0, 30)
-titleLevel.ZIndex = 2
-titleLevel.Parent = topbar
+local textLabel = Instance.new("TextLabel")
+textLabel.Name = "TextLabel"
+textLabel.Font = Enum.Font.GothamBold
+textLabel.Text = Info.Text
+textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+textLabel.TextSize = 12
+textLabel.TextXAlignment = Enum.TextXAlignment.Left
+textLabel.BackgroundColor3 = Color3.fromRGB(237, 237, 237)
+textLabel.BackgroundTransparency = 1
+textLabel.Position = UDim2.new(0.015, 0, 0, 0)
+textLabel.Size = UDim2.new(0, 51, 0, 30)
+textLabel.ZIndex = 2
+textLabel.Parent = topbar
 
-local titleListLayout = Instance.new("UIListLayout")
-titleListLayout.Name = "UIListLayout"
-titleListLayout.FillDirection = Enum.FillDirection.Horizontal
-titleListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
-titleListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-titleListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-titleListLayout.Padding = UDim.new(0, 6)
-titleListLayout.Parent = titleLevel
+local closeButton = Instance.new("ImageButton")
+closeButton.Name = "CloseButton"
+closeButton.Image = getcustomasset("Shaman/Close.png")
+closeButton.ImageColor3 = Color3.fromRGB(237, 237, 237)
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.BackgroundTransparency = 1
+closeButton.Position = UDim2.new(0.947, 0, 0.194, 0)
+closeButton.Size = UDim2.new(0, 17, 0, 17)
+closeButton.ZIndex = 2
+closeButton.Parent = topbar
 
-local scriptNameLabel = Instance.new("TextLabel")
-scriptNameLabel.Name = "ScriptNameLabel"
-scriptNameLabel.LayoutOrder = 1
-scriptNameLabel.Font = Enum.Font.GothamBold
-scriptNameLabel.Text = Info.ScriptName
-scriptNameLabel.RichText = true
-scriptNameLabel.TextColor3 = _G.UIColor
-scriptNameLabel.TextSize = 12
-scriptNameLabel.TextXAlignment = Enum.TextXAlignment.Left
-scriptNameLabel.BackgroundTransparency = 1
-scriptNameLabel.AutomaticSize = Enum.AutomaticSize.X
-scriptNameLabel.Size = UDim2.fromOffset(0, 30)
-scriptNameLabel.ZIndex = 2
-scriptNameLabel.Parent = titleLevel
+closeButton.MouseButton1Click:Once(function()
+    shamanScreenGui:Destroy()
+    tooltipScreenGui:Destroy()
+end)
 
-local titleLabel = Instance.new("TextLabel")
-titleLabel.Name = "TitleLabel"
-titleLabel.LayoutOrder = 2
-titleLabel.Font = Enum.Font.GothamBold
-titleLabel.Text = Info.Text
-titleLabel.RichText = true
-titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-titleLabel.TextSize = 12
-titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-titleLabel.BackgroundTransparency = 1
-titleLabel.AutomaticSize = Enum.AutomaticSize.X
-titleLabel.Size = UDim2.fromOffset(0, 30)
-titleLabel.ZIndex = 2
-titleLabel.Parent = titleLevel
+closeButton.MouseEnter:Connect(function()
+    TweenService:Create(closeButton, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = Color3.fromRGB(217, 97, 99)}):Play()
+end)
 
-window.TitleLevel = titleLevel
-window.ScriptNameLabel = scriptNameLabel
-window.TitleLabel = titleLabel
+closeButton.MouseLeave:Connect(function()
+    TweenService:Create(closeButton, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = Color3.fromRGB(217, 217, 217)}):Play()
+end)
 
 local minimizeButton = Instance.new("ImageButton")
-minimizeButton.Name = "UIColorButton"
-minimizeButton.Image = getcustomasset("Shaman/ColorDropper.png")
-minimizeButton.ImageRectOffset = Vector2.new(284, 4)
-minimizeButton.ImageRectSize = Vector2.new(24, 24)
-minimizeButton.ImageColor3 = _G.UIColor
-minimizeButton.BackgroundColor3 = _G.UIColor
+minimizeButton.Name = "MinimizeButton"
+minimizeButton.Image = "rbxassetid://10664064072"
+minimizeButton.ImageColor3 = Color3.fromRGB(237, 237, 237)
+minimizeButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 minimizeButton.BackgroundTransparency = 1
-minimizeButton.Position = UDim2.new(0.947, 0, 0.194, 0)
-minimizeButton.Size = UDim2.new(0, 15, 0, 15)
+minimizeButton.Position = UDim2.new(0.893, 0, 0.194, 0)
+minimizeButton.Size = UDim2.new(0, 17, 0, 17)
 minimizeButton.ZIndex = 2
 minimizeButton.Parent = topbar
 
-local colorPicker = Instance.new("Frame")
-colorPicker.Name = "UIColorPicker"
-colorPicker.AnchorPoint = Vector2.new(1, 0)
-colorPicker.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-colorPicker.BorderSizePixel = 0
-colorPicker.Position = UDim2.new(1, -6, 0, 34)
-colorPicker.Size = UDim2.new(0, 160, 0, 140)
-colorPicker.Visible = false
-colorPicker.ZIndex = 10
-colorPicker.Parent = topbar
-
-local pickerCorner = Instance.new("UICorner")
-pickerCorner.CornerRadius = UDim.new(0, 4)
-pickerCorner.Parent = colorPicker
-
-local pickerStroke = Instance.new("UIStroke")
-pickerStroke.Color = Color3.fromRGB(55, 55, 55)
-pickerStroke.Parent = colorPicker
-
-local wheel = Instance.new("ImageLabel")
-wheel.Name = "ColorWheel"
-wheel.BackgroundTransparency = 1
-wheel.Image = "rbxassetid://6020299385"
-wheel.Position = UDim2.new(0, 8, 0, 8)
-wheel.Size = UDim2.new(0, 120, 0, 120)
-wheel.ZIndex = 15
-wheel.Parent = colorPicker
-
-local wheelCursor = Instance.new("Frame")
-wheelCursor.Name = "WheelCursor"
-wheelCursor.AnchorPoint = Vector2.new(0.5, 0.5)
-wheelCursor.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-wheelCursor.BorderSizePixel = 0
-wheelCursor.Size = UDim2.new(0, 6, 0, 6)
-wheelCursor.Position = UDim2.new(0.5, 0, 0.5, 0)
-wheelCursor.ZIndex = 16
-wheelCursor.Parent = wheel
-
-local wheelCursorCorner = Instance.new("UICorner")
-wheelCursorCorner.CornerRadius = UDim.new(0, 100)
-wheelCursorCorner.Parent = wheelCursor
-
-local valueBar = Instance.new("Frame")
-valueBar.Name = "ValueBar"
-valueBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-valueBar.BorderSizePixel = 0
-valueBar.Position = UDim2.new(0, 137, 0, 8)
-valueBar.Size = UDim2.new(0, 12, 0, 120)
-valueBar.ZIndex = 15
-valueBar.Parent = colorPicker
-
-local valueCorner = Instance.new("UICorner")
-valueCorner.CornerRadius = UDim.new(0, 3)
-valueCorner.Parent = valueBar
-
-local valueGradient = Instance.new("UIGradient")
-valueGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0))
-})
-valueGradient.Rotation = 90
-valueGradient.Parent = valueBar
-
-local valueCursor = Instance.new("Frame")
-valueCursor.Name = "ValueCursor"
-valueCursor.AnchorPoint = Vector2.new(0.5, 0.5)
-valueCursor.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-valueCursor.BorderSizePixel = 0
-valueCursor.Position = UDim2.new(0.5, 0, 0, 0)
-valueCursor.Size = UDim2.new(0, 14, 0, 2)
-valueCursor.ZIndex = 16
-valueCursor.Parent = valueBar
-
-local function refreshUIColorElements()
-    for element, data in pairs(ColorElements) do
-        if element and element.Parent and data then
-            local shouldUseColor = data.Type == "Slider" or data.Type == "Accent" or (data.Type == "Toggle" and data.Enabled)
-            if shouldUseColor then
-                if element:IsA("Frame") then
-                    element.BackgroundColor3 = _G.UIColor
-                elseif element:IsA("ImageLabel") or element:IsA("ImageButton") then
-                    element.ImageColor3 = _G.UIColor
-
-                elseif element:IsA("TextLabel")
-                    or element:IsA("TextButton")
-                    or element:IsA("TextBox") then
-
-                    element.TextColor3 = _G.UIColor
-                end
-            elseif data.Type == "Toggle" and element:IsA("Frame") then
-                element.BackgroundColor3 = Color3.fromRGB(68, 68, 68)
-            end
-        end
-    end
-end
-
-local hue = 0
-local sat = 1
-local val = 1
-local pickingWheel = false
-local pickingValue = false
-
-local function updateFromPicker()
-    _G.UIColor = Color3.fromHSV(hue, sat, val)
-    valueGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromHSV(hue, sat, 1)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0))
-    })
-    refreshUIColorElements()
-    scriptNameLabel.TextColor3 = _G.UIColor
-end
-
-local function updateWheel()
-    local px = math.clamp(Mouse.X - wheel.AbsolutePosition.X, 0, wheel.AbsoluteSize.X)
-    local py = math.clamp(Mouse.Y - wheel.AbsolutePosition.Y, 0, wheel.AbsoluteSize.Y)
-    local center = Vector2.new(wheel.AbsoluteSize.X / 2, wheel.AbsoluteSize.Y / 2)
-    local pos = Vector2.new(px, py)
-    local offset = pos - center
-    local radius = wheel.AbsoluteSize.X / 2
-    local dist = math.min(offset.Magnitude, radius)
-    local dir = offset.Magnitude > 0 and offset.Unit or Vector2.new(1, 0)
-    local clamped = center + dir * dist
-    local angle = math.atan2(
-        center.Y - clamped.Y,
-        clamped.X - center.X
-    )
-    
-    hue = ((angle / (2 * math.pi)) + 0.5) % 1
-    sat = math.clamp(dist / radius, 0, 1)
-    wheelCursor.Position = UDim2.new(0, clamped.X, 0, clamped.Y)
-    updateFromPicker()
-end
-
-local function updateValue()
-    local py = math.clamp(Mouse.Y - valueBar.AbsolutePosition.Y, 0, valueBar.AbsoluteSize.Y)
-    val = 1 - (py / valueBar.AbsoluteSize.Y)
-    valueCursor.Position = UDim2.new(0.5, 0, 0, py)
-    updateFromPicker()
-end
-
 minimizeButton.MouseEnter:Connect(function()
-    TweenService:Create(minimizeButton, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = _G.UIColor}):Play()
+    TweenService:Create(minimizeButton, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = Color3.fromRGB(194, 162, 76)}):Play()
 end)
 
 minimizeButton.MouseLeave:Connect(function()
     TweenService:Create(minimizeButton, TweenInfo.new(.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = Color3.fromRGB(217, 217, 217)}):Play()
 end)
 
+local Opened = true
+
 minimizeButton.MouseButton1Click:Connect(function()
-    colorPicker.Visible = not colorPicker.Visible
-end)
-
-wheel.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        pickingWheel = true
-        updateWheel()
+    Opened = not Opened
+    
+    topbar.Frame.Visible = Opened
+    task.spawn(function()
+    if Opened then
+        wait(.15)
     end
-end)
-
-valueBar.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        pickingValue = true
-        updateValue()
-    end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement then
-        if pickingWheel then
-            updateWheel()
-        elseif pickingValue then
-            updateValue()
+    for _,v in pairs(main:GetChildren()) do
+        if v.Name == "TabContainer" then
+            v.Visible = Opened
         end
     end
+    for _,v in pairs(main:GetChildren()) do
+       if (v.Name == "LeftContainer" or v.Name == "RightContainer") and v.Visible then
+           v.Size = Opened and UDim2.new(0, 168,0, 287) or UDim2.new(0, 168,0, 0)
+       end
+    end
+    end)
+    
+    TweenService:Create(main, TweenInfo.new(.2, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = Opened and UDim2.new(0, 450,0, 321) or UDim2.new(0, 450,0, 30)}):Play()
 end)
 
-UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        pickingWheel = false
-        pickingValue = false
+local editButton = Instance.new("ImageButton")
+editButton.Name = "EditButton"
+editButton.Image = getcustomasset("Shaman/ColorDropper.png")
+editButton.ImageColor3 = Color3.fromRGB(237, 237, 237)
+editButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+editButton.BackgroundTransparency = 1
+editButton.Position = UDim2.new(0.841, 0, 0.226, 0)
+editButton.Size = UDim2.new(0, 15, 0, 15)
+editButton.ZIndex = 2
+editButton.Parent = topbar
+
+local uiGradient = Instance.new("UIGradient")
+uiGradient.Name = "UIGradient"
+uiGradient.Enabled = false
+uiGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0,Color3.fromRGB(255,0,0)),
+    ColorSequenceKeypoint.new(0.2,Color3.fromRGB(255,255,0)),
+    ColorSequenceKeypoint.new(0.4,Color3.fromRGB(0,255,0)),
+    ColorSequenceKeypoint.new(0.6,Color3.fromRGB(0,255,255)),
+    ColorSequenceKeypoint.new(0.8,Color3.fromRGB(0,0,255)),
+    ColorSequenceKeypoint.new(1,Color3.fromRGB(255,0,255)),
+}
+uiGradient.Parent = editButton
+
+task.spawn(function()
+    while wait() do -- skidded from devforum
+    if uiGradient.Enabled then
+	local loop = tick() % 2 / 2
+	colors = {}
+	for i = 1, 7 + 1, 1 do
+		z = Color3.fromHSV(loop - ((i - 1)/7), 1, 1)
+		if loop - ((i - 1) / 7) < 0 then
+			z = Color3.fromHSV((loop - ((i - 1) / 7)) + 1, 1, 1)
+		end
+		local d = ColorSequenceKeypoint.new((i - 1) / 7, z)
+		table.insert(colors, #colors + 1, d)
+	end
+	uiGradient.Color = ColorSequence.new(colors)
+end
+end
+end)
+
+editButton.MouseEnter:Connect(function()
+    if not EditOpened then
+        uiGradient.Enabled = true
+    end
+end)
+
+editButton.MouseLeave:Connect(function()
+    if not EditOpened then
+        uiGradient.Enabled = false
+    end
+end)
+
+editButton.MouseButton1Click:Connect(function()
+    EditOpened = not EditOpened
+    
+    uiGradient.Enabled = EditOpened and true or false
+    
+    if not EditOpened then
+        for frame, v in pairs(ColorElements) do
+            if v.Enabled then
+                if frame.ClassName == "Frame" then
+                TweenService:Create(frame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundColor3 = _G.UIColor}):Play()
+                else
+                TweenService:Create(frame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = _G.UIColor}):Play()
+                end
+            end
+        end
+    else
+        for _,v in pairs(ColorElements) do
+            if v.Type ~= "Toggle" then
+                v.Enabled = true
+            end
+        end
     end
 end)
 
 local tabContainer = Instance.new("Frame")
 tabContainer.Name = "TabContainer"
-tabContainer.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+tabContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 tabContainer.Position = UDim2.new(0, 0, 0.0935, 0)
 tabContainer.Size = UDim2.new(0, 114, 0, 291)
 tabContainer.Parent = main
@@ -573,7 +545,7 @@ uICorner2.Parent = tabContainer
 
 local fix = Instance.new("Frame")
 fix.Name = "Fix"
-fix.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+fix.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 fix.BorderSizePixel = 0
 fix.Position = UDim2.new(0.895, 0, 0, 0)
 fix.Size = UDim2.new(0, 11, 0, 285)
@@ -581,7 +553,7 @@ fix.Parent = tabContainer
 
 local fix1 = Instance.new("Frame")
 fix1.Name = "Fix"
-fix1.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+fix1.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 fix1.BorderSizePixel = 0
 fix1.Position = UDim2.new(0, 0, -0.00351, 0)
 fix1.Size = UDim2.new(0, 11, 0, 79)
@@ -616,30 +588,22 @@ tabButton.Parent = scrollingContainer
 local tabFrame = Instance.new("Frame")
 tabFrame.Name = "TabFrame"
 tabFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-tabFrame.BackgroundTransparency = 1
+tabFrame.BackgroundTransparency = 0.96
 tabFrame.BorderSizePixel = 0
 tabFrame.Position = UDim2.new(0.067, -5, 0.013, 3)
 tabFrame.Size = UDim2.new(0, 107, 0, 23)
 tabFrame.ZIndex = 2
 tabFrame.Parent = tabButton
 
---[[local uIStroke = Instance.new("UIStroke")
-uIStroke.Name = "UIStroke"
-uIStroke.Color = Color3.fromRGB(68, 68, 68) -- 183, 248, 219
-uIStroke.Transparency = 0.43
-uIStroke.Parent = tabFrame]]
-
 tabFrame.MouseEnter:Connect(function()
     if TabSelected ~= tabFrame or TabSelected == nil then
         TweenService:Create(tabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = .93}):Play()
-        --TweenService:Create(uIStroke, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Transparency = 0.43}):Play()
     end
 end)
 
 tabFrame.MouseLeave:Connect(function()
     if TabSelected ~= tabFrame or TabSelected == nil then
-        TweenService:Create(tabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1}):Play()
-        --TweenService:Create(uIStroke, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Transparency = 1}):Play()
+        TweenService:Create(tabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = .96}):Play()
     end
 end)
 
@@ -653,7 +617,6 @@ tabTextButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 tabTextButton.BackgroundTransparency = 1
 tabTextButton.Size = UDim2.new(0, 107, 0, 23)
 tabTextButton.Parent = tabFrame
---tabTextButton.TextXAlignment = Enum.TextXAlignment.Left
 
 local uICorner3 = Instance.new("UICorner")
 uICorner3.Name = "UICorner"
@@ -663,7 +626,7 @@ uICorner3.Parent = tabFrame
 local textLabel1 = Instance.new("TextLabel")
 textLabel1.Name = "TextLabel"
 textLabel1.Font = Enum.Font.GothamBold
-textLabel1.Text = "   " .. Info.Text
+textLabel1.Text = Info.Text
 textLabel1.TextColor3 = Color3.fromRGB(237, 237, 237)
 textLabel1.TextSize = 11
 textLabel1.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -671,17 +634,12 @@ textLabel1.BackgroundTransparency = 1
 textLabel1.Size = UDim2.new(0, 108, 0, 23)
 textLabel1.ZIndex = 2
 textLabel1.Parent = tabFrame
-textLabel1.TextXAlignment = Enum.TextXAlignment.Left
 
-local lineFrame = Instance.new("Frame")
-lineFrame.Name = "LineFrame"
-lineFrame.BackgroundColor3 = _G.UIColor 
-lineFrame.BorderSizePixel = 0
-lineFrame.Size = UDim2.new(0, 2, 0, 23)
-lineFrame.Parent = tabFrame
-ColorElements[lineFrame] = {Type = "Accent", Enabled = true}
-ColorElements[scriptNameLabel] = {Type = "Accent", Enabled = true}
-ColorElements[minimizeButton] = {Type = "Accent", Enabled = true}
+local uIStroke = Instance.new("UIStroke")
+uIStroke.Name = "UIStroke"
+uIStroke.Color = Color3.fromRGB(68, 68, 68) -- 183, 248, 219
+uIStroke.Transparency = 0.45
+uIStroke.Parent = tabFrame
 
 local selected = Instance.new("Frame")
 selected.Name = "Selected"
@@ -787,12 +745,22 @@ section.BackgroundTransparency = 1
 section.Size = UDim2.new(0, 162, 0, 27)
 section.Parent = Side
 
+local Closed = Instance.new("BoolValue", section)
+Closed.Value = true
+
 local sectionFrame = Instance.new("Frame")
 sectionFrame.Name = "SectionFrame"
 sectionFrame.BackgroundColor3 = Color3.fromRGB(42, 42, 42)
 sectionFrame.ClipsDescendants = true
 sectionFrame.Size = UDim2.new(0, 162, 0, 23)
 sectionFrame.Parent = section
+
+local function applyOpenSectionSizes()
+    section.Size = UDim2.new(0, 162, 0, SizeY + 4)
+    sectionFrame.Size = UDim2.new(0, 162, 0, SizeY)
+end
+
+applyOpenSectionSizes()
 
 sectionFrame.ChildAdded:Connect(function(v)
     if v.ClassName == "Frame" then
@@ -801,8 +769,7 @@ sectionFrame.ChildAdded:Connect(function(v)
         else
         SizeY = SizeY + 27
         end
-        sectionFrame.Size = UDim2.new(0, 162, 0, SizeY)
-        section.Size = UDim2.new(0, 162, 0, SizeY + 4)
+        applyOpenSectionSizes()
     end
 end)
 
@@ -836,7 +803,7 @@ sectionName.TextXAlignment = Enum.TextXAlignment.Left
 sectionName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 sectionName.BackgroundTransparency = 1
 sectionName.Position = UDim2.new(0.0488, 0, 0, 0)
-sectionName.Size = UDim2.new(0, 128, 0, 23)
+sectionName.Size = UDim2.new(0, 156, 0, 23)
 sectionName.Parent = section
 
 function sectiontable:Label(Info)
@@ -1676,6 +1643,20 @@ for _,v in pairs(Info.List) do
 insidedropdown:Add(v)
 end
 
+Closed:GetPropertyChangedSignal("Value"):Connect(function()
+    if not Closed.Value then
+    DropdownOpened = false
+    
+    TweenService:Create(dropdownIcon, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Rotation = DropdownOpened and -180 or -90}):Play()
+    TweenService:Create(dropdownIcon, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = DropdownOpened and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(191, 191, 191)}):Play()
+    TweenService:Create(dropdown, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = DropdownOpened and UDim2.new(0, 162, 0, DropdownYSize) or UDim2.new(0, 162, 0, 27)}):Play()
+    TweenService:Create(dropdownContainer, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = DropdownOpened and UDim2.new(0, 162, 0, DropdownYSize) or UDim2.new(0, 162, 0, 27)}):Play()
+    TweenService:Create(dropdownContainer, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = DropdownOpened and .96 or 1}):Play()
+    TweenService:Create(sectionFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = DropdownOpened and UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset + DropdownYSize - 27) or UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset - DropdownYSize + 27)}):Play()
+    TweenService:Create(section, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = DropdownOpened and UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset + DropdownYSize - 27 + 4) or UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset - DropdownYSize + 31)}):Play()
+    end
+end)
+
 dropdownButton.MouseButton1Click:Connect(function()
     DropdownOpened = not DropdownOpened
     
@@ -1692,232 +1673,256 @@ return insidedropdown
 end
 
 function sectiontable:RadioButton(Info)
-    Info.Text = Info.Text or "Radio Button"
-    Info.Options = Info.Options or {}
-    Info.Flag = Info.Flag or nil
-    Info.Callback = Info.Callback or function() end
-    Info.Tooltip = Info.Tooltip or ""
-    Info.Default = Info.Default or nil
+Info.Text = Info.Text or "Radio Button"
+Info.Options = Info.Options or {}
+Info.Flag = Info.Flag or nil
+Info.Callback = Info.Callback or function() end
+Info.Tooltip = Info.Tooltip or ""
+Info.Default = Info.Default or nil
 
-    local RadioOpened = false
-    local insideradio = {}
+local RadioOpened = false
 
-    -- Fix: don't use global for RadioYSize, use local variable (otherwise, each instance will conflict)
-    local RadioYSize = 27
+RadioYSize = 27
 
-    if Info.Default ~= nil then
-        task.spawn(function()
-            pcall(Info.Callback, Info.Default)
-        end)
-        if Info.Flag ~= nil then
-            library.Flags[Info.Flag] = Info.Default
+if Info.Default ~= nil then
+    task.spawn(function()
+        pcall(Info.Callback, Info.Default)
+    end)
+    if Info.Flag ~= nil then
+        library.Flags[Info.Flag] = Info.Default
+	end
+end
+
+local insideradio = {}
+
+local radioButton = Instance.new("Frame")
+radioButton.Name = "RadioButton"
+radioButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+radioButton.BackgroundTransparency = 1
+radioButton.Size = UDim2.new(0, 162, 0, 27)
+radioButton.Parent = sectionFrame
+
+if Info.Tooltip ~= "" then
+    AddTooltip(radioButton, Info.Tooltip)
+end
+
+local button = Instance.new("Frame")
+button.Name = "Button"
+button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+button.BackgroundTransparency = 1
+button.Size = UDim2.new(0, 162, 0, 27)
+button.Parent = radioButton
+
+local radioButtonTextButton = Instance.new("TextButton")
+radioButtonTextButton.Name = "RadioButtonTextButton"
+radioButtonTextButton.Font = Enum.Font.SourceSans
+radioButtonTextButton.Text = ""
+radioButtonTextButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+radioButtonTextButton.TextSize = 14
+radioButtonTextButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+radioButtonTextButton.BackgroundTransparency = 1
+radioButtonTextButton.Size = UDim2.new(0, 162, 0, 27)
+radioButtonTextButton.Parent = button
+
+local radioButtonText = Instance.new("TextLabel")
+radioButtonText.Name = "RadioButtonText"
+radioButtonText.Font = Enum.Font.GothamBold
+radioButtonText.Text = Info.Text
+radioButtonText.TextColor3 = Color3.fromRGB(217, 217, 217)
+radioButtonText.TextSize = 11
+radioButtonText.TextXAlignment = Enum.TextXAlignment.Left
+radioButtonText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+radioButtonText.BackgroundTransparency = 1
+radioButtonText.Position = UDim2.new(0.0488, 0, 0, 0)
+radioButtonText.Size = UDim2.new(0, 156, 0, 27)
+radioButtonText.Parent = button
+
+local radioButtonIcon = Instance.new("ImageLabel")
+radioButtonIcon.Name = "RadioButtonIcon"
+radioButtonIcon.Image = getcustomasset("Shaman/CollapseArrow.png")
+radioButtonIcon.AnchorPoint = Vector2.new(1, 0)
+radioButtonIcon.ImageColor3 = Color3.fromRGB(191, 191, 191)
+radioButtonIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+radioButtonIcon.BackgroundTransparency = 1
+radioButtonIcon.Rotation = -90
+radioButtonIcon.BorderSizePixel = 0
+radioButtonIcon.Position = UDim2.new(0, 155, 0, 7)
+radioButtonIcon.Size = UDim2.new(0, 13, 0, 13)
+radioButtonIcon.Parent = button
+
+local radioButtonIcon2 = Instance.new("ImageLabel")
+radioButtonIcon2.Name = "RadioButtonIcon2"
+radioButtonIcon2.Image = getcustomasset("Shaman/RadioButton.png")
+radioButtonIcon2.AnchorPoint = Vector2.new(1, 0)
+radioButtonIcon2.ImageColor3 = Color3.fromRGB(191, 191, 191)
+radioButtonIcon2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+radioButtonIcon2.BackgroundTransparency = 1
+radioButtonIcon2.BorderSizePixel = 0
+radioButtonIcon2.Position = UDim2.new(0, 138, 0, 7)
+radioButtonIcon2.Size = UDim2.new(0, 13, 0, 13)
+radioButtonIcon2.Parent = button
+
+local radioContainer = Instance.new("Frame")
+radioContainer.Name = "RadioContainer"
+radioContainer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+radioContainer.BackgroundTransparency = 1
+radioContainer.Size = UDim2.new(0, 162, 0, 27)
+radioContainer.Parent = radioButton
+radioContainer.ClipsDescendants = true
+
+local radioUILayout = Instance.new("UIListLayout")
+radioUILayout.Name = "RadioUILayout"
+radioUILayout.SortOrder = Enum.SortOrder.LayoutOrder
+radioUILayout.Parent = radioContainer
+
+local radiouIPadding = Instance.new("UIPadding")
+radiouIPadding.Name = "UIPadding"
+radiouIPadding.PaddingTop = UDim.new(0, 27)
+radiouIPadding.Parent = radioContainer
+
+local RadioSelected = nil
+
+function insideradio:Button(text)
+RadioYSize = RadioYSize + 27
+
+local radio = Instance.new("Frame")
+radio.Name = "Radio"
+radio.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+radio.BackgroundTransparency = 1
+radio.Size = UDim2.new(0, 162, 0, 27)
+radio.Parent = radioContainer
+
+local radioTextButton = Instance.new("TextButton")
+radioTextButton.Name = "RadioTextButton"
+radioTextButton.Font = Enum.Font.SourceSans
+radioTextButton.Text = ""
+radioTextButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+radioTextButton.TextSize = 14
+radioTextButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+radioTextButton.BackgroundTransparency = 1
+radioTextButton.Size = UDim2.new(0, 162, 0, 27)
+radioTextButton.Parent = radio
+
+local radioOuter = Instance.new("ImageLabel")
+radioOuter.Name = "RadioOuter"
+radioOuter.Image = getcustomasset("Shaman/RadioOuter.png")
+radioOuter.ImageColor3 = Color3.fromRGB(191, 191, 191)
+radioOuter.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+radioOuter.BackgroundTransparency = 1
+radioOuter.BorderSizePixel = 0
+radioOuter.Position = UDim2.new(0.865, 0, 0.185, 0)
+radioOuter.Size = UDim2.new(0, 17, 0, 17)
+radioOuter.Parent = radio
+
+local radioInner = Instance.new("ImageLabel")
+radioInner.Name = "RadioInner"
+radioInner.Image = getcustomasset("Shaman/RadioInner.png")
+radioInner.AnchorPoint = Vector2.new(0.5, 0.5)
+radioInner.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+radioInner.BackgroundTransparency = 1
+radioInner.BorderSizePixel = 0
+radioInner.Position = UDim2.new(0.5, 0, 0.5, 0)
+radioInner.Size = UDim2.new(0, 7, 0, 7)
+radioInner.Parent = radioOuter
+
+ColorElements[radioInner] = {Type = "Toggle", Enabled = false}
+ColorElements[radioOuter] = {Type = "Toggle", Enabled = false}
+
+local radioText = Instance.new("TextLabel")
+radioText.Name = "RadioText"
+radioText.Font = Enum.Font.GothamBold
+radioText.Text = text
+radioText.TextColor3 = Color3.fromRGB(191, 191, 191)
+radioText.TextSize = 11
+radioText.TextXAlignment = Enum.TextXAlignment.Left
+radioText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+radioText.BackgroundTransparency = 1
+radioText.Position = UDim2.new(0.0488, 0, 0, 0)
+radioText.Size = UDim2.new(0, 156, 0, 27)
+radioText.Parent = radio
+
+radio.MouseEnter:Connect(function()
+    if RadioOpened and RadioSelected ~= radio or RadioSelected == nil then
+    TweenService:Create(radioText, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {TextColor3 = Color3.fromRGB(217, 217, 217)}):Play()
+    TweenService:Create(radioInner, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = Color3.fromRGB(217, 217, 217)}):Play()
+    TweenService:Create(radioOuter, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = Color3.fromRGB(217, 217, 217)}):Play()
+    end
+end)
+
+radio.MouseLeave:Connect(function()
+    if RadioOpened and RadioSelected ~= radio or RadioSelected == nil then
+    TweenService:Create(radioText, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {TextColor3 = Color3.fromRGB(191, 191, 191)}):Play()
+    TweenService:Create(radioInner, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = Color3.fromRGB(191, 191, 191)}):Play()
+    TweenService:Create(radioOuter, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = Color3.fromRGB(191, 191, 191)}):Play()
+    end
+end)
+
+radioTextButton.MouseButton1Click:Connect(function()
+    task.spawn(function()
+        pcall(Info.Callback, radioText.Text)
+    end)
+    if Info.Flag ~= nil then
+        library.Flags[Info.Flag] = radioText.Text
+	end
+    
+    ColorElements[radioInner].Enabled = true
+    ColorElements[radioOuter].Enabled = true
+    
+    RadioSelected = radio
+    
+    for _,v in pairs(radioContainer:GetChildren()) do
+        if v.ClassName == "Frame" and v ~= radio then
+            ColorElements[v.RadioOuter].Enabled = false
+            ColorElements[v.RadioOuter.RadioInner].Enabled = false
+            TweenService:Create(v.RadioOuter, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = Color3.fromRGB(191, 191, 191)}):Play()
+            TweenService:Create(v.RadioOuter.RadioInner, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = Color3.fromRGB(191, 191, 191)}):Play()
+            TweenService:Create(v.RadioText, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {TextColor3 = Color3.fromRGB(191, 191, 191)}):Play()
         end
     end
-
-    local radioButton = Instance.new("Frame")
-    radioButton.Name = "RadioButton"
-    radioButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    radioButton.BackgroundTransparency = 1
-    radioButton.Size = UDim2.new(0, 162, 0, 27)
-    radioButton.Parent = sectionFrame
-
-    if Info.Tooltip ~= "" then
-        AddTooltip(radioButton, Info.Tooltip)
+    
+    TweenService:Create(radioText, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+    
+    if not EditOpened then
+        TweenService:Create(radioInner, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = RadioOpened and _G.UIColor or Color3.fromRGB(191, 191, 191)}):Play()
+        TweenService:Create(radioOuter, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = RadioOpened and _G.UIColor or Color3.fromRGB(191, 191, 191)}):Play()
     end
+end)
 
-    local button = Instance.new("Frame")
-    button.Name = "Button"
-    button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    button.BackgroundTransparency = 1
-    button.Size = UDim2.new(0, 162, 0, 27)
-    button.Parent = radioButton
+end
 
-    local radioButtonTextButton = Instance.new("TextButton")
-    radioButtonTextButton.Name = "RadioButtonTextButton"
-    radioButtonTextButton.Font = Enum.Font.SourceSans
-    radioButtonTextButton.Text = ""
-    radioButtonTextButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-    radioButtonTextButton.TextSize = 14
-    radioButtonTextButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    radioButtonTextButton.BackgroundTransparency = 1
-    radioButtonTextButton.Size = UDim2.new(0, 162, 0, 27)
-    radioButtonTextButton.Parent = button
+radioButtonTextButton.MouseButton1Click:Connect(function()
+    RadioOpened = not RadioOpened
+    
+    TweenService:Create(radioButtonIcon, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = RadioOpened and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(191, 191, 191)}):Play()
+    TweenService:Create(radioButtonIcon, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Rotation = RadioOpened and -180 or -90}):Play()
+    TweenService:Create(radioButtonIcon2, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = RadioOpened and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(191, 191, 191)}):Play()
+    TweenService:Create(radioButton, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = RadioOpened and UDim2.new(0, 162, 0, RadioYSize) or UDim2.new(0, 162, 0, 27)}):Play()
+    TweenService:Create(radioContainer, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = RadioOpened and UDim2.new(0, 162, 0, RadioYSize) or UDim2.new(0, 162, 0, 27)}):Play()
+    TweenService:Create(radioContainer, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = RadioOpened and .96 or 1}):Play()
+    TweenService:Create(sectionFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = RadioOpened and UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset + RadioYSize - 27) or UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset - RadioYSize + 27)}):Play()
+    TweenService:Create(section, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = RadioOpened and UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset + RadioYSize - 27 + 4) or UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset - RadioYSize + 31)}):Play()
+end)
 
-    local radioButtonText = Instance.new("TextLabel")
-    radioButtonText.Name = "RadioButtonText"
-    radioButtonText.Font = Enum.Font.GothamBold
-    radioButtonText.Text = Info.Text
-    radioButtonText.TextColor3 = Color3.fromRGB(217, 217, 217)
-    radioButtonText.TextSize = 11
-    radioButtonText.TextXAlignment = Enum.TextXAlignment.Left
-    radioButtonText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    radioButtonText.BackgroundTransparency = 1
-    radioButtonText.Position = UDim2.new(0.0488, 0, 0, 0)
-    radioButtonText.Size = UDim2.new(0, 156, 0, 27)
-    radioButtonText.Parent = button
+for _,v in pairs(Info.Options) do
+    insideradio:Button(v)
+end
 
-    local radioButtonIcon = Instance.new("ImageLabel")
-    radioButtonIcon.Name = "RadioButtonIcon"
-    radioButtonIcon.Image = getcustomasset("Shaman/CollapseArrow.png")
-    radioButtonIcon.AnchorPoint = Vector2.new(1, 0)
-    radioButtonIcon.ImageColor3 = Color3.fromRGB(191, 191, 191)
-    radioButtonIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    radioButtonIcon.BackgroundTransparency = 1
-    radioButtonIcon.Rotation = -90
-    radioButtonIcon.BorderSizePixel = 0
-    radioButtonIcon.Position = UDim2.new(0, 155, 0, 7)
-    radioButtonIcon.Size = UDim2.new(0, 13, 0, 13)
-    radioButtonIcon.Parent = button
-
-    local radioContainer = Instance.new("Frame")
-    radioContainer.Name = "RadioContainer"
-    radioContainer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    radioContainer.BackgroundTransparency = 1
-    -- Fix: Give the container a height to fit all options (initial, fixed to 27, will be tweened on open/close)
-    radioContainer.Size = UDim2.new(0, 162, 0, 27)
-    radioContainer.Parent = radioButton
-    radioContainer.ClipsDescendants = true
-
-    local radioUILayout = Instance.new("UIListLayout")
-    radioUILayout.Name = "RadioUILayout"
-    radioUILayout.SortOrder = Enum.SortOrder.LayoutOrder
-    radioUILayout.Parent = radioContainer
-
-    local radiouIPadding = Instance.new("UIPadding")
-    radiouIPadding.Name = "UIPadding"
-    radiouIPadding.PaddingTop = UDim.new(0, 27)
-    radiouIPadding.Parent = radioContainer
-
-    local RadioSelected = nil
-
-    function insideradio:Button(text)
-        RadioYSize = RadioYSize + 27
-
-        local radio = Instance.new("Frame")
-        radio.Name = "Radio"
-        radio.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        radio.BackgroundTransparency = 1
-        radio.Size = UDim2.new(0, 162, 0, 27)
-        radio.Parent = radioContainer
-
-        local radioTextButton = Instance.new("TextButton")
-        radioTextButton.Name = "RadioTextButton"
-        radioTextButton.Font = Enum.Font.SourceSans
-        radioTextButton.Text = ""
-        radioTextButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-        radioTextButton.TextSize = 14
-        radioTextButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        radioTextButton.BackgroundTransparency = 1
-        radioTextButton.Size = UDim2.new(0, 162, 0, 27)
-        radioTextButton.Parent = radio
-
-        local radioOuter = Instance.new("ImageLabel")
-        radioOuter.Name = "RadioOuter"
-        radioOuter.Image = getcustomasset("Shaman/RadioOuter.png")
-        radioOuter.ImageColor3 = Color3.fromRGB(191, 191, 191)
-        radioOuter.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        radioOuter.BackgroundTransparency = 1
-        radioOuter.BorderSizePixel = 0
-        radioOuter.Position = UDim2.new(0.865, 0, 0.185, 0)
-        radioOuter.Size = UDim2.new(0, 17, 0, 17)
-        radioOuter.Parent = radio
-
-        local radioInner = Instance.new("ImageLabel")
-        radioInner.Name = "RadioInner"
-        radioInner.Image = getcustomasset("Shaman/RadioInner.png")
-        radioInner.AnchorPoint = Vector2.new(0.5, 0.5)
-        radioInner.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        radioInner.BackgroundTransparency = 1
-        radioInner.BorderSizePixel = 0
-        radioInner.Position = UDim2.new(0.5, 0, 0.5, 0)
-        radioInner.Size = UDim2.new(0, 7, 0, 7)
-        radioInner.Parent = radioOuter
-
-        ColorElements[radioInner] = {Type = "Toggle", Enabled = false}
-        ColorElements[radioOuter] = {Type = "Toggle", Enabled = false}
-
-        local radioText = Instance.new("TextLabel")
-        radioText.Name = "RadioText"
-        radioText.Font = Enum.Font.GothamBold
-        radioText.Text = text
-        radioText.TextColor3 = Color3.fromRGB(191, 191, 191)
-        radioText.TextSize = 11
-        radioText.TextXAlignment = Enum.TextXAlignment.Left
-        radioText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        radioText.BackgroundTransparency = 1
-        radioText.Position = UDim2.new(0.0488, 0, 0, 0)
-        radioText.Size = UDim2.new(0, 156, 0, 27)
-        radioText.Parent = radio
-
-        radio.MouseEnter:Connect(function()
-            if RadioOpened and RadioSelected ~= radio or RadioSelected == nil then
-                TweenService:Create(radioText, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {TextColor3 = Color3.fromRGB(217, 217, 217)}):Play()
-                TweenService:Create(radioInner, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = Color3.fromRGB(217, 217, 217)}):Play()
-                TweenService:Create(radioOuter, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = Color3.fromRGB(217, 217, 217)}):Play()
-            end
-        end)
-
-        radio.MouseLeave:Connect(function()
-            if RadioOpened and RadioSelected ~= radio or RadioSelected == nil then
-                TweenService:Create(radioText, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {TextColor3 = Color3.fromRGB(191, 191, 191)}):Play()
-                TweenService:Create(radioInner, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = Color3.fromRGB(191, 191, 191)}):Play()
-                TweenService:Create(radioOuter, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = Color3.fromRGB(191, 191, 191)}):Play()
-            end
-        end)
-
-        radioTextButton.MouseButton1Click:Connect(function()
-            task.spawn(function()
-                pcall(Info.Callback, radioText.Text)
-            end)
-            if Info.Flag ~= nil then
-                library.Flags[Info.Flag] = radioText.Text
-            end
-
-            ColorElements[radioInner].Enabled = true
-            ColorElements[radioOuter].Enabled = true
-
-            RadioSelected = radio
-
-            for _,v in pairs(radioContainer:GetChildren()) do
-                if v.ClassName == "Frame" and v ~= radio then
-                    ColorElements[v.RadioOuter].Enabled = false
-                    ColorElements[v.RadioOuter.RadioInner].Enabled = false
-                    TweenService:Create(v.RadioOuter, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = Color3.fromRGB(191, 191, 191)}):Play()
-                    TweenService:Create(v.RadioOuter.RadioInner, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = Color3.fromRGB(191, 191, 191)}):Play()
-                    TweenService:Create(v.RadioText, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {TextColor3 = Color3.fromRGB(191, 191, 191)}):Play()
-                end
-            end
-
-            TweenService:Create(radioText, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
-
-            if not EditOpened then
-                TweenService:Create(radioInner, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = RadioOpened and _G.UIColor or Color3.fromRGB(191, 191, 191)}):Play()
-                TweenService:Create(radioOuter, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = RadioOpened and _G.UIColor or Color3.fromRGB(191, 191, 191)}):Play()
-            end
-        end)
+Closed:GetPropertyChangedSignal("Value"):Connect(function()
+    if not Closed.Value then
+    RadioOpened = false
+    
+    TweenService:Create(radioButtonIcon, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = RadioOpened and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(191, 191, 191)}):Play()
+    TweenService:Create(radioButtonIcon, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Rotation = RadioOpened and -180 or -90}):Play()
+    TweenService:Create(radioButtonIcon2, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = RadioOpened and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(191, 191, 191)}):Play()
+    TweenService:Create(radioButton, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = RadioOpened and UDim2.new(0, 162, 0, RadioYSize) or UDim2.new(0, 162, 0, 27)}):Play()
+    TweenService:Create(radioContainer, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = RadioOpened and UDim2.new(0, 162, 0, RadioYSize) or UDim2.new(0, 162, 0, 27)}):Play()
+    TweenService:Create(radioContainer, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = RadioOpened and .96 or 1}):Play()
+    TweenService:Create(sectionFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = RadioOpened and UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset + RadioYSize - 27) or UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset - RadioYSize + 27)}):Play()
+    TweenService:Create(section, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = RadioOpened and UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset + RadioYSize - 27 + 4) or UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset - RadioYSize + 31)}):Play()
     end
+end)
 
-    radioButtonTextButton.MouseButton1Click:Connect(function()
-        RadioOpened = not RadioOpened
-
-        local extraButtons = #Info.Options * 27
-        -- Now, RadioYSize should have increased by 27 for each button added
-        -- So, size calcs should use that
-        TweenService:Create(radioButtonIcon, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageColor3 = RadioOpened and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(191, 191, 191)}):Play()
-        TweenService:Create(radioButtonIcon, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Rotation = RadioOpened and -180 or -90}):Play()
-        TweenService:Create(radioButton, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = RadioOpened and UDim2.new(0, 162, 0, RadioYSize) or UDim2.new(0, 162, 0, 27)}):Play()
-        TweenService:Create(radioContainer, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = RadioOpened and UDim2.new(0, 162, 0, RadioYSize) or UDim2.new(0, 162, 0, 27)}):Play()
-        TweenService:Create(radioContainer, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = RadioOpened and .96 or 1}):Play()
-        TweenService:Create(sectionFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = RadioOpened and UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset + RadioYSize - 27) or UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset - (RadioYSize - 27))}):Play()
-        TweenService:Create(section, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = RadioOpened and UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset + RadioYSize - 27 + 4) or UDim2.new(0, 162, 0, sectionFrame.Size.Y.Offset - (RadioYSize - 27) + 4)}):Play()
-    end)
-
-    -- Fix: Add all option buttons FIRST so RadioYSize reflects true total before opening animation starts
-    for _,v in pairs(Info.Options) do
-        insideradio:Button(v)
-    end
-
-    return insideradio
+return insideradio
 end
 
 return sectiontable
@@ -1934,12 +1939,10 @@ tabTextButton.MouseButton1Click:Connect(function()
     end)
     for _,v in pairs(scrollingContainer:GetChildren()) do
         if v ~= tabButton and v.Name == "TabButton" then
-            TweenService:Create(v.TabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1}):Play()
-            --TweenService:Create(uIStroke, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Transparency = 1}):Play()
+            TweenService:Create(v.TabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = .96}):Play()
         end
     end
     TweenService:Create(tabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = .85}):Play()
-    --TweenService:Create(uIStroke, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Transparency = 0.45}):Play()
     leftContainer.Visible = true
     rightContainer.Visible = true
 end)
@@ -1947,25 +1950,30 @@ end)
 function tab:Select()
     TabSelected = tabFrame
     task.spawn(function()
-        for _,v in pairs(main:GetChildren()) do
-            if v.Name == "LeftContainer" or v.Name == "RightContainer" then
-                v.Visible = false
-            end
+    for _,v in pairs(main:GetChildren()) do
+        if v.Name == "LeftContainer" or v.Name == "RightContainer" then
+            v.Visible = false
         end
+    end
     end)
     for _,v in pairs(scrollingContainer:GetChildren()) do
         if v ~= tabButton and v.Name == "TabButton" then
-            TweenService:Create(v.TabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1}):Play()
+            TweenService:Create(v.TabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = .96}):Play()
         end
     end
-        TweenService:Create(tabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = .85}):Play()
-        leftContainer.Visible = true
-        rightContainer.Visible = true
-    end
-    if TabSelected == nil then
+    TweenService:Create(tabFrame, TweenInfo.new(.15, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = .85}):Play()
+    leftContainer.Visible = true
+    rightContainer.Visible = true
+end
+
+if windowFirstTab then
+    windowFirstTab = false
+    task.defer(function()
         tab:Select()
-    end
-    return tab
+    end)
+end
+
+return tab
 end
 
 local uIListLayout = Instance.new("UIListLayout")
@@ -1990,6 +1998,105 @@ local uIStroke2 = Instance.new("UIStroke")
 uIStroke2.Name = "UIStroke"
 uIStroke2.Color = Color3.fromRGB(61, 61, 61)
 uIStroke2.Parent = main
+
+function window:Notify(Info)
+	Info = Info or {}
+	local message = Info.Text or Info.Message or ""
+	local duration = typeof(Info.Duration) == "number" and Info.Duration or 4
+	local minWidth = typeof(Info.MinWidth) == "number" and Info.MinWidth or 130
+	local textSize = typeof(Info.TextSize) == "number" and Info.TextSize or 14
+	local padX = typeof(Info.PaddingX) == "number" and Info.PaddingX or 12
+	local padY = typeof(Info.PaddingY) == "number" and Info.PaddingY or 10
+
+	local cam = workspace.CurrentCamera
+	local viewportX = cam and cam.ViewportSize.X or 1920
+	local maxOuter = typeof(Info.MaxWidth) == "number" and Info.MaxWidth or math.floor(math.min(560, viewportX - 32))
+	local innerMax = math.max(1, maxOuter - padX * 2)
+
+	local notifyFont = Font.new("rbxasset://fonts/families/RobotoMono.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+
+	local function textBoundsForWrap(innerWrapWidth)
+		local params = Instance.new("GetTextBoundsParams")
+		params.Text = message
+		params.RichText = true
+		params.Font = notifyFont
+		params.Size = textSize
+		params.Width = innerWrapWidth
+		return TextService:GetTextBoundsAsync(params)
+	end
+
+	local loose = textBoundsForWrap(100000)
+	local useWrap = loose.X > innerMax
+	local contentW = useWrap and innerMax or loose.X
+	local contentH = useWrap and textBoundsForWrap(innerMax).Y or loose.Y
+
+	local outerW = math.max(minWidth, math.ceil(contentW) + padX * 2)
+	local outerH = math.max(40, math.ceil(contentH) + padY * 2)
+
+	notificationLayoutSeed -= 1
+
+	local wrap = Instance.new("Frame")
+	wrap.Name = "Notification"
+	wrap.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+	wrap.BorderSizePixel = 0
+	wrap.ClipsDescendants = false
+	wrap.LayoutOrder = notificationLayoutSeed
+	wrap.Size = UDim2.fromOffset(outerW, outerH)
+	wrap.Parent = notificationHolder
+
+	local wrapCorner = Instance.new("UICorner")
+	wrapCorner.CornerRadius = UDim.new(0, 6)
+	wrapCorner.Parent = wrap
+
+	local wrapStroke = Instance.new("UIStroke")
+	wrapStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	wrapStroke.Color = Color3.fromRGB(45, 45, 45)
+	wrapStroke.Thickness = 1
+	wrapStroke.Parent = wrap
+
+	local textLabel = Instance.new("TextLabel")
+	textLabel.Name = "TextLabel"
+	textLabel.BackgroundTransparency = 1
+	textLabel.Text = message
+	textLabel.TextColor3 = Color3.new(1, 1, 1)
+	textLabel.FontFace = notifyFont
+	textLabel.TextSize = textSize
+	textLabel.TextXAlignment = Enum.TextXAlignment.Left
+	textLabel.TextYAlignment = useWrap and Enum.TextYAlignment.Top or Enum.TextYAlignment.Center
+	textLabel.RichText = true
+	textLabel.TextWrapped = useWrap
+	textLabel.Size = UDim2.fromOffset(contentW, contentH)
+	local textPosY = useWrap and padY or math.floor((outerH - contentH) / 2)
+	textLabel.Position = UDim2.fromOffset(padX, textPosY)
+	textLabel.Parent = wrap
+
+	local closed = false
+
+	local function close()
+		if closed then
+			return
+		end
+		closed = true
+		TweenService:Create(wrapStroke, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { Transparency = 1 }):Play()
+		TweenService:Create(wrap, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { BackgroundTransparency = 1 }):Play()
+		TweenService:Create(textLabel, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { TextTransparency = 1 }):Play()
+		task.delay(0.22, function()
+			if wrap.Parent then
+				wrap:Destroy()
+			end
+		end)
+	end
+
+	if duration > 0 then
+		task.delay(duration, function()
+			close()
+		end)
+	end
+
+	return {
+		Close = close,
+	}
+end
 
 return window
 end
