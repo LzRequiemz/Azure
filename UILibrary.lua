@@ -150,9 +150,10 @@ slideFrame.Name = "SlideFrame"
 slideFrame.BackgroundTransparency = 1
 slideFrame.BackgroundColor3 = Color3.fromRGB(255,255,255)
 slideFrame.BorderSizePixel = 0
-slideFrame.ClipsDescendants = false
 slideFrame.Size = UDim2.new(.5,0,.5,0)
-slideFrame.Position = UDim2.new(-0.0001,0,-0.14,0)
+slideFrame.ClipsDescendants = false
+slideFrame.AnchorPoint = Vector2.new(0, 1)
+slideFrame.Position = UDim2.new(0, 16, 1, -16)
 slideFrame.ClipsDescendants = true
 
 uil.Parent = slideFrame
@@ -177,7 +178,7 @@ function Notify(text)
     notifText.BackgroundTransparency = 0
     notifText.BorderSizePixel = 0
     notifText.Position = UDim2.new(0, 0, 0, 0)
-    notifText.Size = UDim2.new(0,10.4*string.len(text),0,20)
+    notifText.Size = UDim2.new(0,10.4*string.len(text),0,40)
     notifText.Font = Enum.Font.Code
     notifText.Text = "  " .. text
     notifText.TextColor3 = Color3.fromRGB(255, 255, 255)
