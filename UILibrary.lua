@@ -257,7 +257,18 @@ end
 
 local notifyLayoutSeed = 0
 
-local function Notify(text)
+-- Supports win.Notify("msg"), win:Notify("msg"), win.Notify({ Text = "msg" }), win:Notify({ Text = "msg" })
+local function Notify(a, b)
+    local payload = b ~= nil and b or a
+    local text
+    if typeof(payload) == "table" then
+        text = tostring(payload.Text or payload.Message or "")
+    elseif typeof(payload) == "string" then
+        text = payload
+    else
+        text = tostring(payload or "")
+    end
+
     local tb = TextService:GetTextSize(
         text,
         15,
