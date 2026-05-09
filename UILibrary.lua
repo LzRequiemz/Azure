@@ -436,12 +436,10 @@ window.ScriptNameLabel = scriptNameLabel
 window.TitleLabel = titleLabel
 
 local minimizeButton = Instance.new("ImageButton")
-minimizeButton.Name = "UIColorButton"
+minimizeButton.Name = "EditButton"
 minimizeButton.Image = getcustomasset("Shaman/ColorDropper.png")
-minimizeButton.ImageRectOffset = Vector2.new(284, 4)
-minimizeButton.ImageRectSize = Vector2.new(24, 24)
-minimizeButton.ImageColor3 = _G.UIColor
-minimizeButton.BackgroundColor3 = _G.UIColor
+minimizeButton.ImageColor3 = Color3.fromRGB(237, 237, 237)
+minimizeButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 minimizeButton.BackgroundTransparency = 1
 minimizeButton.Position = UDim2.new(0.947, 0, 0.194, 0)
 minimizeButton.Size = UDim2.new(0, 15, 0, 15)
