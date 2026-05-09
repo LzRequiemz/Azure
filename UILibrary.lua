@@ -1,6 +1,5 @@
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
-local TextService = game:GetService("TextService")
 local UserInputService = game:GetService("UserInputService")
 
 local Mouse = game.Players.LocalPlayer:GetMouse()
@@ -161,16 +160,8 @@ uil.VerticalAlignment = "Bottom"
 uil.Padding = UDim.new(0,10)
 
 function Notify(text)
-    local textSize = TextService:GetTextSize(
-        text,
-        15,
-        Enum.Font.Code,
-        Vector2.new(math.huge, 20)
-    )
-
     local notifText = Instance.new("TextLabel")
 
-    -- TextLabel setup
     local uiCorner = Instance.new("UICorner")
     uiCorner.Name = "UICorner"
     uiCorner.CornerRadius = UDim.new(0, 3)
@@ -186,7 +177,7 @@ function Notify(text)
     notifText.BackgroundTransparency = 0
     notifText.BorderSizePixel = 0
     notifText.Position = UDim2.new(0, 0, 0, 0)
-    notifText.Size = UDim2.new(0, textSize.X + 10, 0, 20)
+    notifText.Size = UDim2.new(0,10.4*string.len(text),0,20)
     notifText.Font = Enum.Font.Code
     notifText.Text = "  " .. text
     notifText.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -198,25 +189,17 @@ function Notify(text)
     notifText.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
     notifText.ZIndex = 2
 
-    task.spawn(function()
-        task.wait(2)
-
-        local info = TweenInfo.new(1)
-
-        local tweenText = TweenService:Create(
-            notifText,
-            info,
-            { TextTransparency = 1, BackgroundTransparency = 1 }
-        )
-
-
-        tweenText:Play()
-
-        tweenText.Completed:Wait()
-        task.wait(0.2)
-
+    coroutine.wrap(function()
+        wait(2)
+        local Info = TweenInfo.new(1)
+        local Tween = TweenService:Create(notifText,Info,{TextTransparency=1})
+        Tween:Play()
+        local Info = TweenInfo.new(1)
+        local Tween = TweenService:Create(notifText,Info,{BackgroundTransparency=1})
+        Tween:Play()
+        wait(0.5)
         notifText:Destroy()
-    end)
+    end)()
 end
 
 function library:Window(Info)
